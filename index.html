@@ -174,6 +174,8 @@ button.danger:hover{background:#FBF0EC}
 @media(max-width:480px){.set-grid{grid-template-columns:1fr}}
 #spouseBlock.off{opacity:.4;pointer-events:none}
 .pip-row{display:grid;grid-template-columns:1.3fr .9fr 1fr auto;gap:8px;margin-bottom:8px;align-items:center}
+.inc-row{display:grid;grid-template-columns:1.2fr .8fr 1fr 1fr auto;gap:8px;margin-bottom:8px;align-items:center}
+@media(max-width:480px){.inc-row{grid-template-columns:1fr 1fr auto}.inc-row .pip-label{grid-column:1/-1}}
 .pip-row input{margin:0}
 @media(max-width:480px){.pip-row{grid-template-columns:1fr 1fr auto}.pip-row .pip-label{grid-column:1/-1}}
 .disclaimer{font-size:12.5px;color:var(--ink-soft);border-top:1px solid var(--line);padding:22px 0 40px;max-width:85ch}
@@ -491,6 +493,11 @@ header{padding-top:calc(26px + env(safe-area-inset-top))}
         <button type="button" class="small ghost" data-pipadd="p1">+ Add pension in payment</button>
         <div class="hint">Each pension: £/month and the month it starts (or started) paying. DB pensions, annuities, old workplace schemes…</div>
       </div>
+      <div class="field" style="grid-column:1/-1"><label>Other income after retirement</label>
+        <div id="incs_p1"></div>
+        <button type="button" class="small ghost" data-incadd="p1">+ Add income</button>
+        <div class="hint">Part-time work, rental, consultancy… £/month (today's money) with a from and to date. Treated as taxable income in the plan.</div>
+      </div>
       <div class="field"><label for="s_p1_sp">State pension £/yr</label><input type="number" id="s_p1_sp" data-set="p1.statePension" min="0" step="100"></div>
       <div class="field"><label for="s_p1_spage">…from age</label><input type="number" id="s_p1_spage" data-set="p1.spAge" min="66" max="68"></div>
     </div>
@@ -508,6 +515,10 @@ header{padding-top:calc(26px + env(safe-area-inset-top))}
         <div class="field" style="grid-column:1/-1"><label>Pensions in payment</label>
           <div id="pips_p2"></div>
           <button type="button" class="small ghost" data-pipadd="p2">+ Add pension in payment</button>
+        </div>
+        <div class="field" style="grid-column:1/-1"><label>Other income after retirement</label>
+          <div id="incs_p2"></div>
+          <button type="button" class="small ghost" data-incadd="p2">+ Add income</button>
         </div>
         <div class="field"><label for="s_p2_sp">State pension £/yr</label><input type="number" id="s_p2_sp" data-set="p2.statePension" min="0" step="100"></div>
         <div class="field"><label for="s_p2_spage">…from age</label><input type="number" id="s_p2_spage" data-set="p2.spAge" min="66" max="68"></div>
@@ -561,8 +572,8 @@ const tagIcon=(k,size)=>`<svg viewBox="0 0 22 22" width="${size}" height="${size
 let S = {
   settings:{
     couple:false, endAge:97,
-    p1:{name:"You", dob:"", email:"", age:61, salary:0, pips:[], statePension:11973, spAge:67},
-    p2:{name:"Spouse", dob:"", email:"", age:61, salary:0, pips:[], statePension:11973, spAge:67}
+    p1:{name:"You", dob:"", email:"", age:61, salary:0, pips:[], incomes:[], statePension:11973, spAge:67},
+    p2:{name:"Spouse", dob:"", email:"", age:61, salary:0, pips:[], incomes:[], statePension:11973, spAge:67}
   },
   holdings:[
     {name:"Pension / SIPP",wrap:"pension",owner:"p1",value:0,growth:5,start:"2026-06"},
@@ -594,6 +605,18 @@ function pipsAnnual(P,year){           /* £/yr in payment from each pension's o
   },0);
 }
 function pipsMoNow(P){return (P.pips||[]).reduce((a,x)=>a+(+x.mo||0),0);}
+function incomesAnnual(P,year){        /* £/yr from ranged extra incomes (part-time, rental…) */
+  return (P.incomes||[]).reduce((a,x)=>{
+    const sy=parseInt((x.start||"").slice(0,4))||RET_YEAR, sm=parseInt((x.start||"").slice(5,7))||1;
+    const ey=parseInt((x.end||"").slice(0,4))||sy,        em=parseInt((x.end||"").slice(5,7))||12;
+    if(year<sy||year>ey)return a;
+    let months=12;
+    if(year===sy&&year===ey)months=Math.max(0,em-sm+1);
+    else if(year===sy)months=13-sm;
+    else if(year===ey)months=em;
+    return a+(+x.mo||0)*months;
+  },0);
+}
 function ageFromDob(dob){
   if(!dob)return null;
   const d=new Date(dob);if(isNaN(d))return null;
@@ -619,6 +642,8 @@ function normalizeState(){
       delete P.pensionsMo;delete P.pensionsStart;
     }
     P.pips.forEach(x=>{x.mo=+x.mo||0;x.start=x.start||"2026-06";x.label=x.label||"Pension in payment";});
+    if(!Array.isArray(P.incomes))P.incomes=[];
+    P.incomes.forEach(x=>{x.mo=+x.mo||0;x.start=x.start||"2027-07";x.end=x.end||"2032-06";x.label=x.label||"Other income";});
   });
   S.holdings.forEach(h=>{if(h.owner!=="p2"&&h.owner!=="joint")h.owner="p1";});
   if(!S.portfolioFilter)S.portfolioFilter="all";
@@ -772,8 +797,8 @@ function simulate(){
       const spOf=(P,age)=>(age>=+P.spAge)?+P.statePension*Math.pow(1.025,year-NOW_YEAR)*((age===+P.spAge)?frac:1):0;
       const sp1=spOf(ST.p1,age1), sp2=couple?spOf(ST.p2,age2):0;
       sp=sp1+sp2;
-      const fixed={p1:pipsAnnual(ST.p1,year)*frac*(S.escalate?esc:1)+sp1,
-                   p2:couple?(pipsAnnual(ST.p2,year)*frac*(S.escalate?esc:1)+sp2):0};
+      const fixed={p1:pipsAnnual(ST.p1,year)*frac*(S.escalate?esc:1)+incomesAnnual(ST.p1,year)*(S.escalate?esc:1)+sp1,
+                   p2:couple?(pipsAnnual(ST.p2,year)*frac*(S.escalate?esc:1)+incomesAnnual(ST.p2,year)*(S.escalate?esc:1)+sp2):0};
       const drawnTaxable={p1:0,p2:0};                /* taxable pension slices drawn this year, per person */
       const persons=couple?["p1","p2"]:["p1"];
       tax=persons.reduce((a,p)=>a+incomeTax(fixed[p]),0);
@@ -1282,18 +1307,34 @@ function renderSettingsControls(){
         <input type="month" data-pip="${pk}:${i}:start" value="${x.start}" min="2026-06" max="2060-12" aria-label="Paying from">
         <button type="button" class="small danger" data-pipdel="${pk}:${i}" aria-label="Remove">✕</button>
       </div>`).join(""):'<div class="hint" style="margin-bottom:6px">None yet.</div>';
+    const ibox=document.getElementById("incs_"+pk);if(!ibox)return;
+    const incs=ST[pk].incomes||[];
+    ibox.innerHTML=incs.length?incs.map((x,i)=>`<div class="inc-row">
+        <input class="pip-label" type="text" data-inc="${pk}:${i}:label" value="${String(x.label||"").replace(/"/g,'&quot;')}" placeholder="e.g. Part-time work" aria-label="Income name">
+        <input type="number" data-inc="${pk}:${i}:mo" value="${x.mo}" min="0" step="25" aria-label="£ per month">
+        <input type="month" data-inc="${pk}:${i}:start" value="${x.start}" min="2026-06" max="2060-12" aria-label="From">
+        <input type="month" data-inc="${pk}:${i}:end" value="${x.end}" min="2026-06" max="2060-12" aria-label="To">
+        <button type="button" class="small danger" data-incdel="${pk}:${i}" aria-label="Remove">✕</button>
+      </div>`).join(""):'<div class="hint" style="margin-bottom:6px">None yet.</div>';
   });
 }
 setOverlay.addEventListener("click",e=>{
   const t=e.target;
   if(t.dataset.pipadd){S.settings[t.dataset.pipadd].pips.push({label:"Pension in payment",mo:0,start:"2026-06"});renderSettingsControls();render();return;}
   if(t.dataset.pipdel){const [pk,i]=t.dataset.pipdel.split(":");S.settings[pk].pips.splice(+i,1);renderSettingsControls();render();return;}
+  if(t.dataset.incadd){S.settings[t.dataset.incadd].incomes.push({label:"Part-time work",mo:0,start:"2027-07",end:"2032-06"});renderSettingsControls();render();return;}
+  if(t.dataset.incdel){const [pk,i]=t.dataset.incdel.split(":");S.settings[pk].incomes.splice(+i,1);renderSettingsControls();render();return;}
 });
 setOverlay.addEventListener("change",e=>{
   const el=e.target;
   if(el.dataset.pip){
     const [pk,i,key]=el.dataset.pip.split(":");
     S.settings[pk].pips[+i][key]=(key==="mo")?+el.value:el.value;
+    render();return;
+  }
+  if(el.dataset.inc){
+    const [pk,i,key]=el.dataset.inc.split(":");
+    S.settings[pk].incomes[+i][key]=(key==="mo")?+el.value:el.value;
     render();return;
   }
   if(el.id==="s_couple"){S.settings.couple=el.checked;renderSettingsControls();render();return;}
