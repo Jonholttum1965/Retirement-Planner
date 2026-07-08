@@ -1,0 +1,1412 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Retirement Cockpit — June 2027</title>
+<meta name="theme-color" content="#0C2823">
+<link rel="manifest" href="manifest.json">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Cockpit">
+<link rel="apple-touch-icon" href="icon-180.png">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,650&family=Public+Sans:wght@400;500;600;700&family=Spline+Sans+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#F4F6F2; --card:#FFFFFF; --ink:#22302B; --ink-soft:#5A6963;
+  --pine:#133A33; --pine-deep:#0C2823; --gold:#B98A2F; --gold-soft:#E9DCBE;
+  --line:#DDE3DD; --coral:#C4543B; --ok:#2E7D5B;
+  --c-pension:#1F5A4D; --c-isa:#3E8E7E; --c-gia:#7FB6A4; --c-invest:#5B8AA6; --c-gold:#C9A24B; --c-cash:#9AA8A0; --c-crypto:#8A6FA8;
+  --disp:'Fraunces',Georgia,serif; --body:'Public Sans',system-ui,sans-serif; --mono:'Spline Sans Mono',ui-monospace,monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{transition:none!important;animation:none!important}}
+body{font-family:var(--body);background:var(--paper);color:var(--ink);line-height:1.5;font-size:15px}
+a{color:var(--pine)}
+h1,h2,h3{font-family:var(--disp);font-weight:650;line-height:1.15}
+.num{font-family:var(--mono);font-variant-numeric:tabular-nums}
+.wrap{max-width:1100px;margin:0 auto;padding:0 20px}
+
+/* ---------- header ---------- */
+header{background:var(--pine-deep);color:#EAF0EC;padding:26px 0 0}
+.head-top{display:flex;justify-content:space-between;align-items:baseline;gap:16px;flex-wrap:wrap}
+.head-top h1{font-size:clamp(26px,4vw,38px);color:#F3EEDF}
+.head-top h1 em{font-style:normal;color:var(--gold)}
+.countdown{font-family:var(--mono);font-size:13px;color:#BFD0C7;border:1px solid #2C4A41;border-radius:999px;padding:6px 14px;display:flex;align-items:baseline;gap:4px;flex-wrap:wrap}
+.countdown .cd-num{color:var(--gold);font-weight:700;font-size:1.2em;line-height:1}
+nav{display:flex;gap:4px;margin-top:18px;overflow-x:auto;padding-bottom:0}
+nav a{color:#BFD0C7;text-decoration:none;font-size:13px;font-weight:600;padding:9px 14px;border-radius:8px 8px 0 0;white-space:nowrap}
+nav a:hover,nav a:focus-visible{background:#1A4239;color:#fff}
+
+/* ---------- tuner band (signature) ---------- */
+.tuner{background:var(--pine);color:#EAF0EC;padding:26px 0 30px;border-top:1px solid #245247}
+.tuner-grid{display:grid;grid-template-columns:1.3fr 1fr 1fr 1fr;gap:24px;align-items:end}
+@media(max-width:880px){.tuner-grid{grid-template-columns:1fr 1fr}}
+@media(max-width:540px){.tuner-grid{grid-template-columns:1fr}}
+.tuner label{display:block;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:#A8BFB5;margin-bottom:6px}
+.tuner .big{font-family:var(--mono);font-size:clamp(30px,4.5vw,44px);font-weight:600;color:#F3EEDF;line-height:1}
+.tuner .big small{font-size:.45em;color:#A8BFB5;font-weight:400}
+.tuner input[type=range]{width:100%;margin-top:14px;accent-color:var(--gold)}
+.stat .big.gold{color:var(--gold)}
+#fundedAge{cursor:pointer;border-bottom:2px solid transparent}
+#fundedAge:hover{border-bottom:2px dashed rgba(185,138,47,.6)}
+#fundedAge:focus-visible{outline:2px solid var(--gold);outline-offset:3px;border-radius:4px}
+#fundedAge.warn{color:#E8A18D}
+.age-input{background:transparent;border:none;border-bottom:2px dashed var(--gold);color:inherit;font:inherit;width:2.4ch;padding:0 0 2px;text-align:left;-moz-appearance:textfield}
+.age-input::-webkit-inner-spin-button,.age-input::-webkit-outer-spin-button{-webkit-appearance:none}
+.age-input:focus-visible{outline:2px solid var(--gold);outline-offset:3px;border-radius:4px}
+.stat .sub{font-size:12px;color:#A8BFB5;margin-top:6px}
+.stat .big.warn{color:#E8A18D}
+
+/* ---------- sections ---------- */
+section{padding:34px 0}
+section h2{font-size:24px;margin-bottom:4px}
+.section-sub{color:var(--ink-soft);font-size:14px;margin-bottom:18px;max-width:70ch}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:20px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+@media(max-width:820px){.grid2{grid-template-columns:1fr}}
+
+/* ---------- tables ---------- */
+table{width:100%;border-collapse:collapse;font-size:13.5px}
+th{text-align:left;font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-soft);font-weight:700;padding:8px 10px;border-bottom:2px solid var(--line)}
+td{padding:8px 10px;border-bottom:1px solid var(--line);vertical-align:middle}
+td.num,th.num{text-align:right}
+tbody tr:hover{background:#F7FAF7}
+.table-scroll{overflow-x:auto}
+
+/* ---------- inputs ---------- */
+input[type=number],input[type=text],select{font-family:var(--mono);font-size:13.5px;padding:7px 9px;border:1px solid var(--line);border-radius:8px;background:#fff;color:var(--ink);width:100%}
+input:focus-visible,select:focus-visible,button:focus-visible,a:focus-visible{outline:2px solid var(--gold);outline-offset:1px}
+.field{margin-bottom:14px}
+.field>label{display:block;font-size:12px;font-weight:600;color:var(--ink-soft);margin-bottom:5px}
+.field .hint{font-size:11.5px;color:var(--ink-soft);margin-top:4px}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.toggle{display:flex;align-items:center;gap:8px;font-size:13px;font-weight:600}
+.toggle input{accent-color:var(--pine);width:16px;height:16px}
+
+button{font-family:var(--body);font-weight:600;font-size:13.5px;border-radius:9px;border:1px solid var(--pine);background:var(--pine);color:#fff;padding:9px 16px;cursor:pointer}
+button:hover{background:var(--pine-deep)}
+button.ghost{background:transparent;color:var(--pine)}
+button.ghost:hover{background:#EAF0EC}
+button.small{padding:5px 10px;font-size:12px}
+button.danger{border-color:#E0C4BB;background:transparent;color:var(--coral)}
+button.danger:hover{background:#FBF0EC}
+
+/* ---------- wrapper chips & legend ---------- */
+.chip{display:inline-block;font-family:var(--mono);font-size:11px;padding:2px 8px;border-radius:999px;color:#fff}
+.legend{display:flex;gap:14px;flex-wrap:wrap;font-size:12px;color:var(--ink-soft);margin-top:10px}
+.table-filter{display:flex;justify-content:flex-end;align-items:center;gap:8px;margin-bottom:12px;flex-wrap:wrap}
+.table-filter label{font-size:10px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-soft);font-weight:700}
+.table-filter select{width:auto;min-width:120px;padding:6px 8px;font-size:12.5px}
+.table-filter .tf-clear{border:none;background:transparent;color:var(--coral);font-size:12px;font-weight:600;padding:4px 6px;cursor:pointer}
+@media(max-width:700px){.table-filter{justify-content:flex-start}.table-filter select{font-size:16px}}
+.filter-chips{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}
+.filter-chips button{background:transparent;border:1.5px solid var(--line);color:var(--ink-soft);border-radius:999px;padding:7px 16px;font-size:12.5px}
+.filter-chips button:hover{border-color:var(--pine);color:var(--pine);background:transparent}
+.filter-chips button.on{background:var(--pine);border-color:var(--pine);color:#fff}
+.filter-chips button.on:hover{background:var(--pine-deep)}
+.legend span{display:flex;align-items:center;gap:6px}
+.dot{width:10px;height:10px;border-radius:3px;display:inline-block}
+
+/* ---------- insights ---------- */
+.insights li{margin:0 0 12px 0;padding-left:26px;position:relative;list-style:none;max-width:80ch}
+.insights li::before{content:"◆";color:var(--gold);position:absolute;left:4px;font-size:11px;top:3px}
+.insights strong{color:var(--pine)}
+
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;margin-bottom:18px}
+.kpi{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px 16px}
+.kpi .v{font-family:var(--mono);font-size:22px;font-weight:600;color:var(--pine)}
+.kpi .l{font-size:11px;letter-spacing:.05em;text-transform:uppercase;color:var(--ink-soft);margin-top:2px}
+
+.note{background:var(--gold-soft);border:1px solid #D8C58F;border-radius:12px;padding:14px 18px;font-size:13px;max-width:80ch}
+
+/* ---------- action tiles ---------- */
+.actions-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:12px}
+.tile{background:var(--card);border:1px solid var(--line);border-left:4px solid var(--gold);border-radius:12px;padding:14px 14px 12px;display:flex;flex-direction:column;gap:10px;position:relative;cursor:pointer;transition:box-shadow .15s,transform .15s}
+.tile:hover{box-shadow:0 4px 14px rgba(19,58,51,.10);transform:translateY(-1px)}
+.tile:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+.tile .more{font-size:11px;color:var(--pine);font-weight:600;letter-spacing:.03em}
+.tile .more::after{content:" ›"}
+.tile.done{border-left-color:var(--ok);background:#F4F9F5}
+.tile .tile-top{display:flex;gap:10px;align-items:flex-start}
+.tile input[type=checkbox]{accent-color:var(--ok);width:18px;height:18px;margin-top:2px;flex:none;cursor:pointer}
+.tile .t-name{font-size:13px;font-weight:600;line-height:1.35;border:none;background:transparent;width:100%;font-family:var(--body);padding:0;color:var(--ink)}
+.tile.done .t-name{color:var(--ink-soft);text-decoration:line-through;text-decoration-color:var(--ok)}
+.tile .tile-foot{display:flex;gap:8px;align-items:center;justify-content:space-between}
+.tile input[type=date]{font-family:var(--mono);font-size:12px;padding:4px 7px;border:1px solid var(--line);border-radius:7px;width:auto;color:var(--ink-soft)}
+.tile .badge{font-family:var(--mono);font-size:10px;letter-spacing:.06em;text-transform:uppercase;color:var(--ok);font-weight:600}
+.tile .x{position:absolute;top:8px;right:8px;border:none;background:none;color:#C9B6AF;font-size:13px;padding:2px 6px;cursor:pointer}
+.tile .x:hover{color:var(--coral)}
+.arch-row{display:flex;align-items:center;gap:12px;padding:10px 14px;border:1px solid var(--line);border-left:4px solid var(--ok);border-radius:10px;background:#F4F9F5;margin-bottom:8px}
+.arch-row .arch-tick{color:var(--ok);font-weight:700;flex:none}
+.arch-row .arch-body{flex:1;min-width:0}
+.arch-row .arch-name{font-size:13px;font-weight:600;color:var(--ink-soft);text-decoration:line-through;text-decoration-color:var(--ok)}
+.arch-row .arch-meta{font-size:11px;color:var(--ink-soft);margin-top:2px}
+.arch-row .arch-fx{font-family:var(--mono);color:var(--pine)}
+.arch-row button{flex:none}
+#archiveToggle{font-weight:600}
+
+/* ---------- action modal ---------- */
+.modal-overlay{position:fixed;inset:0;background:rgba(12,40,35,.55);display:none;align-items:flex-start;justify-content:center;padding:40px 16px;z-index:50;overflow-y:auto}
+.modal-overlay.open{display:flex}
+.modal{background:var(--card);border-radius:16px;max-width:620px;width:100%;padding:26px 28px 22px;position:relative;border-top:5px solid var(--gold);box-shadow:0 20px 60px rgba(12,40,35,.35)}
+.modal h3{font-size:20px;margin-bottom:4px;padding-right:36px}
+.modal .m-status{display:flex;gap:14px;align-items:center;flex-wrap:wrap;margin:12px 0 16px;padding:10px 12px;background:var(--paper);border-radius:10px;font-size:13px;font-weight:600}
+.modal .m-status input[type=checkbox]{accent-color:var(--ok);width:18px;height:18px}
+.modal .m-status input[type=date]{width:auto;font-size:12.5px;padding:5px 8px}
+.modal .m-detail{font-size:13.5px;color:var(--ink)}
+.modal .m-detail p{margin-bottom:10px}
+.modal .m-detail ul{margin:0 0 8px 0;padding:0}
+.modal .m-detail li{list-style:none;position:relative;padding-left:22px;margin-bottom:9px;line-height:1.5}
+.modal .m-detail li::before{content:"◆";color:var(--gold);position:absolute;left:2px;top:2px;font-size:10px}
+.modal .m-detail strong{color:var(--pine)}
+.modal textarea{width:100%;font-family:var(--body);font-size:13px;border:1px solid var(--line);border-radius:9px;padding:9px 11px;min-height:74px;resize:vertical;color:var(--ink)}
+.modal .m-notes-label{font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-soft);font-weight:700;margin:14px 0 6px;display:block}
+.modal .m-close{position:absolute;top:12px;right:12px;border:none;background:var(--paper);color:var(--ink-soft);width:32px;height:32px;border-radius:50%;font-size:15px;padding:0;line-height:1}
+.modal .m-close:hover{background:#E8EDE8;color:var(--ink)}
+.modal .m-foot{font-size:11.5px;color:var(--ink-soft);margin-top:14px;border-top:1px solid var(--line);padding-top:10px}
+.set-h{font-family:var(--disp);font-size:15px;color:var(--pine);margin:4px 0 10px;border-bottom:1px solid var(--line);padding-bottom:5px}
+.set-grid{display:grid;grid-template-columns:1fr 1fr;gap:0 14px;margin-bottom:8px}
+@media(max-width:480px){.set-grid{grid-template-columns:1fr}}
+#spouseBlock.off{opacity:.4;pointer-events:none}
+.pip-row{display:grid;grid-template-columns:1.3fr .9fr 1fr auto;gap:8px;margin-bottom:8px;align-items:center}
+.pip-row input{margin:0}
+@media(max-width:480px){.pip-row{grid-template-columns:1fr 1fr auto}.pip-row .pip-label{grid-column:1/-1}}
+.disclaimer{font-size:12.5px;color:var(--ink-soft);border-top:1px solid var(--line);padding:22px 0 40px;max-width:85ch}
+
+footer-actions,.report-actions{display:flex;gap:10px;flex-wrap:wrap}
+.oneoff-row{display:grid;grid-template-columns:auto 1.4fr .8fr 1fr auto;gap:8px;margin-bottom:12px;align-items:center}
+.oo-note{grid-column:2/-1;font-family:var(--body)!important;font-size:12px;font-style:italic;color:var(--ink-soft);border:none!important;border-bottom:1px dashed transparent!important;border-radius:0!important;background:transparent!important;padding:1px 2px 3px!important;margin-top:-3px}
+.oo-note:hover{border-bottom-color:var(--line)!important}
+.oo-note:focus{border-bottom-color:var(--gold)!important;outline:none!important;color:var(--ink)}
+.oo-note::placeholder{color:#ADB8B1;font-style:italic}
+.oo-icon{width:34px;height:34px;border-radius:9px;background:var(--gold-soft);border:1px solid #D8C58F;color:var(--pine);display:flex;align-items:center;justify-content:center;flex:none}
+.oo-icon svg{display:block}
+@media(max-width:540px){.oneoff-row{grid-template-columns:auto 1fr auto;grid-auto-rows:auto}.oneoff-row select{grid-column:2/4}}
+
+/* ---------- print ---------- */
+@media print{
+  nav,.tuner input,.no-print,button{display:none!important}
+  body{background:#fff;font-size:11px}
+  header,.tuner{background:#fff!important;color:#000!important;padding:6px 0}
+  .tuner .big,.head-top h1,.head-top h1 em{color:#000!important}
+  .card{border:1px solid #999;break-inside:avoid}
+  section{padding:12px 0}
+}
+
+/* =================================================================
+   MOBILE REFACTOR — tuned for iPhone 14 Pro (393×852, Dynamic Island)
+   ================================================================= */
+.wrap{padding-left:max(20px,env(safe-area-inset-left));padding-right:max(20px,env(safe-area-inset-right))}
+header{padding-top:calc(26px + env(safe-area-inset-top))}
+.disclaimer{padding-bottom:calc(40px + env(safe-area-inset-bottom))}
+.table-scroll{-webkit-overflow-scrolling:touch}
+#projTable{min-width:840px}
+#projTable th:first-child,#projTable td:first-child{position:sticky;left:0;background:var(--card);z-index:1}
+#projTable tbody tr:hover td:first-child{background:#F7FAF7}
+.scroll-hint{display:none;font-size:11px;color:var(--ink-soft);margin-bottom:8px}
+@media(min-width:701px){#holdingsTable{min-width:660px}}
+
+@media(max-width:700px){
+  .scroll-hint{display:block}
+
+  /* iOS zooms any focused input under 16px — prevent it */
+  input[type=number],input[type=text],input[type=month],input[type=date],select,textarea{font-size:16px;padding:10px 11px}
+  .tile .t-name{font-size:16px}
+  .oo-note{font-size:14px}
+
+  /* touch targets */
+  button{padding:12px 18px}
+  button.small{padding:8px 12px;font-size:13px}
+  .toggle input,.tile input[type=checkbox],.modal .m-status input[type=checkbox]{width:22px;height:22px}
+  input[type=range]{height:38px}
+  nav a{padding:12px 14px}
+
+  section{padding:26px 0}
+  .tuner{padding:22px 0 26px}
+  .tuner-grid{gap:18px}
+  .kpis{grid-template-columns:1fr 1fr;gap:10px}
+  .kpi .v{font-size:19px}
+
+  /* holdings table reflows into cards */
+  #holdingsTable thead,#holdingsTable tfoot{display:none}
+  #holdingsTable,#holdingsTable tbody{display:block;width:100%;min-width:0}
+  #holdingsTable tr{display:grid;grid-template-columns:1fr 1fr;gap:10px;border:1px solid var(--line);border-radius:12px;padding:12px;padding-right:44px;margin-bottom:12px;position:relative;background:#FDFEFD}
+  #holdingsTable tr:hover{background:#FDFEFD}
+  #holdingsTable td{display:block;border:none;padding:0}
+  #holdingsTable td[data-label]::before{content:attr(data-label);display:block;font-size:10px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-soft);font-weight:700;margin-bottom:4px}
+  #holdingsTable td.h-name,#holdingsTable td.h-wrap{grid-column:1/-1}
+  #holdingsTable td.h-del{position:absolute;top:8px;right:8px}
+  #holdingsTable td.h-del::before{display:none}
+  #holdingsTable td input,#holdingsTable td select{text-align:left!important;max-width:none!important}
+  .mobile-total{display:block!important}
+
+  /* one-off rows stack */
+  .oneoff-row{grid-template-columns:auto 1fr 1fr auto}
+  .oneoff-row select{grid-column:2/5}
+  .oneoff-row .oo-icon{grid-row:1;width:40px;height:40px}
+  .oo-note{grid-column:1/-1;margin-top:0}
+
+  /* modal becomes a sheet */
+  .modal-overlay{padding:calc(16px + env(safe-area-inset-top)) 10px calc(16px + env(safe-area-inset-bottom))}
+  .modal{padding:22px 18px 18px;max-height:calc(100dvh - 32px);overflow-y:auto;-webkit-overflow-scrolling:touch}
+  .modal h3{font-size:18px}
+
+  .report-actions{flex-direction:column}
+  .report-actions button{width:100%}
+  .head-top{gap:8px}
+  .countdown{font-size:11px;padding:5px 11px}
+}
+.mobile-total{display:none;font-family:var(--mono);font-weight:600;font-size:15px;color:var(--pine);padding:4px 2px 0}
+.print-only{display:none}
+@media print{.print-only{display:block;font-size:11px;color:#000;margin-top:4px}}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <div class="head-top">
+      <h1>Retirement <em>Cockpit</em></h1>
+      <div class="countdown" id="countdown"></div>
+    </div>
+    <div id="planFor" style="font-size:13px;color:#A8BFB5;margin-top:6px"></div>
+    <div id="printFor" class="print-only"></div>
+    <nav class="no-print">
+      <a href="#portfolio">Portfolio</a>
+      <a href="#plan">Plan &amp; tax levers</a>
+      <a href="#actions">Actions</a>
+      <a href="#projection">Projection</a>
+      <a href="#insights">Tax insights</a>
+      <a href="#reports">Reports</a>
+      <a href="#" id="openSettings">⚙ Settings</a>
+    </nav>
+  </div>
+</header>
+
+<!-- ============ INCOME TUNER (signature) ============ -->
+<div class="tuner">
+  <div class="wrap tuner-grid">
+    <div>
+      <label for="incomeSlider">Target monthly income from June 2027 (after tax, today's money)</label>
+      <div class="big num">£<span id="incomeVal">2,000</span><small> /mo</small></div>
+      <input type="range" id="incomeSlider" min="1000" max="8000" step="50" value="2000" aria-label="Target monthly income">
+    </div>
+    <div class="stat">
+      <label for="fundedAgeInput">Plan funded to age — click to edit</label>
+      <div class="big num gold">
+        <span id="fundedAge" role="button" tabindex="0" title="Click to set a target age — the app will solve the income">—</span>
+        <input type="number" id="fundedAgeInput" class="age-input" min="70" max="97" step="1" style="display:none" aria-label="Target age the plan should fund to">
+      </div>
+      <div class="sub" id="fundedSub"></div>
+    </div>
+    <div class="stat">
+      <label>Pot at retirement</label>
+      <div class="big num" id="potAtRet">—</div>
+      <div class="sub">June 2027, all wrappers</div>
+    </div>
+    <div class="stat">
+      <label>Income tax, year 1</label>
+      <div class="big num" id="taxY1">—</div>
+      <div class="sub" id="taxY1Sub"></div>
+    </div>
+  </div>
+</div>
+
+<main class="wrap">
+
+<!-- ============ PORTFOLIO ============ -->
+<section id="portfolio">
+  <h2>Portfolio</h2>
+  <p class="section-sub">Edit values, growth assumptions and wrappers directly. Add new holdings — e.g. an S&amp;P 500 tracker — and choose which tax wrapper they sit in. Everything below recalculates instantly.</p>
+  <div class="filter-chips no-print" id="ownerFilter" role="group" aria-label="Filter holdings by owner"></div>
+  <div class="kpis" id="kpis"></div>
+  <div class="card table-scroll">
+    <div class="table-filter no-print" id="tableFilter"></div>
+    <table id="holdingsTable">
+      <thead><tr id="holdHeadRow"></tr></thead>
+      <tbody></tbody>
+      <tfoot><tr id="holdFootRow"></tr></tfoot>
+    </table>
+    <div class="mobile-total" id="mobileTotal"></div>
+    <div class="row" style="margin-top:14px">
+      <button id="addHolding">+ Add holding</button>
+      <button class="ghost" id="addSP500">+ Add S&amp;P 500 tracker (ISA)</button>
+    </div>
+    <div class="legend" id="wrapperLegend"></div>
+  </div>
+</section>
+
+<!-- ============ PLAN ============ -->
+<section id="plan">
+  <h2>Plan &amp; tax levers</h2>
+  <p class="section-sub">These levers shape how tax-efficient the plan is — pension top-ups before you stop work, annual Bed-&amp;-ISA moves, and the order pots are drawn in retirement.</p>
+  <div class="grid2">
+    <div class="card">
+      <h3 style="margin-bottom:12px">Before retirement (now → June 2027)</h3>
+      <div class="field">
+        <label for="topUp">One-off pension contribution before retirement (gross £)</label>
+        <input type="number" id="topUp" value="20000" min="0" step="1000">
+        <div class="hint">On a £75k salary, roughly £24,730 sits in the 40% band — contributions up to that get 40% relief (annual allowance £60k). Salary sacrifice also saves 2% NI.</div>
+      </div>
+      <div class="field">
+        <label for="reliefRate">Tax relief rate on that contribution</label>
+        <select id="reliefRate"><option value="0.4" selected>40% (higher rate)</option><option value="0.2">20% (basic rate)</option></select>
+      </div>
+      <div class="field">
+        <label for="topUpSource">Funded from</label>
+        <select id="topUpSource"></select>
+        <div class="hint" id="topUpNote"></div>
+      </div>
+      <div class="field">
+        <label for="isaFund">Move into ISA each tax year (£ — allowance is 20,000 per person)</label>
+        <input type="number" id="isaFund" value="20000" min="0" max="40000" step="1000">
+        <div class="hint">Funded from cash every April while cash remains — shelters growth from tax for life.</div>
+      </div>
+      <div class="field">
+        <label for="isaGrowth">Growth on ISA money once invested %/yr</label>
+        <input type="number" id="isaGrowth" value="6" step="0.5">
+        <div class="hint">e.g. a global or S&amp;P 500 index fund inside the ISA.</div>
+      </div>
+    </div>
+    <div class="card">
+      <h3 style="margin-bottom:12px">In retirement</h3>
+      <div class="field">
+        <label for="annualExtras">Annual extras — holidays etc. (£/yr)</label>
+        <input type="number" id="annualExtras" value="3000" min="0" step="500">
+      </div>
+      <div class="field">
+        <label>One-off major expenses</label>
+        <div id="oneoffs"></div>
+        <button class="small ghost no-print" id="addOneoff">+ Add one-off</button>
+      </div>
+      <div class="field">
+        <label for="strategy">Drawdown order</label>
+        <select id="strategy">
+          <option value="opt" selected>Tax-optimised (fill personal allowance from pension, then tax-free pots)</option>
+          <option value="isa">ISA &amp; cash first, pension last</option>
+          <option value="pension">Pension first</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>State pensions, ages &amp; household details</label>
+        <button class="ghost small no-print" id="openSettingsInline" type="button">⚙ Edit in Settings</button>
+        <div class="hint">Names, ages, salaries, pensions in payment and state pensions — for you and, optionally, your spouse — live in Settings.</div>
+      </div>
+      <div class="row">
+        <div class="field" style="flex:1">
+          <label for="inflation">Inflation %/yr</label>
+          <input type="number" id="inflation" value="2.5" step="0.1">
+        </div>
+        <div class="field" style="flex:1">
+          <label for="giaTax">Effective tax on taxable-account withdrawals %</label>
+          <input type="number" id="giaTax" value="5" step="1">
+        </div>
+      </div>
+      <label class="toggle"><input type="checkbox" id="escalate" checked> Increase income with inflation each year</label>
+    </div>
+  </div>
+</section>
+
+<!-- ============ ACTIONS ============ -->
+<section id="actions">
+  <h2>Actions before retirement</h2>
+  <p class="section-sub">Your to-do list for the run-up to June 2027. Click any tile for detailed suggestions and a notes pad; tick items off as you go and the completion date fills in automatically. Progress: <strong id="actionProgress" class="num"></strong></p>
+  <div id="actionFx" style="font-size:12.5px;color:var(--ok);font-weight:600;margin-bottom:12px;min-height:1em"></div>
+  <div class="actions-grid" id="actionTiles"></div>
+  <button class="ghost no-print" id="addAction" style="margin-top:14px">+ Add action</button>
+  <div id="archiveWrap" style="margin-top:26px">
+    <button class="ghost small no-print" id="archiveToggle" aria-expanded="false">▸ Completed &amp; archived (<span id="archiveCount">0</span>)</button>
+    <div id="archiveList" style="display:none;margin-top:14px"></div>
+  </div>
+</section>
+
+<!-- ============ PROJECTION ============ -->
+<section id="projection">
+  <h2>Projection</h2>
+  <p class="section-sub" id="projSub"></p>
+  <div class="card">
+    <div id="chart"></div>
+    <div class="legend" id="chartLegend"></div>
+  </div>
+  <div class="card table-scroll" style="margin-top:18px">
+    <div class="scroll-hint">Swipe sideways to see all columns →</div>
+    <table id="projTable">
+      <thead><tr>
+        <th>Tax yr</th><th class="num">Age</th><th class="num">Net need £</th><th class="num">State pen £</th><th class="num">Pension draw £</th><th class="num">Tax-free draws £</th><th class="num">Income tax £</th><th class="num">Pension pot £</th><th class="num">ISA £</th><th class="num">Other £</th><th class="num">Total £</th>
+      </tr></thead>
+      <tbody></tbody>
+    </table>
+  </div>
+</section>
+
+<!-- ============ INSIGHTS ============ -->
+<section id="insights">
+  <h2>Tax insights for your plan</h2>
+  <ul class="insights" id="insightList"></ul>
+  <div class="note" id="warnNote" style="display:none"></div>
+</section>
+
+<!-- ============ REPORTS ============ -->
+<section id="reports">
+  <h2>Reports &amp; data</h2>
+  <p class="section-sub">Changes are <strong>autosaved as you go</strong> (in this browser, including standalone use) and flushed the moment you close or switch away. For guaranteed portability, “Download app + data” saves a fresh copy of this file with everything baked in — open that copy anywhere and it restores itself, no browser storage needed.</p>
+  <div class="card">
+    <div class="report-actions">
+      <button id="dlApp">Download app + data (HTML)</button>
+      <button id="dlCsv" class="ghost">Download projection (CSV)</button>
+      <button id="dlJson" class="ghost">Save scenario (JSON)</button>
+      <button id="importJson" class="ghost">Load scenario (JSON)</button>
+      <input type="file" id="importFile" accept=".json" style="display:none">
+      <button id="printReport" class="ghost">Print / save as PDF report</button>
+      <button id="resetApp" class="danger no-print">Reset to defaults</button>
+    </div>
+    <div id="saveStatus" class="num" style="font-size:12px;margin-top:12px;color:var(--ink-soft)">Autosave ready…</div>
+  </div>
+</section>
+
+<p class="disclaimer"><strong>Important.</strong> This is a planning model, not financial, tax or investment advice. It uses 2025/26 UK allowances (personal allowance £12,570, basic-rate band to £50,270, ISA allowance £20,000, pension annual allowance £60,000) held flat, simplified UFPLS-style pension withdrawals (25% tax-free / 75% taxable), and assumes UK legal-tender gold and silver coins (Sovereigns, Britannias) remain CGT-exempt. Investment growth is assumed, not guaranteed; crypto is volatile and gains above the £3,000 CGT allowance are taxable. Pension rules, tax bands and the state pension will change. Before acting — especially on lump sums, pension contributions and drawdown — speak to a regulated independent financial adviser and check figures on gov.uk.</p>
+
+</main>
+
+<div class="modal-overlay no-print" id="settingsOverlay" role="dialog" aria-modal="true" aria-labelledby="settingsTitle">
+  <div class="modal">
+    <button class="m-close" id="settingsClose" aria-label="Close settings">✕</button>
+    <h3 id="settingsTitle">Settings</h3>
+    <p style="font-size:12.5px;color:var(--ink-soft);margin:6px 0 14px">Personal details that drive the tax engine. Changes apply and autosave immediately.</p>
+
+    <h4 class="set-h">You</h4>
+    <div class="set-grid">
+      <div class="field"><label for="s_p1_name">Name</label><input type="text" id="s_p1_name" data-set="p1.name"></div>
+      <div class="field"><label for="s_p1_email">Email</label><input type="email" id="s_p1_email" data-set="p1.email" placeholder="you@example.com"></div>
+      <div class="field"><label for="s_p1_dob">Date of birth</label><input type="date" id="s_p1_dob" data-set="p1.dob" min="1940-01-01" max="1986-12-31"></div>
+      <div class="field"><label for="s_p1_age">Age today</label><input type="number" id="s_p1_age" data-set="p1.age" min="40" max="80"><div class="hint">Auto-filled from date of birth.</div></div>
+      <div class="field"><label for="s_p1_salary">Salary £/yr (until June 2027)</label><input type="number" id="s_p1_salary" data-set="p1.salary" min="0" step="1000"></div>
+      <div class="field" style="grid-column:1/-1"><label>Pensions in payment</label>
+        <div id="pips_p1"></div>
+        <button type="button" class="small ghost" data-pipadd="p1">+ Add pension in payment</button>
+        <div class="hint">Each pension: £/month and the month it starts (or started) paying. DB pensions, annuities, old workplace schemes…</div>
+      </div>
+      <div class="field"><label for="s_p1_sp">State pension £/yr</label><input type="number" id="s_p1_sp" data-set="p1.statePension" min="0" step="100"></div>
+      <div class="field"><label for="s_p1_spage">…from age</label><input type="number" id="s_p1_spage" data-set="p1.spAge" min="66" max="68"></div>
+    </div>
+
+    <label class="toggle" style="margin:6px 0 12px"><input type="checkbox" id="s_couple"> Plan as a couple — include spouse/partner</label>
+
+    <div id="spouseBlock">
+      <h4 class="set-h">Spouse / partner</h4>
+      <div class="set-grid">
+        <div class="field"><label for="s_p2_name">Name</label><input type="text" id="s_p2_name" data-set="p2.name"></div>
+        <div class="field"><label for="s_p2_email">Email</label><input type="email" id="s_p2_email" data-set="p2.email" placeholder="name@example.com"></div>
+        <div class="field"><label for="s_p2_dob">Date of birth</label><input type="date" id="s_p2_dob" data-set="p2.dob" min="1940-01-01" max="1986-12-31"></div>
+        <div class="field"><label for="s_p2_age">Age today</label><input type="number" id="s_p2_age" data-set="p2.age" min="40" max="80"><div class="hint">Auto-filled from date of birth.</div></div>
+        <div class="field"><label for="s_p2_salary">Salary £/yr</label><input type="number" id="s_p2_salary" data-set="p2.salary" min="0" step="1000"></div>
+        <div class="field" style="grid-column:1/-1"><label>Pensions in payment</label>
+          <div id="pips_p2"></div>
+          <button type="button" class="small ghost" data-pipadd="p2">+ Add pension in payment</button>
+        </div>
+        <div class="field"><label for="s_p2_sp">State pension £/yr</label><input type="number" id="s_p2_sp" data-set="p2.statePension" min="0" step="100"></div>
+        <div class="field"><label for="s_p2_spage">…from age</label><input type="number" id="s_p2_spage" data-set="p2.spAge" min="66" max="68"></div>
+      </div>
+      <div class="hint" style="margin-bottom:12px">Assign holdings to your spouse with the “Owner” column in the Portfolio table. Their pension pot gets its own personal allowance in the drawdown maths.</div>
+    </div>
+
+    <div class="field"><label for="s_endage">Plan horizon — run projection to age</label><input type="number" id="s_endage" data-set="endAge" min="80" max="105" style="max-width:120px"></div>
+    <div class="m-foot">State pension: full new rate is £11,973/yr (2025/26); check each forecast at gov.uk/check-state-pension. Retirement date stays June 2027.</div>
+  </div>
+</div>
+
+<div class="modal-overlay no-print" id="modalOverlay" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+  <div class="modal">
+    <button class="m-close" id="modalClose" aria-label="Close">✕</button>
+    <h3 id="modalTitle"></h3>
+    <div class="m-status">
+      <label class="toggle"><input type="checkbox" id="mDone"> Done</label>
+      <input type="date" id="mDate" aria-label="Date completed">
+    </div>
+    <div class="m-detail" id="mDetail"></div>
+    <label class="m-notes-label" for="mNotes">Your notes</label>
+    <textarea id="mNotes" placeholder="Decisions, reference numbers, who you spoke to, next step…"></textarea>
+    <div class="m-foot">Guidance only, not financial advice — figures use 2025/26 rules. Notes are saved into your scenario when you export the JSON.</div>
+  </div>
+</div>
+
+<script type="application/json" id="embeddedState">null</script>
+<script>
+"use strict";
+/* ================= state ================= */
+const WRAP = {
+  pension:{label:"Pension (SIPP)",color:"var(--c-pension)",hex:"#1F5A4D"},
+  isa:{label:"ISA",color:"var(--c-isa)",hex:"#3E8E7E"},
+  gia:{label:"Taxable account (GIA)",color:"var(--c-gia)",hex:"#7FB6A4"},
+  investment:{label:"Investment (taxable)",color:"var(--c-invest)",hex:"#5B8AA6"},
+  gold:{label:"Gold/silver coins (CGT-free)",color:"var(--c-gold)",hex:"#C9A24B"},
+  cash:{label:"Cash",color:"var(--c-cash)",hex:"#9AA8A0"},
+  crypto:{label:"Crypto",color:"var(--c-crypto)",hex:"#8A6FA8"}
+};
+const TAGS={
+  car:{label:"Car",p:'<path d="M4 14.5l1.6-4.3a1.4 1.4 0 0 1 1.3-.9h8.2a1.4 1.4 0 0 1 1.3.9l1.6 4.3"/><path d="M3 14.5h16"/><circle cx="7" cy="17" r="1.4"/><circle cx="15" cy="17" r="1.4"/>'},
+  home:{label:"Home improvements",p:'<path d="M4 10.5L11 4l7 6.5"/><path d="M6 9.8V18h10V9.8"/>'},
+  garden:{label:"Garden",p:'<path d="M5.5 17.5C5.5 10.5 10 6 17.5 5.5 17 13 12.5 17.5 5.5 17.5z"/><path d="M5.5 17.5C8 13 11 9.8 15 7.5"/>'},
+  family:{label:"Loans to family",p:'<circle cx="8" cy="7.2" r="2.3"/><circle cx="15.2" cy="8.6" r="1.9"/><path d="M3.5 17.5c.6-3.4 2.4-5.3 4.5-5.3s3.9 1.9 4.5 5.3"/><path d="M13.8 17.5c.4-2.4 1.5-3.9 3-3.9 1.3 0 2.4 1.2 2.9 3.4"/>'},
+  energy:{label:"Energy",p:'<path d="M12.5 3L5.5 12.5h4.5L9 19l7-9.5h-4.5l1-6.5z"/>'},
+  holidays:{label:"Holidays",p:'<path d="M3 10.5L19 4l-6 16-2.6-7L3 10.5z"/><path d="M10.4 13L19 4"/>'},
+  other:{label:"Other",p:'<text x="11" y="16" text-anchor="middle" font-size="14" font-family="Georgia,serif" fill="currentColor" stroke="none">£</text>'}
+};
+const tagIcon=(k,size)=>`<svg viewBox="0 0 22 22" width="${size}" height="${size}" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${(TAGS[k]||TAGS.other).p}</svg>`;
+let S = {
+  settings:{
+    couple:false, endAge:97,
+    p1:{name:"You", dob:"", email:"", age:61, salary:0, pips:[], statePension:11973, spAge:67},
+    p2:{name:"Spouse", dob:"", email:"", age:61, salary:0, pips:[], statePension:11973, spAge:67}
+  },
+  holdings:[
+    {name:"Pension / SIPP",wrap:"pension",owner:"p1",value:0,growth:5,start:"2026-06"},
+    {name:"Cash savings",wrap:"cash",owner:"p1",value:0,growth:3.5,start:"2026-06"},
+    {name:"Stocks & Shares ISA",wrap:"isa",owner:"p1",value:0,growth:6,start:"2026-06"},
+    {name:"Gold & silver legal-tender coins",wrap:"gold",owner:"p1",value:0,growth:3,start:"2026-06"}
+  ],
+  actions:[
+    {t:"Check state pension forecast & fill NI gaps (gov.uk/check-state-pension)",done:false,date:"",notes:"",d:"<p>Your state pension (~£11,973/yr full rate) does the heavy lifting from age 67 — make sure you're on track for the full amount.</p><ul><li>Get your forecast at <strong>gov.uk/check-state-pension</strong> — it shows exactly how many qualifying NI years you have (35 needed for the full new state pension).</li><li>If years are missing, voluntary Class 3 contributions cost roughly £900 per year purchased and add about £340/yr to your pension <em>for life</em> — typically paying for itself within 3 years of claiming.</li><li>Call the <strong>Future Pension Centre</strong> (0800 731 0175) before paying — not every gap year actually increases your pension.</li><li>You'll keep earning NI through June 2027 from your salary, so check the forecast as at your retirement date, not today.</li></ul>"},
+    {t:"Make one-off pension contribution — before taking any taxable pension income (MPAA)",fx:"pension_topup",done:false,date:"",notes:"",d:"<p>This is your single biggest tax win before retiring, and the order matters.</p><ul><li>About <strong>£24,730</strong> of your £75k salary is taxed at 40%. Contributions up to that get 40% relief — £100 in the pension costs you £60.</li><li>Via <strong>salary sacrifice</strong> you also save 2% employee NI (and your employer may pass on some of their 15% saving — ask).</li><li>The annual allowance is £60,000, and unused allowance from the last 3 tax years can be carried forward if you want to go bigger with a lump sum.</li><li><strong>Critical sequencing:</strong> once you take any taxable income from a pension, the MPAA cuts your future contribution allowance to £10,000/yr. Contribute first, draw later.</li><li>25% of everything in the pension comes back out tax-free.</li></ul>"},
+    {t:"Fund 2026/27 ISA (£20,000)",fx:"isa_2026",done:false,date:"",notes:"",d:"<p>The ISA allowance is use-it-or-lose-it each tax year (6 April – 5 April), and ISA withdrawals in retirement are completely tax-free.</p><ul><li>£20,000 this tax year from your cash — a Stocks &amp; Shares ISA holding a low-cost global or S&amp;P 500 index fund matches your stated goal.</li><li>Compare platform fees: flat-fee providers tend to win once balances exceed ~£50k; percentage-fee platforms are fine below that.</li><li>If markets feel uncomfortable, you can hold the £20k as cash <em>inside</em> the ISA and invest gradually — the allowance is secured either way.</li><li>A <strong>flexible ISA</strong> lets you withdraw and replace money in the same tax year without losing allowance — useful in retirement.</li></ul>"},
+    {t:"Fund 2027/28 ISA (£20,000, after 6 April 2027)",fx:"isa_2027",done:false,date:"",notes:"",d:"<p>A second £20,000 goes in once the new tax year opens on 6 April 2027 — two months before you retire.</p><ul><li>That makes <strong>£40,000 sheltered before retirement</strong>, and you can keep adding £20k every year after from remaining cash (\"Bed &amp; ISA\" from any taxable investments).</li><li>Moving taxable investments into the ISA uses your £3,000 CGT allowance each year — sell in stages if gains are large.</li><li>Set a recurring April reminder; the dashboard's plan assumes this happens every year while cash remains.</li></ul>"},
+    {t:"Decide investment plan for any lump sums",done:false,date:"",notes:"",d:"<p>A big decision if a lump sum is coming. A sensible order of operations:</p><ul><li><strong>1. Buffer:</strong> ring-fence 1–2 years of spending (£30–50k) in easy-access savings / cash ISA.</li><li><strong>2. Pension:</strong> consider topping up further while you still have salary — relief is at 40% only until June 2027 (annual allowance + carry-forward permitting).</li><li><strong>3. ISA:</strong> £20k per year, every year.</li><li><strong>4. The rest:</strong> a taxable account (GIA) in low-cost index funds, harvesting the £3,000 CGT allowance annually, plus Premium Bonds (up to £50k, prizes tax-free) for cash you want accessible.</li><li>Drip-feeding a lump sum over 6–12 months reduces regret risk, though investing immediately wins more often than not historically.</li><li>Check whether any inheritance tax is the <em>estate's</em> liability (it usually is) — what you receive is normally yours free of further tax.</li></ul>"},
+    {t:"Book session with a regulated independent financial adviser",done:false,date:"",notes:"",d:"<p>With meaningful savings and an irreversible set of decisions (MPAA, drawdown method), one or two paid advice sessions are worth it.</p><ul><li>Find advisers at <strong>unbiased.co.uk</strong> or <strong>vouchedfor.co.uk</strong> — look for \"Chartered\" or \"Certified\" financial planners who are independent (whole of market), and check the FCA register.</li><li>Ask up front: fixed fee vs % of assets. A one-off retirement plan typically runs £1,500–£3,500 fixed — avoid open-ended % fees if you mainly want a sense-check.</li><li>Bring this dashboard's CSV/JSON export — a concrete plan to critique gets you far more value per hour.</li><li>Also free: <strong>Pension Wise</strong> (MoneyHelper) offers a government-backed guidance appointment for over-50s — book it regardless.</li></ul>"},
+    {t:"Confirm pension provider drawdown options & charges",done:false,date:"",notes:"",d:"<p>Check the mechanics of getting money out before you need it.</p><ul><li>Confirm your plan supports <strong>flexi-access drawdown</strong> and partial withdrawals (UFPLS-style), the annual fee on your plan, and how long withdrawals take to process.</li><li>Expect <strong>emergency tax</strong> on your first taxable withdrawal (HMRC applies a Month 1 code) — you reclaim it with form P55/P50Z, usually within 30 days. Plan cash flow around it.</li><li>Decide 25% tax-free as a lump vs taking it gradually with each withdrawal — gradual usually preserves more tax-free growth and is what this dashboard models.</li><li>Compare drawdown fees with one or two other SIPP providers; transfers before drawdown are straightforward.</li></ul>"},
+    {t:"Ring-fence 1–2 years' spending as cash buffer",done:false,date:"",notes:"",d:"<p>A cash buffer means you never sell investments in a downturn to pay for groceries.</p><ul><li>Target <strong>£30,000–£50,000</strong>: roughly 1–2 years of your £2k/month core spending plus holiday money.</li><li>Spread across: easy-access savings for year one, a 1-year fixed-rate account for year two, and/or a cash ISA portion.</li><li>Mind <strong>FSCS protection</strong> — £85,000 per banking licence. If a lump sum lands, split across institutions.</li><li>Your CGT-free gold and silver coins (£30k) are a decent second-line reserve for lumpy expenses — they're in the plan as exactly that.</li></ul>"}
+  ],
+  monthly:2000, annualExtras:3000, oneoffs:[],
+  topUp:0, relief:0.4, topUpSource:"__any__", isaFund:20000, isaGrowth:6,
+  strategy:"opt", portfolioFilter:"all", wrapperFilter:"all",
+  inflation:2.5, giaTax:5, escalate:true
+};
+const DEFAULTS=JSON.parse(JSON.stringify(S));
+function pipsAnnual(P,year){           /* £/yr in payment from each pension's own start month */
+  return (P.pips||[]).reduce((a,x)=>{
+    const sy=parseInt((x.start||"").slice(0,4))||NOW_YEAR, sm=parseInt((x.start||"").slice(5,7))||1;
+    const f=year<sy?0:(year>sy?1:(13-sm)/12);
+    return a+(+x.mo||0)*12*f;
+  },0);
+}
+function pipsMoNow(P){return (P.pips||[]).reduce((a,x)=>a+(+x.mo||0),0);}
+function ageFromDob(dob){
+  if(!dob)return null;
+  const d=new Date(dob);if(isNaN(d))return null;
+  const now=new Date();
+  let a=now.getFullYear()-d.getFullYear();
+  if(now.getMonth()<d.getMonth()||(now.getMonth()===d.getMonth()&&now.getDate()<d.getDate()))a--;
+  return (a>=40&&a<=90)?a:null;
+}
+/* migrate older saves (pre-settings / pre-owner) so nothing is lost */
+function normalizeState(){
+  if(!S.settings)S.settings=JSON.parse(JSON.stringify(DEFAULTS.settings));
+  ["p1","p2"].forEach(p=>{S.settings[p]=Object.assign(JSON.parse(JSON.stringify(DEFAULTS.settings[p])),S.settings[p]||{});});
+  if(S.settings.couple===undefined)S.settings.couple=false;
+  if(!S.settings.endAge)S.settings.endAge=97;
+  if(S.statePension!==undefined){S.settings.p1.statePension=+S.statePension;delete S.statePension;}
+  if(S.spAge!==undefined){S.settings.p1.spAge=+S.spAge;delete S.spAge;}
+  if(S.existingPensionMo!==undefined){S.settings.p1.pensionsMo=+S.existingPensionMo;delete S.existingPensionMo;}
+  ["p1","p2"].forEach(k=>{
+    const P=S.settings[k];
+    if(!Array.isArray(P.pips))P.pips=[];
+    if(P.pensionsMo!==undefined){
+      if(+P.pensionsMo>0)P.pips.push({label:"Pension in payment",mo:+P.pensionsMo,start:P.pensionsStart||"2026-06"});
+      delete P.pensionsMo;delete P.pensionsStart;
+    }
+    P.pips.forEach(x=>{x.mo=+x.mo||0;x.start=x.start||"2026-06";x.label=x.label||"Pension in payment";});
+  });
+  S.holdings.forEach(h=>{if(h.owner!=="p2"&&h.owner!=="joint")h.owner="p1";});
+  if(!S.portfolioFilter)S.portfolioFilter="all";
+  if(!S.wrapperFilter)S.wrapperFilter="all";
+  ["p1","p2"].forEach(p=>{const a=ageFromDob(S.settings[p].dob);if(a!==null)S.settings[p].age=a;});
+  S.actions=S.actions||[];S.oneoffs=S.oneoffs||[];
+  S.isaDone=S.isaDone||{};
+  S.archived=S.archived||[];
+  S.actions.forEach(a=>{
+    if(a.fx)return;
+    if(/one-off pension contribution/i.test(a.t))a.fx="pension_topup";
+    else if(/2026\/27 ISA/i.test(a.t))a.fx="isa_2026";
+    else if(/2027\/28 ISA/i.test(a.t))a.fx="isa_2027";
+  });
+}
+
+/* ================= persistence =================
+   Layered autosave: Claude artifact storage if available,
+   otherwise this browser's localStorage, otherwise memory-only. */
+const STORE_KEY="retirement-cockpit-v1";
+let persistMode="none";
+async function persistSave(){
+  S._saved=Date.now();
+  const json=JSON.stringify(S);
+  try{
+    if(window.storage&&window.storage.set){await window.storage.set(STORE_KEY,json);persistMode="cloud";setSaveStatus(true);return;}
+  }catch(e){}
+  try{
+    localStorage.setItem(STORE_KEY,json);persistMode="local";setSaveStatus(true);return;
+  }catch(e){}
+  persistMode="none";setSaveStatus(false);
+}
+async function persistLoad(){
+  try{
+    if(window.storage&&window.storage.get){
+      const res=await window.storage.get(STORE_KEY);
+      if(res&&res.value){persistMode="cloud";return JSON.parse(res.value);}
+    }
+  }catch(e){}
+  try{
+    const v=localStorage.getItem(STORE_KEY);
+    if(v){persistMode="local";return JSON.parse(v);}
+  }catch(e){}
+  return null;
+}
+async function persistClear(){
+  try{if(window.storage&&window.storage.delete)await window.storage.delete(STORE_KEY);}catch(e){}
+  try{localStorage.removeItem(STORE_KEY);}catch(e){}
+}
+let saveTimer=null;
+function scheduleSave(){clearTimeout(saveTimer);saveTimer=setTimeout(persistSave,500);}
+/* never lose the pending debounce: flush synchronously when the page hides or closes */
+function flushSave(){
+  clearTimeout(saveTimer);
+  try{S._saved=Date.now();localStorage.setItem(STORE_KEY,JSON.stringify(S));}catch(e){}
+  persistSave();
+}
+window.addEventListener("beforeunload",flushSave);
+window.addEventListener("pagehide",flushSave);
+document.addEventListener("visibilitychange",()=>{if(document.visibilityState==="hidden")flushSave();});
+function setSaveStatus(ok){
+  const el=document.getElementById("saveStatus");if(!el)return;
+  if(ok){
+    const where=persistMode==="cloud"?"to your Claude session":"in this browser";
+    el.textContent="✓ Autosaved "+where+" at "+new Date().toLocaleTimeString("en-GB",{hour:"2-digit",minute:"2-digit"});
+    el.style.color="var(--ok)";
+  }else{
+    el.textContent="⚠ Autosave unavailable here — use “Save scenario (JSON)” to keep your changes.";
+    el.style.color="var(--coral)";
+  }
+}
+/* ================= constants ================= */
+const NOW_YEAR=2026, RET_YEAR=2027;
+const PA=12570, BASIC_TOP=50270, HIGH_TOP=125140;
+const fmt=n=>"£"+Math.round(n).toLocaleString("en-GB");
+const fmt0=n=>Math.round(n).toLocaleString("en-GB");
+
+function incomeTax(t){
+  let tax=0, taxable=Math.max(0,t-PA);
+  tax+=Math.min(taxable,BASIC_TOP-PA)*0.2;
+  if(t>BASIC_TOP) tax+=Math.min(t-BASIC_TOP,HIGH_TOP-BASIC_TOP)*0.4;
+  if(t>HIGH_TOP) tax+=(t-HIGH_TOP)*0.45;
+  return tax;
+}
+/* gross pension withdrawal (75% taxable) needed for net n, given fixed taxable income f */
+function grossPensionForNet(n,f){
+  let lo=0,hi=n*2.2+1;
+  for(let i=0;i<40;i++){
+    const m=(lo+hi)/2;
+    const net=m-(incomeTax(f+0.75*m)-incomeTax(f));
+    (net<n)?lo=m:hi=m;
+  }
+  return hi;
+}
+
+/* ================= simulation ================= */
+const startYearOf=h=>{const y=parseInt((h.start||"").slice(0,4));return isNaN(y)?NOW_YEAR:Math.max(NOW_YEAR,y);};
+function simulate(){
+  const ST=S.settings, couple=!!ST.couple, ENDA=+ST.endAge||97;
+  const pots={isa:0,gia:0,investment:0,gold:0,cash:0,crypto:0};
+  const pen={p1:0,p2:0};                                  /* pensions are personal — separate pots */
+  /* wrapper growth rates: value-weighted across all holdings in that wrapper */
+  const sum={pension:0,isa:0,gia:0,investment:0,gold:0,cash:0,crypto:0}, g={pension:0,isa:0,gia:0,investment:0,gold:0,cash:0,crypto:0};
+  S.holdings.forEach(h=>{sum[h.wrap]+=+h.value; g[h.wrap]+=+h.value*(+h.growth/100);});
+  const rate=w=>sum[w]>0?g[w]/sum[w]:(w==="isa"?S.isaGrowth/100:0.03);
+  const R={pension:rate("pension"),isa:S.holdings.some(h=>h.wrap==="isa"&&h.value>0)?rate("isa"):S.isaGrowth/100,
+           gia:rate("gia"),investment:rate("investment"),gold:rate("gold"),cash:rate("cash"),crypto:rate("crypto")};
+  /* holdings join the plan in their start year */
+  const pending=[];
+  S.holdings.forEach(h=>{
+    const y=startYearOf(h);
+    if(couple&&h.owner==="joint"&&h.wrap==="pension"){     /* pensions are personal: model joint as 50/50 */
+      pending.push({wrap:"pension",owner:"p1",value:+h.value/2,y});
+      pending.push({wrap:"pension",owner:"p2",value:+h.value/2,y});
+    }else{
+      pending.push({wrap:h.wrap,owner:(couple&&h.owner==="p2")?"p2":"p1",value:+h.value,y});
+    }
+  });
+  const infl=S.inflation/100;
+  const rows=[]; let fundedAge=ENDA, shortYear=null, taxY1=null, potAtRet=null, topUpDone=false;
+
+  for(let year=NOW_YEAR; +ST.p1.age+(year-NOW_YEAR)<=ENDA; year++){
+    /* add holdings starting this year */
+    pending.forEach(p=>{if(p.y===year){if(p.wrap==="pension")pen[p.owner]+=p.value;else pots[p.wrap]+=p.value;}});
+
+    /* pre-retirement pension top-up (person 1, the salary earner): net cost from the chosen cash pot */
+    if(!topUpDone&&year<RET_YEAR+1&&S.topUp>0){
+      const net=S.topUp*(1-S.relief);
+      const srcH=S.holdings.find(h=>h.name===S.topUpSource&&h.wrap==="cash");
+      const srcReady=srcH?year>=startYearOf(srcH):pots.cash>=net;
+      if((srcReady&&pots.cash>0)||year===RET_YEAR){
+        pen.p1+=S.topUp;pots.cash=Math.max(0,pots.cash-net);topUpDone=true;
+      }
+    }
+
+    const age1=+ST.p1.age+(year-NOW_YEAR), age2=+ST.p2.age+(year-NOW_YEAR);
+    const retired=year>=RET_YEAR;
+    const frac=(year===RET_YEAR)?10/12:1;            /* retire June 2027: ~10 months of need in 2027/28 */
+    const esc=S.escalate?Math.pow(1+infl,year-NOW_YEAR):1;
+
+    /* Bed & ISA each April — allowance is per person, so a couple shelters up to £40k/yr */
+    const isaCap=couple?40000:20000;
+    let isaMove=(S.isaDone&&S.isaDone[year])?0:Math.min(S.isaFund,isaCap,pots.cash);
+    if(isaMove>0){pots.cash-=isaMove;pots.isa+=isaMove;}
+
+    let need=0,sp=0,pensionDraw=0,taxFreeDraw=0,tax=0;
+    if(retired){
+      need=(S.monthly*12+S.annualExtras)*frac*esc
+           + S.oneoffs.filter(o=>+o.year===year).reduce((a,o)=>a+ +o.amount,0);
+      /* each person's fixed taxable income: pensions in payment + state pension from their own SP age */
+      const spOf=(P,age)=>(age>=+P.spAge)?+P.statePension*Math.pow(1.025,year-NOW_YEAR)*((age===+P.spAge)?frac:1):0;
+      const sp1=spOf(ST.p1,age1), sp2=couple?spOf(ST.p2,age2):0;
+      sp=sp1+sp2;
+      const fixed={p1:pipsAnnual(ST.p1,year)*frac*(S.escalate?esc:1)+sp1,
+                   p2:couple?(pipsAnnual(ST.p2,year)*frac*(S.escalate?esc:1)+sp2):0};
+      const drawnTaxable={p1:0,p2:0};                /* taxable pension slices drawn this year, per person */
+      const persons=couple?["p1","p2"]:["p1"];
+      tax=persons.reduce((a,p)=>a+incomeTax(fixed[p]),0);
+      let netSoFar=fixed.p1+fixed.p2-tax;
+      let remaining=need-netSoFar;
+
+      const drawTaxFree=(w,amt)=>{const d=Math.min(pots[w],amt);pots[w]-=d;taxFreeDraw+=d;remaining-=d;return d;};
+      const drawGIA=(w,amt)=>{const eff=1-S.giaTax/100;const d=Math.min(pots[w],amt/eff);pots[w]-=d;taxFreeDraw+=d*eff;tax+=d*(1-eff);remaining-=d*eff;};
+      const fillAllowance=p=>{                       /* UFPLS slice whose taxable 75% just fills this person's PA: zero tax */
+        const base=fixed[p]+drawnTaxable[p];
+        const room=Math.max(0,PA-base);
+        if(room<=0||pen[p]<=0||remaining<=0)return;
+        const gross=Math.min(room/0.75,pen[p],remaining);
+        pen[p]-=gross;pensionDraw+=gross;drawnTaxable[p]+=0.75*gross;remaining-=gross;
+      };
+      const drawPensionTaxed=(p,netAmt)=>{           /* further UFPLS, taxed at this person's marginal rate */
+        if(pen[p]<=0||netAmt<=0)return;
+        const base=fixed[p]+drawnTaxable[p];
+        let gross=grossPensionForNet(netAmt,base);
+        gross=Math.min(gross,pen[p]);
+        const before=incomeTax(base);
+        pen[p]-=gross;pensionDraw+=gross;drawnTaxable[p]+=0.75*gross;
+        const after=incomeTax(fixed[p]+drawnTaxable[p]);
+        tax+=after-before; remaining-=gross-(after-before);
+      };
+      const drawPensionsSplit=()=>{                  /* lower-taxed person first, then the other */
+        const order=[...persons].sort((a,b)=>(fixed[a]+drawnTaxable[a])-(fixed[b]+drawnTaxable[b]));
+        order.forEach(p=>{if(remaining>1)drawPensionTaxed(p,remaining);});
+      };
+      const taxFreeRun=()=>{
+        if(remaining>0)drawTaxFree("cash",remaining);
+        if(remaining>0)drawTaxFree("isa",remaining);
+        if(remaining>0)drawTaxFree("gold",remaining);
+        if(remaining>0)drawGIA("crypto",remaining);
+        if(remaining>0)drawGIA("gia",remaining);
+        if(remaining>0)drawGIA("investment",remaining);
+      };
+
+      if(remaining>0){
+        if(S.strategy==="opt"){
+          persons.forEach(fillAllowance);            /* both personal allowances filled tax-free */
+          taxFreeRun();
+          drawPensionsSplit();
+        }else if(S.strategy==="isa"){
+          taxFreeRun();
+          drawPensionsSplit();
+        }else{
+          drawPensionsSplit();
+          taxFreeRun();
+        }
+      }else if(remaining<0){ pots.cash+=-remaining; remaining=0; }
+
+      if(remaining>1 && shortYear===null){shortYear=year;fundedAge=age1-1;}
+      if(taxY1===null){taxY1=tax;}
+    }
+
+    /* growth */
+    pen.p1*=1+R.pension; pen.p2*=1+R.pension;
+    Object.keys(pots).forEach(w=>pots[w]*=1+R[w]);
+    const total=pen.p1+pen.p2+Object.values(pots).reduce((a,b)=>a+b,0);
+    if(year===RET_YEAR&&potAtRet===null)potAtRet=total;
+    rows.push({year,age:age1,need,sp,pensionDraw,taxFreeDraw,tax,
+      pension:pen.p1+pen.p2,pensionP1:pen.p1,pensionP2:pen.p2,
+      isa:pots.isa,gia:pots.gia,investment:pots.investment,gold:pots.gold,cash:pots.cash,crypto:pots.crypto,total,
+      short:shortYear===year});
+    if(shortYear!==null&&year>=shortYear)break;
+  }
+  return {rows,fundedAge:shortYear?fundedAge:ENDA,ranOut:!!shortYear,taxY1:taxY1||0,potAtRet:potAtRet||0,R,endAge:ENDA};
+}
+
+/* ================= render ================= */
+function render(){
+  const r=simulate();
+  /* tuner */
+  document.getElementById("incomeVal").textContent=fmt0(S.monthly);
+  document.getElementById("incomeSlider").value=S.monthly;
+  const fa=document.getElementById("fundedAge");
+  fa.textContent=r.ranOut?r.fundedAge:r.endAge+"+";
+  fa.classList.toggle("warn",r.ranOut&&r.fundedAge<90);
+  document.getElementById("fundedSub").textContent=r.ranOut?("money runs short in "+(r.fundedAge-(+S.settings.p1.age)+NOW_YEAR)):"plan lasts beyond age "+r.endAge;
+  window.__res=r;
+  document.getElementById("potAtRet").textContent=fmt(r.potAtRet);
+  document.getElementById("taxY1").textContent=fmt(r.taxY1);
+  document.getElementById("taxY1Sub").textContent="first retirement year (2027/28)";
+
+  /* owner filter (couple mode only) */
+  const coupleOn=!!S.settings.couple;
+  if(!coupleOn)S.portfolioFilter="all";
+  const filt=S.portfolioFilter||"all";
+  const ownerOf=h=>(h.owner==="p2"||h.owner==="joint")?h.owner:"p1";
+  const wFilt=S.wrapperFilter||"all";
+  const inFilter=h=>(filt==="all"||ownerOf(h)===filt)&&(wFilt==="all"||h.wrap===wFilt);
+  const fChips=document.getElementById("ownerFilter");
+  if(coupleOn){
+    const nm1=S.settings.p1.name||"You", nm2=S.settings.p2.name||"Spouse";
+    fChips.style.display="flex";
+    fChips.innerHTML=[["all","All holdings"],["p1",nm1],["p2",nm2],["joint","Joint"]]
+      .map(([v,l])=>`<button type="button" data-filt="${v}" class="${filt===v?"on":""}" aria-pressed="${filt===v}">${l}</button>`).join("");
+  }else{fChips.style.display="none";fChips.innerHTML="";}
+  /* table filter bar (red-circle spot): owner + wrapper */
+  const nm1f=S.settings.p1.name||"You", nm2f=S.settings.p2.name||"Spouse";
+  const active=(coupleOn&&filt!=="all")||wFilt!=="all";
+  document.getElementById("tableFilter").innerHTML=
+    (coupleOn?`<label for="tfOwner">Owner</label><select id="tfOwner" data-tf="owner">
+      <option value="all"${filt==="all"?" selected":""}>All</option>
+      <option value="p1"${filt==="p1"?" selected":""}>${nm1f}</option>
+      <option value="p2"${filt==="p2"?" selected":""}>${nm2f}</option>
+      <option value="joint"${filt==="joint"?" selected":""}>Joint</option></select>`:"")
+    +`<label for="tfWrap">Wrapper</label><select id="tfWrap" data-tf="wrap">
+      <option value="all"${wFilt==="all"?" selected":""}>All</option>
+      ${Object.keys(WRAP).map(w=>`<option value="${w}"${wFilt===w?" selected":""}>${WRAP[w].label}</option>`).join("")}</select>`
+    +(active?`<button type="button" class="tf-clear" data-tfclear="1">✕ Clear</button>`:"");
+
+  /* KPIs — computed over the filtered view */
+  const fHoldings=S.holdings.filter(inFilter);
+  const tot=fHoldings.reduce((a,h)=>a+ +h.value,0);
+  const byW={};fHoldings.forEach(h=>byW[h.wrap]=(byW[h.wrap]||0)+ +h.value);
+  document.getElementById("kpis").innerHTML=
+    `<div class="kpi"><div class="v">${fmt(tot)}</div><div class="l">${(filt==="all"&&wFilt==="all")?"Total today":"Filtered total"}</div></div>
+     <div class="kpi"><div class="v">${fmt(byW.pension||0)}</div><div class="l">Pension</div></div>
+     <div class="kpi"><div class="v">${fmt((byW.cash||0))}</div><div class="l">Cash</div></div>
+     <div class="kpi"><div class="v">${fmt(byW.isa||0)}</div><div class="l">ISA</div></div>
+     <div class="kpi"><div class="v">${filt==="joint"?"—":"£"+fmt0(filt==="p1"?pipsMoNow(S.settings.p1):filt==="p2"?pipsMoNow(S.settings.p2):(pipsMoNow(S.settings.p1)+(coupleOn?pipsMoNow(S.settings.p2):0)))+ (filt==="joint"?"":"/mo")}</div><div class="l">Pensions in payment${filt!=="all"?" ("+(filt==="p1"?(S.settings.p1.name||"You"):filt==="p2"?(S.settings.p2.name||"Spouse"):"joint")+")":""}</div></div>`;
+
+  /* holdings table */
+  const couple=!!S.settings.couple, n1=S.settings.p1.name||"You", n2=S.settings.p2.name||"Spouse";
+  document.getElementById("holdHeadRow").innerHTML=
+    `<th>Holding</th><th>Wrapper</th>${couple?"<th>Owner</th>":""}<th>Starts</th><th class="num">Value £</th><th class="num">Growth %/yr</th><th></th>`;
+  const tb=document.querySelector("#holdingsTable tbody");
+  tb.innerHTML="";
+  S.holdings.forEach((h,i)=>{
+    if(!inFilter(h))return;
+    const tr=document.createElement("tr");
+    tr.innerHTML=`<td class="h-name" data-label="Holding"><input type="text" data-i="${i}" data-k="name" value="${h.name.replace(/"/g,'&quot;')}" aria-label="Holding name"></td>
+      <td class="h-wrap" data-label="Wrapper"><select data-i="${i}" data-k="wrap" aria-label="Wrapper">${Object.keys(WRAP).map(w=>`<option value="${w}"${w===h.wrap?" selected":""}>${WRAP[w].label}</option>`).join("")}</select></td>
+      ${couple?`<td data-label="Owner"><select data-i="${i}" data-k="owner" aria-label="Owner"><option value="p1"${ownerOf(h)==="p1"?" selected":""}>${n1}</option><option value="p2"${ownerOf(h)==="p2"?" selected":""}>${n2}</option><option value="joint"${ownerOf(h)==="joint"?" selected":""}>Joint</option></select></td>`:""}
+      <td data-label="Starts"><input type="month" data-i="${i}" data-k="start" value="${h.start||"2026-06"}" min="2026-06" max="2060-12" style="min-width:130px" aria-label="Start date"></td>
+      <td class="num" data-label="Value £"><input type="number" data-i="${i}" data-k="value" value="${h.value}" min="0" step="500" style="text-align:right" aria-label="Value"></td>
+      <td class="num" data-label="Growth %/yr"><input type="number" data-i="${i}" data-k="growth" value="${h.growth}" step="0.5" style="text-align:right;max-width:90px" aria-label="Growth"></td>
+      <td class="h-del"><button class="small danger no-print" data-del="${i}" aria-label="Remove holding">✕</button></td>`;
+    tb.appendChild(tr);
+  });
+  const avgG=tot>0?fHoldings.reduce((a,h)=>a+ +h.value*+h.growth,0)/tot:0;
+  const totLabel=(filt==="all"&&wFilt==="all")?"Total":"Total (filtered)";
+  document.getElementById("holdFootRow").innerHTML=
+    `<th>${totLabel}</th><th></th>${couple?"<th></th>":""}<th></th><th class="num">${fmt(tot)}</th><th class="num" title="Value-weighted average growth across the holdings shown">avg ${avgG.toFixed(1)}%</th><th></th>`;
+  document.getElementById("mobileTotal").textContent=totLabel+": "+fmt(tot)+" · avg growth "+avgG.toFixed(1)+"%/yr";
+
+  /* personalised header */
+  document.getElementById("planFor").textContent="Plan for "+n1+(couple?" & "+n2+" — joint household view":"");
+  updateCountdown();
+  const em1=S.settings.p1.email?" <"+S.settings.p1.email+">":"";
+  document.getElementById("printFor").textContent="Prepared for "+n1+em1+(couple?" & "+n2+(S.settings.p2.email?" <"+S.settings.p2.email+">":""):"")+" — "+new Date().toLocaleDateString("en-GB");
+  document.getElementById("wrapperLegend").innerHTML=Object.keys(WRAP).map(w=>`<span><i class="dot" style="background:${WRAP[w].hex}"></i>${WRAP[w].label}</span>`).join("");
+
+  /* funded-from selector for the pension top-up */
+  const srcSel=document.getElementById("topUpSource");
+  const cashHoldings=S.holdings.filter(h=>h.wrap==="cash");
+  srcSel.innerHTML=cashHoldings.map(h=>`<option value="${h.name.replace(/"/g,'&quot;')}"${h.name===S.topUpSource?" selected":""}>${h.name} (£${fmt0(h.value)})</option>`).join("")
+    +`<option value="__any__"${S.topUpSource==="__any__"||!cashHoldings.some(h=>h.name===S.topUpSource)?" selected":""}>Any available cash</option>`;
+  const srcH=cashHoldings.find(h=>h.name===S.topUpSource);
+  const netCost=S.topUp*(1-S.relief);
+  const note=document.getElementById("topUpNote");
+  if(S.topUp<=0)note.textContent="No contribution planned.";
+  else if(srcH){
+    const sy=startYearOf(srcH);
+    note.textContent="Net cost "+fmt(netCost)+" (after "+Math.round(S.relief*100)+"% relief) comes out of “"+srcH.name+"”"
+      +(sy>NOW_YEAR?" once it arrives in "+sy+".":" straight away.")
+      +(netCost>+srcH.value?" ⚠ That's more than the pot holds — the shortfall falls on other cash.":"");
+  }else note.textContent="Net cost "+fmt(netCost)+" comes out of whichever cash is available.";
+
+  /* one-offs */
+  const oo=document.getElementById("oneoffs");
+  oo.innerHTML="";
+  S.oneoffs.forEach((o,i)=>{
+    const tag=TAGS[o.tag]?o.tag:"other";
+    const d=document.createElement("div");d.className="oneoff-row";
+    d.innerHTML=`<span class="oo-icon" title="${TAGS[tag].label}" aria-hidden="true">${tagIcon(tag,17)}</span>
+      <select data-oo="${i}" data-k="tag" aria-label="Category">${Object.keys(TAGS).map(k=>`<option value="${k}"${k===tag?" selected":""}>${TAGS[k].label}</option>`).join("")}</select>
+      <input type="number" data-oo="${i}" data-k="year" value="${o.year}" min="${RET_YEAR}" max="2060" aria-label="Year">
+      <input type="number" data-oo="${i}" data-k="amount" value="${o.amount}" min="0" step="500" aria-label="Amount £">
+      <button class="small danger no-print" data-oodel="${i}">✕</button>
+      <input type="text" class="oo-note" data-oo="${i}" data-k="note" value="${String(o.note||"").replace(/"/g,'&quot;')}" placeholder="Add a note — e.g. replace the Golf, kitchen refit quote…" aria-label="Note">`;
+    oo.appendChild(d);
+  });
+
+  /* action tiles */
+  const at=document.getElementById("actionTiles");
+  at.innerHTML=S.actions.map((a,i)=>`<div class="tile${a.done?" done":""}" data-open="${i}" tabindex="0" role="button" aria-label="Open details: ${String(a.t).replace(/"/g,'&quot;')}">
+      <button class="x no-print" data-adel="${i}" aria-label="Remove action">✕</button>
+      <div class="tile-top">
+        <input type="checkbox" data-ai="${i}" data-k="done"${a.done?" checked":""} aria-label="Mark done">
+        <input type="text" class="t-name" data-ai="${i}" data-k="t" value="${String(a.t).replace(/"/g,'&quot;')}" aria-label="Action">
+      </div>
+      <div class="tile-foot">
+        ${a.done?'<span class="badge">✓ Done</span>':'<span class="more">Details</span>'}
+        <input type="date" data-ai="${i}" data-k="date" value="${a.date||""}" aria-label="Date completed"${a.done?"":" disabled"}>
+      </div>
+    </div>`).join("");
+  const doneN=S.actions.filter(a=>a.done).length;
+  const arch=S.archived||[];
+  document.getElementById("actionProgress").textContent=arch.length+" completed · "+S.actions.length+" outstanding";
+  document.getElementById("archiveCount").textContent=arch.length;
+  const al=document.getElementById("archiveList");
+  al.innerHTML=arch.length?arch.map((a,j)=>{
+    const fxNote=a.applied?` · <span class="arch-fx">portfolio adjusted</span>`:"";
+    return `<div class="arch-row">
+      <span class="arch-tick">✓</span>
+      <div class="arch-body">
+        <div class="arch-name">${String(a.t).replace(/</g,"&lt;")}</div>
+        <div class="arch-meta">Completed ${a.date||"—"}${fxNote}</div>
+      </div>
+      <button class="small ghost no-print" data-arestore="${j}">Restore</button>
+      <button class="small danger no-print" data-adelarch="${j}" aria-label="Delete permanently">✕</button>
+    </div>`;}).join(""):'<div class="hint">Nothing archived yet. Completed actions move here automatically.</div>';
+
+  renderChart(r.rows);
+  renderTable(r.rows);
+  renderInsights(r,byW,tot);
+  document.getElementById("projSub").textContent=
+    `Pot balances after drawdown, growing at your assumed rates. Income target ${fmt(S.monthly)}/month + ${fmt(S.annualExtras)}/yr extras${S.escalate?", rising with inflation":""}; strategy: ${document.getElementById("strategy").selectedOptions[0].text}.`;
+  window.__rows=r.rows;
+  scheduleSave();
+}
+
+function renderChart(rows){
+  const W=1040,H=320,P={l:62,r:10,t:14,b:26};
+  const keys=["pension","isa","gia","investment","gold","cash","crypto"];
+  const maxT=Math.max(...rows.map(r=>r.total),1);
+  const x=i=>P.l+(W-P.l-P.r)*i/Math.max(rows.length-1,1);
+  const y=v=>H-P.b-(H-P.t-P.b)*v/maxT;
+  let cum=rows.map(()=>0),paths="";
+  keys.forEach(k=>{
+    const top=rows.map((r,i)=>cum[i]+r[k]);
+    let d="M"+x(0)+","+y(cum[0]);
+    top.forEach((v,i)=>d+="L"+x(i)+","+y(v));
+    for(let i=rows.length-1;i>=0;i--)d+="L"+x(i)+","+y(cum[i]);
+    paths+=`<path d="${d}Z" fill="${WRAP[k].hex}" fill-opacity="0.88"/>`;
+    cum=top;
+  });
+  let grid="",lbls="";
+  for(let g=0;g<=4;g++){const v=maxT*g/4,yy=y(v);
+    grid+=`<line x1="${P.l}" x2="${W-P.r}" y1="${yy}" y2="${yy}" stroke="#DDE3DD"/>`;
+    lbls+=`<text x="${P.l-8}" y="${yy+4}" text-anchor="end" font-size="10" fill="#5A6963" font-family="monospace">£${Math.round(v/1000)}k</text>`;}
+  let xl="";
+  rows.forEach((r,i)=>{if(r.age%5===0||i===rows.length-1)xl+=`<text x="${x(i)}" y="${H-8}" text-anchor="middle" font-size="10" fill="#5A6963" font-family="monospace">${r.age}</text>`;});
+  const retX=x(rows.findIndex(r=>r.year===RET_YEAR));
+  document.getElementById("chart").innerHTML=
+    `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Projected pot balances by age" style="width:100%;height:auto">
+      ${grid}${paths}
+      <line x1="${retX}" x2="${retX}" y1="${P.t}" y2="${H-P.b}" stroke="#B98A2F" stroke-dasharray="4 3"/>
+      <text x="${retX+5}" y="${P.t+12}" font-size="10" fill="#B98A2F" font-family="monospace">retire</text>
+      ${lbls}${xl}
+    </svg>`;
+  document.getElementById("chartLegend").innerHTML=keys.map(k=>`<span><i class="dot" style="background:${WRAP[k].hex}"></i>${WRAP[k].label}</span>`).join("");
+}
+
+function renderTable(rows){
+  const tb=document.querySelector("#projTable tbody");
+  tb.innerHTML=rows.map(r=>{
+    const icons=S.oneoffs.filter(o=>+o.year===r.year)
+      .map(o=>`<span title="${(TAGS[o.tag]||TAGS.other).label}: £${fmt0(o.amount)}${o.note?" — "+String(o.note).replace(/"/g,'&quot;'):""}" style="cursor:help;color:var(--gold);vertical-align:-2px;display:inline-block">${tagIcon(o.tag,13)}</span>`).join(" ");
+    return `<tr${r.short?' style="background:#FBF0EC"':""}>
+    <td class="num">${r.year}/${String(r.year+1).slice(2)}</td><td class="num">${r.age}</td>
+    <td class="num">${r.need?fmt0(r.need):"—"}${icons?" "+icons:""}</td><td class="num">${r.sp?fmt0(r.sp):"—"}</td>
+    <td class="num">${r.pensionDraw?fmt0(r.pensionDraw):"—"}</td><td class="num">${r.taxFreeDraw?fmt0(r.taxFreeDraw):"—"}</td>
+    <td class="num">${r.tax?fmt0(r.tax):"—"}</td>
+    <td class="num">${fmt0(r.pension)}</td><td class="num">${fmt0(r.isa)}</td>
+    <td class="num">${fmt0(r.gia+r.investment+r.gold+r.cash+r.crypto)}</td>
+    <td class="num"><strong>${fmt0(r.total)}</strong></td></tr>`;}).join("");
+}
+
+function renderInsights(r,byW,tot){
+  const ST=S.settings, couple=!!ST.couple, n1=ST.p1.name||"You", n2=ST.p2.name||"your spouse";
+  const ins=[];
+  const band40=Math.max(0,+ST.p1.salary-BASIC_TOP);
+  if(band40>0)ins.push(`<strong>40% relief window before June 2027.</strong> About ${fmt(band40)} of ${n1==="You"?"your":n1+"'s"} £${fmt0(ST.p1.salary)} salary is taxed at 40%. Pension contributions up to that amount effectively cost 60p per £1 saved (current top-up: ${fmt(S.topUp)}).`);
+  else ins.push(`<strong>Pension relief before June 2027.</strong> Contributions get at least 20% relief while there's salary to set them against (current top-up: ${fmt(S.topUp)}).`);
+  ins.push(`<strong>ISA shelter${couple?" ×2":""}.</strong> The £20,000 allowance is per person — ${couple?"as a couple you can shelter <strong>£40,000 every tax year</strong>":"you can move £20,000 each tax year"}. Your plan moves ${fmt(S.isaFund)}/yr; withdrawals are completely tax-free later.`);
+  const pa1=Math.max(0,PA-pipsMoNow(ST.p1)*12);
+  if(couple){
+    const pa2=Math.max(0,PA-pipsMoNow(ST.p2)*12);
+    ins.push(`<strong>Two personal allowances.</strong> Until state pensions begin, ${n1} has ~${fmt(pa1)}/yr and ${n2} ~${fmt(pa2)}/yr of unused allowance — nearly ${fmt(pa1+pa2)}/yr the household can draw from pensions at <strong>zero tax</strong> (plus 25% of each withdrawal tax-free on top). Splitting pension wealth between you is the single biggest couple's tax lever.`);
+    ins.push(`<strong>Spouse contributions still work.</strong> Even with no earnings, ${n2} can add £2,880/yr to a pension and HMRC tops it up to £3,600 — free money until age 75. Transfers of investments between spouses are also CGT-free, letting you use both £3,000 CGT allowances and both sets of ISA headroom.`);
+  }else{
+    ins.push(`<strong>Personal allowance funnel.</strong> Your £${fmt0(pipsMoNow(ST.p1)*12)}/yr pensions in payment leave ~${fmt(pa1)} of allowance unused until state pension age. The tax-optimised strategy fills it with pension drawdown — zero tax, plus 25% of every withdrawal tax-free.`);
+  }
+  ins.push(`<strong>State pension${couple?"s":""} from ${ST.p1.spAge}${couple&&ST.p2.spAge!==ST.p1.spAge?" / "+ST.p2.spAge:""}.</strong> ${couple?`Together worth ${fmt(+ST.p1.statePension+ +ST.p2.statePension)}/yr (today's money) — they may cover most of your £${fmt0(S.monthly)}/month core need.`:`At ${fmt(ST.p1.statePension)}/yr it covers roughly half your core need.`} The heavy drawdown years are ${RET_YEAR}–${NOW_YEAR+(+ST.p1.spAge-+ST.p1.age)}. Check ${couple?"both NI records":"your NI record"} for gaps; topping up is usually excellent value.`);
+  ins.push(`<strong>Gold &amp; silver legal-tender coins (${fmt(byW.gold||0)}).</strong> Sovereigns and Britannias are exempt from capital gains tax — a genuinely tax-free reserve for lumpy spending.`);
+  ins.push(`<strong>Cash drag.</strong> ${fmt(byW.cash||0)} sits in cash. Beyond a 1–2 year buffer, drip-feeding into ISAs${couple?" (both of yours)":""} and index funds typically improves long-run outcomes — at the cost of short-term swings.`);
+  ins.push(`<strong>Watch the MPAA.</strong> Once anyone takes taxable income from their pension, that person's contribution allowance drops to £10,000/yr — make big contributions first.`);
+  document.getElementById("insightList").innerHTML=ins.map(i=>`<li>${i}</li>`).join("");
+  const warn=document.getElementById("warnNote");
+  if(r.ranOut){warn.style.display="block";warn.innerHTML=`<strong>Heads-up:</strong> at ${fmt(S.monthly)}/month this plan runs short around age ${r.fundedAge}. Try lowering the income slider, adding to pensions/ISAs, or raising assumed growth to see what changes.`;}
+  else warn.style.display="none";
+}
+
+/* ================= events ================= */
+document.getElementById("incomeSlider").addEventListener("input",e=>{S.monthly=+e.target.value;render();});
+
+/* ---------- inverse solver: set a target age, solve the income ---------- */
+function lastsTo(monthly){
+  const orig=S.monthly;S.monthly=monthly;
+  const r=simulate();S.monthly=orig;
+  return r.ranOut?r.fundedAge:999;
+}
+function solveIncomeForAge(target){
+  const LO=300,HI=12000;
+  if(lastsTo(LO)<target)return{income:LO,feasible:false};       /* even minimal income falls short */
+  if(lastsTo(HI)>=target)return{income:HI,feasible:true};
+  let lo=LO,hi=HI;
+  for(let i=0;i<30;i++){const mid=(lo+hi)/2;(lastsTo(mid)>=target)?lo=mid:hi=mid;}
+  return{income:Math.floor(lo/10)*10,feasible:true};            /* round down = safe side */
+}
+const faSpan=document.getElementById("fundedAge"), faInput=document.getElementById("fundedAgeInput");
+function enterAgeEdit(){
+  const cur=parseInt(faSpan.textContent)||90;
+  faInput.max=S.settings.endAge;faInput.value=Math.min(+S.settings.endAge,cur);
+  faSpan.style.display="none";faInput.style.display="inline-block";
+  faInput.focus();faInput.select();
+}
+function exitAgeEdit(){faInput.style.display="none";faSpan.style.display="inline";}
+faSpan.addEventListener("click",enterAgeEdit);
+faSpan.addEventListener("keydown",e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();enterAgeEdit();}});
+faInput.addEventListener("keydown",e=>{
+  if(e.key==="Escape"){e.stopPropagation();exitAgeEdit();}
+  if(e.key==="Enter")faInput.blur();
+});
+faInput.addEventListener("blur",()=>{
+  if(faInput.style.display==="none")return;
+  let target=Math.round(+faInput.value);
+  exitAgeEdit();
+  if(!target)return;
+  target=Math.min(+S.settings.endAge,Math.max(+S.settings.p1.age+5,target));
+  const sol=solveIncomeForAge(target);
+  S.monthly=sol.income;render();
+  const sub=document.getElementById("fundedSub");
+  sub.textContent=sol.feasible
+    ? "income solved: "+fmt(sol.income)+"/mo sustains the plan to age "+target
+    : "even at "+fmt(sol.income)+"/mo the plan falls short of "+target+" — add savings or growth";
+});
+document.body.addEventListener("change",e=>{
+  const t=e.target;
+  if(t.dataset.i!==undefined){const k=t.dataset.k;S.holdings[+t.dataset.i][k]=(k==="name"||k==="wrap"||k==="start"||k==="owner")?t.value:+t.value;render();}
+  if(t.dataset.tf==="owner"){S.portfolioFilter=t.value;render();return;}
+  if(t.dataset.tf==="wrap"){S.wrapperFilter=t.value;render();return;}
+  if(t.dataset.oo!==undefined){const k=t.dataset.k;S.oneoffs[+t.dataset.oo][k]=(k==="tag"||k==="note")?t.value:+t.value;render();}
+  if(t.dataset.ai!==undefined){
+    const a=S.actions[+t.dataset.ai];
+    if(t.dataset.k==="done"){setActionDone(a,t.checked);}
+    else a[t.dataset.k]=t.value;
+    render();
+  }
+});
+document.body.addEventListener("click",e=>{
+  const t=e.target;
+  if(t.dataset.del!==undefined){S.holdings.splice(+t.dataset.del,1);render();return;}
+  if(t.dataset.oodel!==undefined){S.oneoffs.splice(+t.dataset.oodel,1);render();return;}
+  if(t.dataset.adel!==undefined){S.actions.splice(+t.dataset.adel,1);closeModal();render();return;}
+  if(t.dataset.arestore!==undefined){restoreAction(+t.dataset.arestore);return;}
+  if(t.dataset.adelarch!==undefined){if(confirm("Delete this archived action permanently? If it changed your portfolio, that change will be reversed."))deleteArchived(+t.dataset.adelarch);return;}
+  if(t.dataset.filt!==undefined){S.portfolioFilter=t.dataset.filt;render();return;}
+  if(t.dataset.tfclear!==undefined){S.portfolioFilter="all";S.wrapperFilter="all";render();return;}
+  const tile=t.closest("[data-open]");
+  if(tile&&!t.closest("input,button,select,textarea,a"))openAction(+tile.dataset.open);
+});
+
+/* ---------- action → portfolio effects ----------
+   Ticking certain actions executes them for real: holdings update and the
+   matching plan lever is retired so the simulation never double-counts. */
+function applyActionFx(a){
+  if(!a.fx||a.applied)return null;
+  if(a.fx==="pension_topup"){
+    const gross=+S.topUp||0;if(gross<=0)return null;
+    const net=Math.round(gross*(1-S.relief));
+    let penH=S.holdings.find(x=>x.wrap==="pension"&&x.owner!=="p2");
+    if(!penH){penH={name:"Pension / SIPP",wrap:"pension",owner:"p1",value:0,growth:5,start:"2026-06"};S.holdings.push(penH);}
+    let src=S.holdings.find(x=>x.name===S.topUpSource&&x.wrap==="cash")
+         ||S.holdings.filter(x=>x.wrap==="cash").sort((x,y)=>+y.value-+x.value)[0];
+    const moved=src?Math.min(net,+src.value):0;
+    penH.value=+penH.value+gross;
+    if(src)src.value=+src.value-moved;
+    a.applied={fx:a.fx,gross,net:moved,pen:penH.name,cash:src?src.name:null,prevTopUp:gross};
+    S.topUp=0;
+    return "+"+fmt(gross)+" → “"+penH.name+"”"+(src?", −"+fmt(moved)+" from “"+src.name+"”":"")+". Contribution lever set to £0.";
+  }
+  if(a.fx==="isa_2026"||a.fx==="isa_2027"){
+    const year=a.fx==="isa_2026"?2026:2027;
+    S.isaDone=S.isaDone||{};
+  S.archived=S.archived||[];
+    if(S.isaDone[year])return null;
+    let isaH=S.holdings.find(x=>x.wrap==="isa"&&x.owner!=="p2");
+    if(!isaH){isaH={name:"Stocks & Shares ISA",wrap:"isa",owner:"p1",value:0,growth:+S.isaGrowth||6,start:"2026-06"};S.holdings.push(isaH);}
+    const src=S.holdings.filter(x=>x.wrap==="cash").sort((x,y)=>+y.value-+x.value)[0];
+    const moved=src?Math.min(20000,+src.value):0;
+    if(moved<=0)return null;
+    isaH.value=+isaH.value+moved;src.value=+src.value-moved;
+    S.isaDone[year]=true;
+    a.applied={fx:a.fx,moved,isa:isaH.name,cash:src.name,year};
+    return "+"+fmt(moved)+" → “"+isaH.name+"”, −"+fmt(moved)+" from “"+src.name+"”. "+year+"/"+String(year+1).slice(2)+" ISA year marked done in the model.";
+  }
+  return null;
+}
+function revertActionFx(a){
+  const ap=a.applied;if(!ap)return null;
+  if(ap.fx==="pension_topup"){
+    const penH=S.holdings.find(x=>x.name===ap.pen&&x.wrap==="pension");
+    if(penH)penH.value=Math.max(0,+penH.value-ap.gross);
+    const src=ap.cash?S.holdings.find(x=>x.name===ap.cash&&x.wrap==="cash"):null;
+    if(src)src.value=+src.value+ap.net;
+    S.topUp=ap.prevTopUp;
+  }else{
+    const isaH=S.holdings.find(x=>x.name===ap.isa&&x.wrap==="isa");
+    if(isaH)isaH.value=Math.max(0,+isaH.value-ap.moved);
+    const src=S.holdings.find(x=>x.name===ap.cash&&x.wrap==="cash");
+    if(src)src.value=+src.value+ap.moved;
+    if(S.isaDone)delete S.isaDone[ap.year];
+  }
+  delete a.applied;
+  return "Portfolio changes reverted.";
+}
+function setActionDone(a,checked){
+  a.done=checked;
+  if(checked&&!a.date)a.date=new Date().toISOString().slice(0,10);
+  if(!checked)a.date="";
+  const msg=checked?applyActionFx(a):revertActionFx(a);
+  const fxEl=document.getElementById("actionFx");
+  if(fxEl)fxEl.innerHTML=msg?("✓ Portfolio updated: "+msg):"";
+  if(checked){                                  /* completed → move to archive; portfolio effect stays applied */
+    const idx=S.actions.indexOf(a);
+    if(idx>-1){S.actions.splice(idx,1);S.archived=S.archived||[];S.archived.unshift(a);}
+  }
+  renderControls();
+}
+/* bring an archived action back into the active list (its applied effect, if any, stays applied) */
+function restoreAction(j){
+  S.archived=S.archived||[];
+  const a=S.archived[j];if(!a)return;
+  S.archived.splice(j,1);
+  a.done=false;a.date="";
+  if(a.applied){const m=revertActionFx(a);const fxEl=document.getElementById("actionFx");if(fxEl)fxEl.innerHTML=m?("↩ Restored & "+m.toLowerCase()):"";}
+  S.actions.push(a);
+  render();
+}
+/* permanently delete an archived action; reverse its portfolio effect if still applied */
+function deleteArchived(j){
+  S.archived=S.archived||[];
+  const a=S.archived[j];if(!a)return;
+  if(a.applied)revertActionFx(a);
+  S.archived.splice(j,1);
+  render();
+}
+
+/* ---------- action modal ---------- */
+let modalIdx=null;
+const overlay=document.getElementById("modalOverlay");
+function openAction(i){
+  modalIdx=i;const a=S.actions[i];if(!a)return;
+  document.getElementById("modalTitle").textContent=a.t;
+  document.getElementById("mDone").checked=!!a.done;
+  const md=document.getElementById("mDate");md.value=a.date||"";md.disabled=!a.done;
+  document.getElementById("mDetail").innerHTML=a.d||"<p>No suggestions for this custom action yet — use the notes below to capture your own plan, contacts and deadlines.</p>";
+  document.getElementById("mNotes").value=a.notes||"";
+  overlay.classList.add("open");
+  document.getElementById("modalClose").focus();
+}
+function closeModal(){overlay.classList.remove("open");modalIdx=null;}
+document.getElementById("modalClose").addEventListener("click",closeModal);
+overlay.addEventListener("click",e=>{if(e.target===overlay)closeModal();});
+document.addEventListener("keydown",e=>{if(e.key==="Escape")closeModal();});
+document.body.addEventListener("keydown",e=>{
+  const tile=e.target.closest&&e.target.closest("[data-open]");
+  if(tile&&(e.key==="Enter"||e.key===" ")&&e.target===tile){e.preventDefault();openAction(+tile.dataset.open);}
+});
+document.getElementById("mDone").addEventListener("change",e=>{
+  if(modalIdx===null)return;
+  setActionDone(S.actions[modalIdx],e.target.checked);
+  render();openAction(modalIdx);
+});
+document.getElementById("mDate").addEventListener("change",e=>{if(modalIdx!==null){S.actions[modalIdx].date=e.target.value;render();}});
+document.getElementById("mNotes").addEventListener("input",e=>{if(modalIdx!==null){S.actions[modalIdx].notes=e.target.value;scheduleSave();}});
+
+/* ---------- settings ---------- */
+const setOverlay=document.getElementById("settingsOverlay");
+function openSettings(){renderSettingsControls();setOverlay.classList.add("open");document.getElementById("settingsClose").focus();}
+function closeSettings(){setOverlay.classList.remove("open");}
+document.getElementById("openSettings").addEventListener("click",e=>{e.preventDefault();openSettings();});
+document.getElementById("openSettingsInline").addEventListener("click",openSettings);
+document.getElementById("settingsClose").addEventListener("click",closeSettings);
+setOverlay.addEventListener("click",e=>{if(e.target===setOverlay)closeSettings();});
+document.addEventListener("keydown",e=>{if(e.key==="Escape")closeSettings();});
+function renderSettingsControls(){
+  const ST=S.settings;
+  document.querySelectorAll("[data-set]").forEach(el=>{
+    const path=el.dataset.set.split(".");
+    el.value=path.length===2?ST[path[0]][path[1]]:ST[path[0]];
+  });
+  document.getElementById("s_couple").checked=!!ST.couple;
+  document.getElementById("spouseBlock").classList.toggle("off",!ST.couple);
+  ["p1","p2"].forEach(pk=>{
+    const box=document.getElementById("pips_"+pk);if(!box)return;
+    const pips=ST[pk].pips||[];
+    box.innerHTML=pips.length?pips.map((x,i)=>`<div class="pip-row">
+        <input class="pip-label" type="text" data-pip="${pk}:${i}:label" value="${String(x.label||"").replace(/"/g,'&quot;')}" placeholder="e.g. BT pension" aria-label="Pension name">
+        <input type="number" data-pip="${pk}:${i}:mo" value="${x.mo}" min="0" step="25" aria-label="£ per month">
+        <input type="month" data-pip="${pk}:${i}:start" value="${x.start}" min="2026-06" max="2060-12" aria-label="Paying from">
+        <button type="button" class="small danger" data-pipdel="${pk}:${i}" aria-label="Remove">✕</button>
+      </div>`).join(""):'<div class="hint" style="margin-bottom:6px">None yet.</div>';
+  });
+}
+setOverlay.addEventListener("click",e=>{
+  const t=e.target;
+  if(t.dataset.pipadd){S.settings[t.dataset.pipadd].pips.push({label:"Pension in payment",mo:0,start:"2026-06"});renderSettingsControls();render();return;}
+  if(t.dataset.pipdel){const [pk,i]=t.dataset.pipdel.split(":");S.settings[pk].pips.splice(+i,1);renderSettingsControls();render();return;}
+});
+setOverlay.addEventListener("change",e=>{
+  const el=e.target;
+  if(el.dataset.pip){
+    const [pk,i,key]=el.dataset.pip.split(":");
+    S.settings[pk].pips[+i][key]=(key==="mo")?+el.value:el.value;
+    render();return;
+  }
+  if(el.id==="s_couple"){S.settings.couple=el.checked;renderSettingsControls();render();return;}
+  if(!el.dataset.set)return;
+  const path=el.dataset.set.split(".");
+  const isStr=["text","email","date","month"].includes(el.type);
+  const val=isStr?el.value:+el.value;
+  if(path.length===2)S.settings[path[0]][path[1]]=val;else S.settings[path[0]]=val;
+  if(path[1]==="dob"){const a=ageFromDob(val);if(a!==null){S.settings[path[0]].age=a;renderSettingsControls();}}
+  render();
+});
+const bind=(id,key,fn)=>document.getElementById(id).addEventListener("change",e=>{S[key]=fn?fn(e.target.value):+e.target.value;render();});
+bind("topUp","topUp");bind("reliefRate","relief");bind("topUpSource","topUpSource",v=>v);bind("isaFund","isaFund");bind("isaGrowth","isaGrowth");
+bind("annualExtras","annualExtras");bind("strategy","strategy",v=>v);bind("inflation","inflation");bind("giaTax","giaTax");
+document.getElementById("escalate").addEventListener("change",e=>{S.escalate=e.target.checked;render();});
+document.getElementById("addHolding").addEventListener("click",()=>{S.holdings.push({name:"New holding",wrap:"gia",owner:"p1",value:10000,growth:5,start:"2026-06"});render();});
+document.getElementById("addSP500").addEventListener("click",()=>{S.holdings.push({name:"S&P 500 index tracker",wrap:"isa",owner:"p1",value:10000,growth:7,start:"2026-06"});render();});
+document.getElementById("addOneoff").addEventListener("click",()=>{S.oneoffs.push({year:2030,amount:5000,tag:"holidays",note:""});render();});
+document.getElementById("addAction").addEventListener("click",()=>{S.actions.push({t:"New action",done:false,date:"",notes:"",d:""});render();});
+document.getElementById("archiveToggle").addEventListener("click",function(){
+  const list=document.getElementById("archiveList");
+  const open=list.style.display==="none";
+  list.style.display=open?"block":"none";
+  this.setAttribute("aria-expanded",open);
+  this.innerHTML=(open?"▾":"▸")+" Completed &amp; archived (<span id=\"archiveCount\">"+(S.archived||[]).length+"</span>)";
+});
+
+/* reports */
+document.getElementById("dlCsv").addEventListener("click",()=>{
+  const h=["TaxYear","Age","NetNeed","StatePension","PensionDraw","TaxFreeDraws","IncomeTax","PensionPot","PensionP1","PensionP2","ISA","GIA","Investment","Gold","Cash","Crypto","Total","OneOffEvents"];
+  const lines=[h.join(",")].concat(window.__rows.map(r=>{
+    const ev=S.oneoffs.filter(o=>+o.year===r.year).map(o=>(TAGS[o.tag]||TAGS.other).label+" £"+Math.round(o.amount)+(o.note?" ("+String(o.note).replace(/"/g,"'")+")":"")).join("; ");
+    return [r.year+"/"+String(r.year+1).slice(2),r.age,...[r.need,r.sp,r.pensionDraw,r.taxFreeDraw,r.tax,r.pension,r.pensionP1,r.pensionP2,r.isa,r.gia,r.investment,r.gold,r.cash,r.crypto,r.total].map(v=>Math.round(v)),'"'+ev+'"'].join(",");
+  }));
+  dl(new Blob([lines.join("\n")],{type:"text/csv"}),"retirement-projection.csv");
+});
+document.getElementById("dlJson").addEventListener("click",()=>dl(new Blob([JSON.stringify(S,null,2)],{type:"application/json"}),"retirement-scenario.json"));
+document.getElementById("importJson").addEventListener("click",()=>document.getElementById("importFile").click());
+document.getElementById("importFile").addEventListener("change",e=>{
+  const f=e.target.files[0];if(!f)return;
+  const rd=new FileReader();
+  rd.onload=()=>{try{const j=JSON.parse(rd.result);if(j.holdings)S=Object.assign(S,j);normalizeState();renderControls();renderSettingsControls();render();}catch(err){alert("Could not read that file — is it a scenario JSON saved from this app?");}};
+  rd.readAsText(f);
+});
+document.getElementById("printReport").addEventListener("click",()=>window.print());
+/* Self-saving file: bake current state into a fresh copy of this HTML */
+document.getElementById("dlApp").addEventListener("click",()=>{
+  S._saved=Date.now();
+  const el=document.getElementById("embeddedState");
+  const prev=el.textContent;
+  el.textContent=JSON.stringify(S).replace(/</g,"\\u003c");   /* escape < so closing-tag sequences stay inert */
+  const htmlOut="<!DOCTYPE html>\n"+document.documentElement.outerHTML;
+  el.textContent=prev;
+  dl(new Blob([htmlOut],{type:"text/html"}),"retirement-cockpit.html");
+  const st=document.getElementById("saveStatus");
+  if(st){st.textContent="✓ App downloaded with your data embedded — that file opens with everything intact, on any device.";st.style.color="var(--ok)";}
+});
+function dl(blob,name){const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),500);}
+
+function renderControls(){
+  const set=(id,v)=>document.getElementById(id).value=v;
+  set("topUp",S.topUp);set("reliefRate",S.relief);set("isaFund",S.isaFund);set("isaGrowth",S.isaGrowth);
+  set("annualExtras",S.annualExtras);set("strategy",S.strategy);set("inflation",S.inflation);set("giaTax",S.giaTax);set("incomeSlider",S.monthly);
+  document.getElementById("escalate").checked=S.escalate;
+}
+
+/* live countdown — days & hours to retirement, 30 June 2027 */
+const RET_DATE=new Date(2027,5,30,17,0,0);          /* 5pm on the last working day */
+function updateCountdown(){
+  const el=document.getElementById("countdown");if(!el)return;
+  const n1=S.settings.p1.name||"You";
+  const retAge1=+S.settings.p1.age+(RET_YEAR-NOW_YEAR);
+  const ms=RET_DATE-new Date();
+  if(ms<=0){el.textContent="🎉 Retired · 30 June 2027 · "+n1;return;}
+  const days=Math.floor(ms/86400000);
+  const hrs=Math.floor((ms%86400000)/3600000);
+  el.innerHTML='<strong class="cd-num">'+days+'</strong> days <strong class="cd-num">'+hrs+'</strong> hrs to retirement · 30 June 2027 · '+n1+' age '+retAge1;
+}
+setInterval(updateCountdown,60000);
+
+document.getElementById("resetApp").addEventListener("click",async()=>{
+  if(!confirm("Reset everything to the original defaults? Autosaved changes will be cleared (exported JSON files are unaffected)."))return;
+  await persistClear();
+  S=JSON.parse(JSON.stringify(DEFAULTS));
+  renderControls();renderSettingsControls();render();
+});
+
+/* ---------- start: restore the newest saved state (browser vs embedded-in-file), then render ---------- */
+function embeddedState(){
+  try{
+    const j=JSON.parse(document.getElementById("embeddedState").textContent);
+    return (j&&j.holdings)?j:null;
+  }catch(e){return null;}
+}
+(async function init(){
+  const saved=await persistLoad();
+  const emb=embeddedState();
+  let chosen=null;
+  if(saved&&emb)chosen=((saved._saved||0)>=(emb._saved||0))?saved:emb;   /* newest wins */
+  else chosen=saved||emb;
+  if(chosen&&chosen.holdings)Object.assign(S,chosen);
+  normalizeState();
+  renderControls();renderSettingsControls();
+  render();
+})();
+
+</script>
+
+<script>
+/* Register the offline service worker when hosted over http(s); silently skipped for file:// */
+if("serviceWorker" in navigator && location.protocol.startsWith("http")){
+  window.addEventListener("load",()=>{navigator.serviceWorker.register("sw.js").catch(()=>{});});
+}
+</script>
+</body>
+</html>
