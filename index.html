@@ -19,7 +19,7 @@
   --paper:#F4F6F2; --card:#FFFFFF; --ink:#22302B; --ink-soft:#5A6963;
   --pine:#133A33; --pine-deep:#0C2823; --gold:#B98A2F; --gold-soft:#E9DCBE;
   --line:#DDE3DD; --coral:#C4543B; --ok:#2E7D5B;
-  --c-pension:#1F5A4D; --c-isa:#3E8E7E; --c-gia:#7FB6A4; --c-invest:#5B8AA6; --c-gold:#C9A24B; --c-cash:#9AA8A0; --c-crypto:#8A6FA8;
+  --c-pension:#1F5A4D; --c-isa:#3E8E7E; --c-gia:#7FB6A4; --c-invest:#5B8AA6; --c-gold:#C9A24B; --c-cash:#9AA8A0; --c-premium:#B4637A; --c-crypto:#8A6FA8;
   --disp:'Fraunces',Georgia,serif; --body:'Public Sans',system-ui,sans-serif; --mono:'Spline Sans Mono',ui-monospace,monospace;
 }
 *{box-sizing:border-box;margin:0;padding:0}
@@ -188,6 +188,11 @@ footer-actions,.report-actions{display:flex;gap:10px;flex-wrap:wrap}
 .oo-note::placeholder{color:#ADB8B1;font-style:italic}
 .oo-icon{width:34px;height:34px;border-radius:9px;background:var(--gold-soft);border:1px solid #D8C58F;color:var(--pine);display:flex;align-items:center;justify-content:center;flex:none}
 .oo-icon svg{display:block}
+.h-del{white-space:nowrap}
+.mv-group{display:inline-flex;gap:4px;margin-right:8px}
+button.mv{padding:4px 7px;font-size:9px;line-height:1.2;border-color:var(--line);color:var(--ink-soft)}
+button.mv:hover:not(:disabled){border-color:var(--pine);color:var(--pine);background:#EAF0EC}
+button.mv:disabled{opacity:.3;cursor:default}
 @media(max-width:540px){.oneoff-row{grid-template-columns:auto 1fr auto;grid-auto-rows:auto}.oneoff-row select{grid-column:2/4}}
 
 /* ---------- print ---------- */
@@ -210,6 +215,13 @@ header{padding-top:calc(26px + env(safe-area-inset-top))}
 #projTable{min-width:840px}
 #projTable th:first-child,#projTable td:first-child{position:sticky;left:0;background:var(--card);z-index:1}
 #projTable tbody tr:hover td:first-child{background:#F7FAF7}
+.live-row{display:flex;gap:12px;align-items:center;flex-wrap:wrap;padding:9px 0;border-bottom:1px solid var(--line)}
+.live-row:last-child{border-bottom:none}
+.live-row .lv-name{font-weight:600;font-size:13px;min-width:180px}
+.live-row .lv-val{font-family:var(--mono);font-size:14px;color:var(--pine);font-weight:600}
+.live-row .lv-chg{font-family:var(--mono);font-size:11.5px}
+.live-row .lv-units{width:110px!important;text-align:right}
+.live-row .lv-sub{font-size:11px;color:var(--ink-soft)}
 .scroll-hint{display:none;font-size:11px;color:var(--ink-soft);margin-bottom:8px}
 @media(min-width:701px){#holdingsTable{min-width:660px}}
 
@@ -242,7 +254,7 @@ header{padding-top:calc(26px + env(safe-area-inset-top))}
   #holdingsTable td{display:block;border:none;padding:0}
   #holdingsTable td[data-label]::before{content:attr(data-label);display:block;font-size:10px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-soft);font-weight:700;margin-bottom:4px}
   #holdingsTable td.h-name,#holdingsTable td.h-wrap{grid-column:1/-1}
-  #holdingsTable td.h-del{position:absolute;top:8px;right:8px}
+  #holdingsTable td.h-del{position:absolute;top:8px;right:8px;display:flex;gap:6px;align-items:center}
   #holdingsTable td.h-del::before{display:none}
   #holdingsTable td input,#holdingsTable td select{text-align:left!important;max-width:none!important}
   .mobile-total{display:block!important}
@@ -294,7 +306,7 @@ header{padding-top:calc(26px + env(safe-area-inset-top))}
 <div class="tuner">
   <div class="wrap tuner-grid">
     <div>
-      <label for="incomeSlider">Target monthly income from June 2027 (after tax, today's money)</label>
+      <label for="incomeSlider">Target monthly income from <span id="tunerFrom">June 2027</span> (after tax, today's money)</label>
       <div class="big num">£<span id="incomeVal">2,000</span><small> /mo</small></div>
       <input type="range" id="incomeSlider" min="1000" max="8000" step="50" value="2000" aria-label="Target monthly income">
     </div>
@@ -309,7 +321,7 @@ header{padding-top:calc(26px + env(safe-area-inset-top))}
     <div class="stat">
       <label>Pot at retirement</label>
       <div class="big num" id="potAtRet">—</div>
-      <div class="sub">June 2027, all wrappers</div>
+      <div class="sub" id="potAtRetSub">June 2027, all wrappers</div>
     </div>
     <div class="stat">
       <label>Income tax, year 1</label>
@@ -341,6 +353,19 @@ header{padding-top:calc(26px + env(safe-area-inset-top))}
     </div>
     <div class="legend" id="wrapperLegend"></div>
   </div>
+
+  <div class="card" style="margin-top:18px" id="liveCard">
+    <div class="row" style="justify-content:space-between;align-items:baseline">
+      <h3 style="font-size:16px">Live UK data</h3>
+      <div class="row">
+        <span id="liveStamp" class="num" style="font-size:11.5px;color:var(--ink-soft)"></span>
+        <button class="small no-print" id="refreshLive">↻ Refresh</button>
+      </div>
+    </div>
+    <div id="liveRows" style="margin-top:12px"></div>
+    <div id="liveMsg" style="font-size:12px;margin-top:8px;min-height:1em"></div>
+    <div class="hint" style="margin-top:8px">Sources: ONS (CPI 12-month rate) and CoinGecko (XRP; gold is indicative, via the PAXG token ≈ 1 troy oz). Anonymous requests, needs internet; none of your data is sent. Fund and share prices have no free keyless feed, so update those holdings manually.</div>
+  </div>
 </section>
 
 <!-- ============ PLAN ============ -->
@@ -349,7 +374,7 @@ header{padding-top:calc(26px + env(safe-area-inset-top))}
   <p class="section-sub">These levers shape how tax-efficient the plan is — pension top-ups before you stop work, annual Bed-&amp;-ISA moves, and the order pots are drawn in retirement.</p>
   <div class="grid2">
     <div class="card">
-      <h3 style="margin-bottom:12px">Before retirement (now → June 2027)</h3>
+      <h3 style="margin-bottom:12px">Before retirement</h3>
       <div class="field">
         <label for="topUp">One-off pension contribution before retirement (gross £)</label>
         <input type="number" id="topUp" value="20000" min="0" step="1000">
@@ -417,7 +442,7 @@ header{padding-top:calc(26px + env(safe-area-inset-top))}
 <!-- ============ ACTIONS ============ -->
 <section id="actions">
   <h2>Actions before retirement</h2>
-  <p class="section-sub">Your to-do list for the run-up to June 2027. Click any tile for detailed suggestions and a notes pad; tick items off as you go and the completion date fills in automatically. Progress: <strong id="actionProgress" class="num"></strong></p>
+  <p class="section-sub">Your to-do list for the run-up to retirement. Click any tile for detailed suggestions and a notes pad; tick items off as you go and the completion date fills in automatically. Progress: <strong id="actionProgress" class="num"></strong></p>
   <div id="actionFx" style="font-size:12.5px;color:var(--ok);font-weight:600;margin-bottom:12px;min-height:1em"></div>
   <div class="actions-grid" id="actionTiles"></div>
   <button class="ghost no-print" id="addAction" style="margin-top:14px">+ Add action</button>
@@ -431,9 +456,16 @@ header{padding-top:calc(26px + env(safe-area-inset-top))}
 <section id="projection">
   <h2>Projection</h2>
   <p class="section-sub" id="projSub"></p>
+  <label class="toggle no-print" style="margin-bottom:14px"><input type="checkbox" id="realTerms"> Show figures in today's money (strip out inflation)</label>
   <div class="card">
     <div id="chart"></div>
     <div class="legend" id="chartLegend"></div>
+  </div>
+  <div class="card" style="margin-top:18px">
+    <h3 style="margin-bottom:4px;font-size:16px">Where each year's income comes from</h3>
+    <p class="section-sub" style="margin-bottom:14px;font-size:12.5px">Stacked income sources per retirement year; the dashed line is your net spending target — the gap above it is income tax (or, in surplus years, income reinvested). Hover any bar segment for figures.</p>
+    <div id="incomeChart"></div>
+    <div class="legend" id="incomeLegend"></div>
   </div>
   <div class="card table-scroll" style="margin-top:18px">
     <div class="scroll-hint">Swipe sideways to see all columns →</div>
@@ -487,7 +519,8 @@ header{padding-top:calc(26px + env(safe-area-inset-top))}
       <div class="field"><label for="s_p1_email">Email</label><input type="email" id="s_p1_email" data-set="p1.email" placeholder="you@example.com"></div>
       <div class="field"><label for="s_p1_dob">Date of birth</label><input type="date" id="s_p1_dob" data-set="p1.dob" min="1940-01-01" max="1986-12-31"></div>
       <div class="field"><label for="s_p1_age">Age today</label><input type="number" id="s_p1_age" data-set="p1.age" min="40" max="80"><div class="hint">Auto-filled from date of birth.</div></div>
-      <div class="field"><label for="s_p1_salary">Salary £/yr (until June 2027)</label><input type="number" id="s_p1_salary" data-set="p1.salary" min="0" step="1000"></div>
+      <div class="field"><label for="s_p1_retire">Retirement date</label><input type="month" id="s_p1_retire" data-set="p1.retire" min="2026-07" max="2045-12"></div>
+      <div class="field"><label for="s_p1_salary">Salary £/yr (until your retirement date)</label><input type="number" id="s_p1_salary" data-set="p1.salary" min="0" step="1000"></div>
       <div class="field" style="grid-column:1/-1"><label>Pensions in payment</label>
         <div id="pips_p1"></div>
         <button type="button" class="small ghost" data-pipadd="p1">+ Add pension in payment</button>
@@ -511,7 +544,8 @@ header{padding-top:calc(26px + env(safe-area-inset-top))}
         <div class="field"><label for="s_p2_email">Email</label><input type="email" id="s_p2_email" data-set="p2.email" placeholder="name@example.com"></div>
         <div class="field"><label for="s_p2_dob">Date of birth</label><input type="date" id="s_p2_dob" data-set="p2.dob" min="1940-01-01" max="1986-12-31"></div>
         <div class="field"><label for="s_p2_age">Age today</label><input type="number" id="s_p2_age" data-set="p2.age" min="40" max="80"><div class="hint">Auto-filled from date of birth.</div></div>
-        <div class="field"><label for="s_p2_salary">Salary £/yr</label><input type="number" id="s_p2_salary" data-set="p2.salary" min="0" step="1000"></div>
+        <div class="field"><label for="s_p2_retire">Retirement date</label><input type="month" id="s_p2_retire" data-set="p2.retire" min="2026-07" max="2045-12"></div>
+        <div class="field"><label for="s_p2_salary">Salary £/yr (until their retirement date)</label><input type="number" id="s_p2_salary" data-set="p2.salary" min="0" step="1000"></div>
         <div class="field" style="grid-column:1/-1"><label>Pensions in payment</label>
           <div id="pips_p2"></div>
           <button type="button" class="small ghost" data-pipadd="p2">+ Add pension in payment</button>
@@ -527,7 +561,7 @@ header{padding-top:calc(26px + env(safe-area-inset-top))}
     </div>
 
     <div class="field"><label for="s_endage">Plan horizon — run projection to age</label><input type="number" id="s_endage" data-set="endAge" min="80" max="105" style="max-width:120px"></div>
-    <div class="m-foot">State pension: full new rate is £11,973/yr (2025/26); check each forecast at gov.uk/check-state-pension. Retirement date stays June 2027.</div>
+    <div class="m-foot">State pension: full new rate is £11,973/yr (2025/26); check each forecast at gov.uk/check-state-pension. Household drawdown starts when the first of you retires; a partner still working offsets the need with their salary (taxed, NI ignored).</div>
   </div>
 </div>
 
@@ -557,6 +591,7 @@ const WRAP = {
   investment:{label:"Investment (taxable)",color:"var(--c-invest)",hex:"#5B8AA6"},
   gold:{label:"Gold/silver coins (CGT-free)",color:"var(--c-gold)",hex:"#C9A24B"},
   cash:{label:"Cash",color:"var(--c-cash)",hex:"#9AA8A0"},
+  premium:{label:"NS&I Premium Bonds",color:"var(--c-premium)",hex:"#B4637A"},
   crypto:{label:"Crypto",color:"var(--c-crypto)",hex:"#8A6FA8"}
 };
 const TAGS={
@@ -572,8 +607,8 @@ const tagIcon=(k,size)=>`<svg viewBox="0 0 22 22" width="${size}" height="${size
 let S = {
   settings:{
     couple:false, endAge:97,
-    p1:{name:"You", dob:"", email:"", age:61, salary:0, pips:[], incomes:[], statePension:11973, spAge:67},
-    p2:{name:"Spouse", dob:"", email:"", age:61, salary:0, pips:[], incomes:[], statePension:11973, spAge:67}
+    p1:{name:"You", dob:"", email:"", age:61, retire:"2027-06", salary:0, pips:[], incomes:[], statePension:11973, spAge:67},
+    p2:{name:"Spouse", dob:"", email:"", age:61, retire:"2027-06", salary:0, pips:[], incomes:[], statePension:11973, spAge:67}
   },
   holdings:[
     {name:"Pension / SIPP",wrap:"pension",owner:"p1",value:0,growth:5,start:"2026-06"},
@@ -593,10 +628,22 @@ let S = {
   ],
   monthly:2000, annualExtras:3000, oneoffs:[],
   topUp:0, relief:0.4, topUpSource:"__any__", isaFund:20000, isaGrowth:6,
-  strategy:"opt", portfolioFilter:"all", wrapperFilter:"all",
+  strategy:"opt", portfolioFilter:"all", wrapperFilter:"all", realTerms:false, live:null,
   inflation:2.5, giaTax:5, escalate:true
 };
 const DEFAULTS=JSON.parse(JSON.stringify(S));
+function retRowOf(P){               /* tax-year row a retirement date lands in, + need-fraction of that row */
+  const s=P.retire||"2027-06";
+  const y=parseInt(s.slice(0,4))||2027, m=parseInt(s.slice(5,7))||6;
+  const effM=m>=4?m:m+12, ry=m>=4?y:y-1;
+  const frac=Math.min(1,Math.max(1/12,(16-effM)/12));   /* June -> 10/12, matching the original convention */
+  return {ry,frac};
+}
+function fmtMY(ym){
+  const y=parseInt((ym||"").slice(0,4)),m=parseInt((ym||"").slice(5,7));
+  if(!y||!m)return "June 2027";
+  return new Date(y,m-1,1).toLocaleDateString("en-GB",{month:"long",year:"numeric"});
+}
 function pipsAnnual(P,year){           /* £/yr in payment from each pension's own start month */
   return (P.pips||[]).reduce((a,x)=>{
     const sy=parseInt((x.start||"").slice(0,4))||NOW_YEAR, sm=parseInt((x.start||"").slice(5,7))||1;
@@ -642,12 +689,16 @@ function normalizeState(){
       delete P.pensionsMo;delete P.pensionsStart;
     }
     P.pips.forEach(x=>{x.mo=+x.mo||0;x.start=x.start||"2026-06";x.label=x.label||"Pension in payment";});
+    if(!P.retire||!/^\d{4}-\d{2}$/.test(P.retire))P.retire="2027-06";
     if(!Array.isArray(P.incomes))P.incomes=[];
     P.incomes.forEach(x=>{x.mo=+x.mo||0;x.start=x.start||"2027-07";x.end=x.end||"2032-06";x.label=x.label||"Other income";});
   });
   S.holdings.forEach(h=>{if(h.owner!=="p2"&&h.owner!=="joint")h.owner="p1";});
   if(!S.portfolioFilter)S.portfolioFilter="all";
   if(!S.wrapperFilter)S.wrapperFilter="all";
+  if(S.realTerms===undefined)S.realTerms=false;
+  if(S.live===undefined)S.live=null;
+  S.holdings.forEach(x=>{if(x.units!==undefined)x.units=+x.units||0;});
   ["p1","p2"].forEach(p=>{const a=ageFromDob(S.settings[p].dob);if(a!==null)S.settings[p].age=a;});
   S.actions=S.actions||[];S.oneoffs=S.oneoffs||[];
   S.isaDone=S.isaDone||{};
@@ -740,17 +791,34 @@ function grossPensionForNet(n,f){
 }
 
 /* ================= simulation ================= */
+function ownerKeyOf(x){return (x.owner==="p2"||x.owner==="joint")?x.owner:"p1";}
+function holdingVisible(x){
+  const filt=S.settings.couple?(S.portfolioFilter||"all"):"all";
+  const wf=S.wrapperFilter||"all";
+  return (filt==="all"||ownerKeyOf(x)===filt)&&(wf==="all"||x.wrap===wf);
+}
+function moveHolding(i,dir){
+  const vis=S.holdings.map((x,j)=>holdingVisible(x)?j:-1).filter(j=>j>=0);
+  const pos=vis.indexOf(i);
+  if(pos<0)return;
+  const target=vis[pos+dir];
+  if(target===undefined)return;                      /* already at the visible edge */
+  const [item]=S.holdings.splice(i,1);
+  const tAdj=target>i?target-1:target;               /* removal shifted later indices left */
+  S.holdings.splice(dir>0?tAdj+1:tAdj,0,item);
+  render();
+}
 const startYearOf=h=>{const y=parseInt((h.start||"").slice(0,4));return isNaN(y)?NOW_YEAR:Math.max(NOW_YEAR,y);};
 function simulate(){
   const ST=S.settings, couple=!!ST.couple, ENDA=+ST.endAge||97;
-  const pots={isa:0,gia:0,investment:0,gold:0,cash:0,crypto:0};
+  const pots={isa:0,gia:0,investment:0,gold:0,cash:0,premium:0,crypto:0};
   const pen={p1:0,p2:0};                                  /* pensions are personal — separate pots */
   /* wrapper growth rates: value-weighted across all holdings in that wrapper */
-  const sum={pension:0,isa:0,gia:0,investment:0,gold:0,cash:0,crypto:0}, g={pension:0,isa:0,gia:0,investment:0,gold:0,cash:0,crypto:0};
+  const sum={pension:0,isa:0,gia:0,investment:0,gold:0,cash:0,premium:0,crypto:0}, g={pension:0,isa:0,gia:0,investment:0,gold:0,cash:0,premium:0,crypto:0};
   S.holdings.forEach(h=>{sum[h.wrap]+=+h.value; g[h.wrap]+=+h.value*(+h.growth/100);});
   const rate=w=>sum[w]>0?g[w]/sum[w]:(w==="isa"?S.isaGrowth/100:0.03);
   const R={pension:rate("pension"),isa:S.holdings.some(h=>h.wrap==="isa"&&h.value>0)?rate("isa"):S.isaGrowth/100,
-           gia:rate("gia"),investment:rate("investment"),gold:rate("gold"),cash:rate("cash"),crypto:rate("crypto")};
+           gia:rate("gia"),investment:rate("investment"),gold:rate("gold"),cash:rate("cash"),premium:rate("premium"),crypto:rate("crypto")};
   /* holdings join the plan in their start year */
   const pending=[];
   S.holdings.forEach(h=>{
@@ -763,6 +831,11 @@ function simulate(){
     }
   });
   const infl=S.inflation/100;
+  /* per-person retirement dates; household drawdown starts when the FIRST of you retires */
+  const R1=retRowOf(ST.p1), R2=couple?retRowOf(ST.p2):R1;
+  const RETROW={p1:R1,p2:R2};
+  const hhRy=Math.min(R1.ry,R2.ry);
+  const hhFrac=Math.max(R1.ry===hhRy?R1.frac:0, R2.ry===hhRy?R2.frac:0);
   const rows=[]; let fundedAge=ENDA, shortYear=null, taxY1=null, potAtRet=null, topUpDone=false;
 
   for(let year=NOW_YEAR; +ST.p1.age+(year-NOW_YEAR)<=ENDA; year++){
@@ -770,18 +843,18 @@ function simulate(){
     pending.forEach(p=>{if(p.y===year){if(p.wrap==="pension")pen[p.owner]+=p.value;else pots[p.wrap]+=p.value;}});
 
     /* pre-retirement pension top-up (person 1, the salary earner): net cost from the chosen cash pot */
-    if(!topUpDone&&year<RET_YEAR+1&&S.topUp>0){
+    if(!topUpDone&&year<R1.ry+1&&S.topUp>0){
       const net=S.topUp*(1-S.relief);
       const srcH=S.holdings.find(h=>h.name===S.topUpSource&&h.wrap==="cash");
       const srcReady=srcH?year>=startYearOf(srcH):pots.cash>=net;
-      if((srcReady&&pots.cash>0)||year===RET_YEAR){
+      if((srcReady&&pots.cash>0)||year===R1.ry){
         pen.p1+=S.topUp;pots.cash=Math.max(0,pots.cash-net);topUpDone=true;
       }
     }
 
     const age1=+ST.p1.age+(year-NOW_YEAR), age2=+ST.p2.age+(year-NOW_YEAR);
-    const retired=year>=RET_YEAR;
-    const frac=(year===RET_YEAR)?10/12:1;            /* retire June 2027: ~10 months of need in 2027/28 */
+    const retired=year>=hhRy;
+    const frac=(year===hhRy)?hhFrac:1;               /* first retirement year is prorated by its month */
     const esc=S.escalate?Math.pow(1+infl,year-NOW_YEAR):1;
 
     /* Bed & ISA each April — allowance is per person, so a couple shelters up to £40k/yr */
@@ -789,7 +862,7 @@ function simulate(){
     let isaMove=(S.isaDone&&S.isaDone[year])?0:Math.min(S.isaFund,isaCap,pots.cash);
     if(isaMove>0){pots.cash-=isaMove;pots.isa+=isaMove;}
 
-    let need=0,sp=0,pensionDraw=0,taxFreeDraw=0,tax=0;
+    let need=0,sp=0,pensionDraw=0,taxFreeDraw=0,tax=0,fixedTot=0;
     if(retired){
       need=(S.monthly*12+S.annualExtras)*frac*esc
            + S.oneoffs.filter(o=>+o.year===year).reduce((a,o)=>a+ +o.amount,0);
@@ -797,8 +870,17 @@ function simulate(){
       const spOf=(P,age)=>(age>=+P.spAge)?+P.statePension*Math.pow(1.025,year-NOW_YEAR)*((age===+P.spAge)?frac:1):0;
       const sp1=spOf(ST.p1,age1), sp2=couple?spOf(ST.p2,age2):0;
       sp=sp1+sp2;
-      const fixed={p1:pipsAnnual(ST.p1,year)*frac*(S.escalate?esc:1)+incomesAnnual(ST.p1,year)*(S.escalate?esc:1)+sp1,
-                   p2:couple?(pipsAnnual(ST.p2,year)*frac*(S.escalate?esc:1)+incomesAnnual(ST.p2,year)*(S.escalate?esc:1)+sp2):0};
+      /* a partner still working after the household starts drawing: their salary offsets the need (taxed) */
+      const salOf=pk=>{
+        const P=ST[pk],RR=RETROW[pk],sal=+P.salary||0;
+        if(sal<=0)return 0;
+        if(year<RR.ry)return sal;
+        if(year===RR.ry&&year>hhRy)return sal*(1-RR.frac);
+        return 0;
+      };
+      const fixed={p1:pipsAnnual(ST.p1,year)*frac*(S.escalate?esc:1)+incomesAnnual(ST.p1,year)*(S.escalate?esc:1)+salOf("p1")*(S.escalate?esc:1)+sp1,
+                   p2:couple?(pipsAnnual(ST.p2,year)*frac*(S.escalate?esc:1)+incomesAnnual(ST.p2,year)*(S.escalate?esc:1)+salOf("p2")*(S.escalate?esc:1)+sp2):0};
+      fixedTot=fixed.p1+fixed.p2;
       const drawnTaxable={p1:0,p2:0};                /* taxable pension slices drawn this year, per person */
       const persons=couple?["p1","p2"]:["p1"];
       tax=persons.reduce((a,p)=>a+incomeTax(fixed[p]),0);
@@ -830,6 +912,7 @@ function simulate(){
       };
       const taxFreeRun=()=>{
         if(remaining>0)drawTaxFree("cash",remaining);
+        if(remaining>0)drawTaxFree("premium",remaining);   /* prizes tax-free; low expected return, so spend before invested pots */
         if(remaining>0)drawTaxFree("isa",remaining);
         if(remaining>0)drawTaxFree("gold",remaining);
         if(remaining>0)drawGIA("crypto",remaining);
@@ -859,14 +942,14 @@ function simulate(){
     pen.p1*=1+R.pension; pen.p2*=1+R.pension;
     Object.keys(pots).forEach(w=>pots[w]*=1+R[w]);
     const total=pen.p1+pen.p2+Object.values(pots).reduce((a,b)=>a+b,0);
-    if(year===RET_YEAR&&potAtRet===null)potAtRet=total;
-    rows.push({year,age:age1,need,sp,pensionDraw,taxFreeDraw,tax,
+    if(year===hhRy&&potAtRet===null)potAtRet=total;
+    rows.push({year,age:age1,need,sp,fixedInc:fixedTot,pensionDraw,taxFreeDraw,tax,
       pension:pen.p1+pen.p2,pensionP1:pen.p1,pensionP2:pen.p2,
-      isa:pots.isa,gia:pots.gia,investment:pots.investment,gold:pots.gold,cash:pots.cash,crypto:pots.crypto,total,
+      isa:pots.isa,gia:pots.gia,investment:pots.investment,gold:pots.gold,cash:pots.cash,premium:pots.premium,crypto:pots.crypto,total,
       short:shortYear===year});
     if(shortYear!==null&&year>=shortYear)break;
   }
-  return {rows,fundedAge:shortYear?fundedAge:ENDA,ranOut:!!shortYear,taxY1:taxY1||0,potAtRet:potAtRet||0,R,endAge:ENDA};
+  return {rows,fundedAge:shortYear?fundedAge:ENDA,ranOut:!!shortYear,taxY1:taxY1||0,potAtRet:potAtRet||0,R,endAge:ENDA,retY:hhRy};
 }
 
 /* ================= render ================= */
@@ -880,9 +963,11 @@ function render(){
   fa.classList.toggle("warn",r.ranOut&&r.fundedAge<90);
   document.getElementById("fundedSub").textContent=r.ranOut?("money runs short in "+(r.fundedAge-(+S.settings.p1.age)+NOW_YEAR)):"plan lasts beyond age "+r.endAge;
   window.__res=r;
-  document.getElementById("potAtRet").textContent=fmt(r.potAtRet);
-  document.getElementById("taxY1").textContent=fmt(r.taxY1);
-  document.getElementById("taxY1Sub").textContent="first retirement year (2027/28)";
+  window.__retY=r.retY;
+  const deflRet=S.realTerms?Math.pow(1+S.inflation/100,r.retY-NOW_YEAR):1;
+  document.getElementById("potAtRet").textContent=fmt(r.potAtRet/deflRet);
+  document.getElementById("taxY1").textContent=fmt(r.taxY1/deflRet);
+  document.getElementById("taxY1Sub").textContent="first retirement year ("+r.retY+"/"+String(r.retY+1).slice(2)+")";
 
   /* owner filter (couple mode only) */
   const coupleOn=!!S.settings.couple;
@@ -929,6 +1014,8 @@ function render(){
     `<th>Holding</th><th>Wrapper</th>${couple?"<th>Owner</th>":""}<th>Starts</th><th class="num">Value £</th><th class="num">Growth %/yr</th><th></th>`;
   const tb=document.querySelector("#holdingsTable tbody");
   tb.innerHTML="";
+  const visIdx=S.holdings.map((x,j)=>inFilter(x)?j:-1).filter(j=>j>=0);
+  const firstVis=visIdx[0], lastVis=visIdx[visIdx.length-1];
   S.holdings.forEach((h,i)=>{
     if(!inFilter(h))return;
     const tr=document.createElement("tr");
@@ -938,7 +1025,7 @@ function render(){
       <td data-label="Starts"><input type="month" data-i="${i}" data-k="start" value="${h.start||"2026-06"}" min="2026-06" max="2060-12" style="min-width:130px" aria-label="Start date"></td>
       <td class="num" data-label="Value £"><input type="number" data-i="${i}" data-k="value" value="${h.value}" min="0" step="500" style="text-align:right" aria-label="Value"></td>
       <td class="num" data-label="Growth %/yr"><input type="number" data-i="${i}" data-k="growth" value="${h.growth}" step="0.5" style="text-align:right;max-width:90px" aria-label="Growth"></td>
-      <td class="h-del"><button class="small danger no-print" data-del="${i}" aria-label="Remove holding">✕</button></td>`;
+      <td class="h-del"><span class="mv-group no-print"><button class="small ghost mv" data-mvu="${i}"${firstVis===i?" disabled":""} aria-label="Move up" title="Move up">▲</button><button class="small ghost mv" data-mvd="${i}"${lastVis===i?" disabled":""} aria-label="Move down" title="Move down">▼</button></span><button class="small danger no-print" data-del="${i}" aria-label="Remove holding">✕</button></td>`;
     tb.appendChild(tr);
   });
   const avgG=tot>0?fHoldings.reduce((a,h)=>a+ +h.value*+h.growth,0)/tot:0;
@@ -950,6 +1037,9 @@ function render(){
   /* personalised header */
   document.getElementById("planFor").textContent="Plan for "+n1+(couple?" & "+n2+" — joint household view":"");
   updateCountdown();
+  const earliest=(!couple||retRowOf(S.settings.p1).ry<=retRowOf(S.settings.p2).ry)?S.settings.p1.retire:S.settings.p2.retire;
+  const tf=document.getElementById("tunerFrom");if(tf)tf.textContent=fmtMY(earliest);
+  const prs=document.getElementById("potAtRetSub");if(prs)prs.textContent=fmtMY(earliest)+", all wrappers";
   const em1=S.settings.p1.email?" <"+S.settings.p1.email+">":"";
   document.getElementById("printFor").textContent="Prepared for "+n1+em1+(couple?" & "+n2+(S.settings.p2.email?" <"+S.settings.p2.email+">":""):"")+" — "+new Date().toLocaleDateString("en-GB");
   document.getElementById("wrapperLegend").innerHTML=Object.keys(WRAP).map(w=>`<span><i class="dot" style="background:${WRAP[w].hex}"></i>${WRAP[w].label}</span>`).join("");
@@ -1015,18 +1105,25 @@ function render(){
       <button class="small danger no-print" data-adelarch="${j}" aria-label="Delete permanently">✕</button>
     </div>`;}).join(""):'<div class="hint">Nothing archived yet. Completed actions move here automatically.</div>';
 
-  renderChart(r.rows);
-  renderTable(r.rows);
+  /* real-terms view: deflate every £ figure back to today's money for display */
+  const defl=S.realTerms?(y=>Math.pow(1+S.inflation/100,y-NOW_YEAR)):(()=>1);
+  const MF=["need","sp","fixedInc","pensionDraw","taxFreeDraw","tax","pension","pensionP1","pensionP2","isa","gia","investment","gold","cash","premium","crypto","total"];
+  const dispRows=S.realTerms?r.rows.map(row=>{const c=Object.assign({},row);const d=defl(row.year);MF.forEach(k=>c[k]=row[k]/d);return c;}):r.rows;
+  document.getElementById("realTerms").checked=!!S.realTerms;
+  renderLive();
+  renderChart(dispRows);
+  renderIncomeChart(dispRows);
+  renderTable(dispRows);
   renderInsights(r,byW,tot);
   document.getElementById("projSub").textContent=
-    `Pot balances after drawdown, growing at your assumed rates. Income target ${fmt(S.monthly)}/month + ${fmt(S.annualExtras)}/yr extras${S.escalate?", rising with inflation":""}; strategy: ${document.getElementById("strategy").selectedOptions[0].text}.`;
+    `Pot balances after drawdown, growing at your assumed rates.${S.realTerms?" Shown in today\'s money.":""} Income target ${fmt(S.monthly)}/month + ${fmt(S.annualExtras)}/yr extras${S.escalate?", rising with inflation":""}; strategy: ${document.getElementById("strategy").selectedOptions[0].text}.`;
   window.__rows=r.rows;
   scheduleSave();
 }
 
 function renderChart(rows){
   const W=1040,H=320,P={l:62,r:10,t:14,b:26};
-  const keys=["pension","isa","gia","investment","gold","cash","crypto"];
+  const keys=["pension","isa","gia","investment","gold","cash","premium","crypto"];
   const maxT=Math.max(...rows.map(r=>r.total),1);
   const x=i=>P.l+(W-P.l-P.r)*i/Math.max(rows.length-1,1);
   const y=v=>H-P.b-(H-P.t-P.b)*v/maxT;
@@ -1045,7 +1142,7 @@ function renderChart(rows){
     lbls+=`<text x="${P.l-8}" y="${yy+4}" text-anchor="end" font-size="10" fill="#5A6963" font-family="monospace">£${Math.round(v/1000)}k</text>`;}
   let xl="";
   rows.forEach((r,i)=>{if(r.age%5===0||i===rows.length-1)xl+=`<text x="${x(i)}" y="${H-8}" text-anchor="middle" font-size="10" fill="#5A6963" font-family="monospace">${r.age}</text>`;});
-  const retX=x(rows.findIndex(r=>r.year===RET_YEAR));
+  const retX=x(Math.max(0,rows.findIndex(r=>r.year===(window.__retY||RET_YEAR))));
   document.getElementById("chart").innerHTML=
     `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Projected pot balances by age" style="width:100%;height:auto">
       ${grid}${paths}
@@ -1054,6 +1151,61 @@ function renderChart(rows){
       ${lbls}${xl}
     </svg>`;
   document.getElementById("chartLegend").innerHTML=keys.map(k=>`<span><i class="dot" style="background:${WRAP[k].hex}"></i>${WRAP[k].label}</span>`).join("");
+}
+
+
+/* ---------- income composition chart ----------
+   Stacked sources per retirement year (validated categorical palette:
+   green -> gold -> teal -> blue, fixed order) + dashed spending-target line. */
+const INC_SERIES=[
+  {key:"sp",      label:"State pensions",              hex:"#0E8F60"},
+  {key:"pipOther",label:"Salary, pensions in payment &amp; other income", hex:"#C28C17"},
+  {key:"pensionDraw",label:"Pension drawdown",         hex:"#2AB3B1"},
+  {key:"taxFreeDraw",label:"Savings, ISA &amp; other pots",hex:"#6E7FE8"}
+];
+function renderIncomeChart(rows){
+  const el=document.getElementById("incomeChart");if(!el)return;
+  const data=rows.filter(r=>r.year>=(window.__retY||RET_YEAR)).map(r=>({
+    year:r.year,age:r.age,
+    sp:r.sp,
+    pipOther:Math.max(0,(r.fixedInc||0)-r.sp),
+    pensionDraw:r.pensionDraw,
+    taxFreeDraw:r.taxFreeDraw,
+    need:r.need,tax:r.tax
+  }));
+  if(!data.length){el.innerHTML="";return;}
+  const W=1040,H=300,P={l:62,r:10,t:14,b:26};
+  const maxV=Math.max(...data.map(d=>Math.max(d.sp+d.pipOther+d.pensionDraw+d.taxFreeDraw,d.need)),1)*1.06;
+  const n=data.length, slot=(W-P.l-P.r)/n, bw=Math.max(4,Math.min(26,slot-4));
+  const x=i=>P.l+slot*i+(slot-bw)/2;
+  const y=v=>H-P.b-(H-P.t-P.b)*v/maxV;
+  let grid="",lbls="";
+  for(let g=0;g<=4;g++){const v=maxV*g/4,yy=y(v);
+    grid+=`<line x1="${P.l}" x2="${W-P.r}" y1="${yy}" y2="${yy}" stroke="#DDE3DD"/>`;
+    lbls+=`<text x="${P.l-8}" y="${yy+4}" text-anchor="end" font-size="10" fill="#5A6963" font-family="monospace">£${Math.round(v/1000)}k</text>`;}
+  let bars="";
+  data.forEach((d,i)=>{
+    let cum=0;
+    INC_SERIES.forEach(s=>{
+      const v=d[s.key];if(v<=1)return;
+      const y1=y(cum+v),hgt=Math.max(0,y(cum)-y1-1.5);   /* 1.5px surface gap between segments */
+      if(hgt>0.5)bars+=`<rect x="${x(i)}" y="${y1}" width="${bw}" height="${hgt}" rx="2" fill="${s.hex}"><title>${d.year}/${String(d.year+1).slice(2)} (age ${d.age}) — ${s.label}: £${Math.round(v).toLocaleString("en-GB")}</title></rect>`;
+      cum+=v;
+    });
+  });
+  /* dashed spending-target line */
+  let needPath="M";
+  data.forEach((d,i)=>{needPath+=(i?"L":"")+(x(i)+bw/2)+","+y(d.need);});
+  let xl="";
+  data.forEach((d,i)=>{if(d.age%5===0||i===data.length-1)xl+=`<text x="${x(i)+bw/2}" y="${H-8}" text-anchor="middle" font-size="10" fill="#5A6963" font-family="monospace">${d.age}</text>`;});
+  el.innerHTML=`<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Income sources by year" style="width:100%;height:auto">
+    ${grid}${bars}
+    <path d="${needPath}" fill="none" stroke="#22302B" stroke-width="1.6" stroke-dasharray="5 4"/>
+    ${lbls}${xl}
+  </svg>`;
+  document.getElementById("incomeLegend").innerHTML=
+    INC_SERIES.map(s=>`<span><i class="dot" style="background:${s.hex}"></i>${s.label}</span>`).join("")
+    +`<span><i style="display:inline-block;width:14px;border-top:2px dashed #22302B;vertical-align:middle"></i>&nbsp;Spending target (net)</span>`;
 }
 
 function renderTable(rows){
@@ -1067,7 +1219,7 @@ function renderTable(rows){
     <td class="num">${r.pensionDraw?fmt0(r.pensionDraw):"—"}</td><td class="num">${r.taxFreeDraw?fmt0(r.taxFreeDraw):"—"}</td>
     <td class="num">${r.tax?fmt0(r.tax):"—"}</td>
     <td class="num">${fmt0(r.pension)}</td><td class="num">${fmt0(r.isa)}</td>
-    <td class="num">${fmt0(r.gia+r.investment+r.gold+r.cash+r.crypto)}</td>
+    <td class="num">${fmt0(r.gia+r.investment+r.gold+r.cash+r.premium+r.crypto)}</td>
     <td class="num"><strong>${fmt0(r.total)}</strong></td></tr>`;}).join("");
 }
 
@@ -1075,8 +1227,8 @@ function renderInsights(r,byW,tot){
   const ST=S.settings, couple=!!ST.couple, n1=ST.p1.name||"You", n2=ST.p2.name||"your spouse";
   const ins=[];
   const band40=Math.max(0,+ST.p1.salary-BASIC_TOP);
-  if(band40>0)ins.push(`<strong>40% relief window before June 2027.</strong> About ${fmt(band40)} of ${n1==="You"?"your":n1+"'s"} £${fmt0(ST.p1.salary)} salary is taxed at 40%. Pension contributions up to that amount effectively cost 60p per £1 saved (current top-up: ${fmt(S.topUp)}).`);
-  else ins.push(`<strong>Pension relief before June 2027.</strong> Contributions get at least 20% relief while there's salary to set them against (current top-up: ${fmt(S.topUp)}).`);
+  if(band40>0)ins.push(`<strong>40% relief window before ${fmtMY(ST.p1.retire)}.</strong> About ${fmt(band40)} of ${n1==="You"?"your":n1+"'s"} £${fmt0(ST.p1.salary)} salary is taxed at 40%. Pension contributions up to that amount effectively cost 60p per £1 saved (current top-up: ${fmt(S.topUp)}).`);
+  else ins.push(`<strong>Pension relief before ${fmtMY(ST.p1.retire)}.</strong> Contributions get at least 20% relief while there's salary to set them against (current top-up: ${fmt(S.topUp)}).`);
   ins.push(`<strong>ISA shelter${couple?" ×2":""}.</strong> The £20,000 allowance is per person — ${couple?"as a couple you can shelter <strong>£40,000 every tax year</strong>":"you can move £20,000 each tax year"}. Your plan moves ${fmt(S.isaFund)}/yr; withdrawals are completely tax-free later.`);
   const pa1=Math.max(0,PA-pipsMoNow(ST.p1)*12);
   if(couple){
@@ -1086,7 +1238,12 @@ function renderInsights(r,byW,tot){
   }else{
     ins.push(`<strong>Personal allowance funnel.</strong> Your £${fmt0(pipsMoNow(ST.p1)*12)}/yr pensions in payment leave ~${fmt(pa1)} of allowance unused until state pension age. The tax-optimised strategy fills it with pension drawdown — zero tax, plus 25% of every withdrawal tax-free.`);
   }
-  ins.push(`<strong>State pension${couple?"s":""} from ${ST.p1.spAge}${couple&&ST.p2.spAge!==ST.p1.spAge?" / "+ST.p2.spAge:""}.</strong> ${couple?`Together worth ${fmt(+ST.p1.statePension+ +ST.p2.statePension)}/yr (today's money) — they may cover most of your £${fmt0(S.monthly)}/month core need.`:`At ${fmt(ST.p1.statePension)}/yr it covers roughly half your core need.`} The heavy drawdown years are ${RET_YEAR}–${NOW_YEAR+(+ST.p1.spAge-+ST.p1.age)}. Check ${couple?"both NI records":"your NI record"} for gaps; topping up is usually excellent value.`);
+  ins.push(`<strong>State pension${couple?"s":""} from ${ST.p1.spAge}${couple&&ST.p2.spAge!==ST.p1.spAge?" / "+ST.p2.spAge:""}.</strong> ${couple?`Together worth ${fmt(+ST.p1.statePension+ +ST.p2.statePension)}/yr (today's money) — they may cover most of your £${fmt0(S.monthly)}/month core need.`:`At ${fmt(ST.p1.statePension)}/yr it covers roughly half your core need.`} The heavy drawdown years are ${r.retY}–${NOW_YEAR+(+ST.p1.spAge-+ST.p1.age)}. Check ${couple?"both NI records":"your NI record"} for gaps; topping up is usually excellent value.`);
+  if(byW.premium>0){
+    const capPer=50000;
+    const over=S.holdings.filter(x=>x.wrap==="premium"&&+x.value>capPer).map(x=>x.name);
+    ins.push(`<strong>NS&amp;I Premium Bonds (${fmt(byW.premium)}).</strong> Prizes are tax-free and capital is Treasury-backed — a decent tax-free home for accessible cash. The cap is <strong>£50,000 per person</strong>${couple?" (£100,000 between you — hold them in each name)":""}. Set the growth rate to the current prize-fund rate (check nsandi.com); returns are lumpy and average luck earns slightly less than the headline rate.${over.length?` <span style="color:var(--coral)">⚠ ${over.join(", ")} exceeds the £50,000 individual cap — split it across owners.</span>`:""}`);
+  }
   ins.push(`<strong>Gold &amp; silver legal-tender coins (${fmt(byW.gold||0)}).</strong> Sovereigns and Britannias are exempt from capital gains tax — a genuinely tax-free reserve for lumpy spending.`);
   ins.push(`<strong>Cash drag.</strong> ${fmt(byW.cash||0)} sits in cash. Beyond a 1–2 year buffer, drip-feeding into ISAs${couple?" (both of yours)":""} and index funds typically improves long-run outcomes — at the cost of short-term swings.`);
   ins.push(`<strong>Watch the MPAA.</strong> Once anyone takes taxable income from their pension, that person's contribution allowance drops to £10,000/yr — make big contributions first.`);
@@ -1145,6 +1302,7 @@ document.body.addEventListener("change",e=>{
   if(t.dataset.i!==undefined){const k=t.dataset.k;S.holdings[+t.dataset.i][k]=(k==="name"||k==="wrap"||k==="start"||k==="owner")?t.value:+t.value;render();}
   if(t.dataset.tf==="owner"){S.portfolioFilter=t.value;render();return;}
   if(t.dataset.tf==="wrap"){S.wrapperFilter=t.value;render();return;}
+  if(t.dataset.lu!==undefined){S.holdings[+t.dataset.lu].units=+t.value||0;render();return;}
   if(t.dataset.oo!==undefined){const k=t.dataset.k;S.oneoffs[+t.dataset.oo][k]=(k==="tag"||k==="note")?t.value:+t.value;render();}
   if(t.dataset.ai!==undefined){
     const a=S.actions[+t.dataset.ai];
@@ -1155,9 +1313,13 @@ document.body.addEventListener("change",e=>{
 });
 document.body.addEventListener("click",e=>{
   const t=e.target;
+  if(t.dataset.mvu!==undefined){moveHolding(+t.dataset.mvu,-1);return;}
+  if(t.dataset.mvd!==undefined){moveHolding(+t.dataset.mvd,1);return;}
   if(t.dataset.del!==undefined){S.holdings.splice(+t.dataset.del,1);render();return;}
   if(t.dataset.oodel!==undefined){S.oneoffs.splice(+t.dataset.oodel,1);render();return;}
   if(t.dataset.adel!==undefined){S.actions.splice(+t.dataset.adel,1);closeModal();render();return;}
+  if(t.id==="useCpi"&&S.live&&S.live.cpi){S.inflation=+S.live.cpi.v.toFixed(1);renderControls();render();const m=document.getElementById("liveMsg");m.style.color="var(--ok)";m.textContent="\u2713 Inflation assumption set to "+S.inflation+"% (ONS CPI, "+S.live.cpi.date+").";return;}
+  if(t.id==="applyLive"){applyLivePrices();return;}
   if(t.dataset.arestore!==undefined){restoreAction(+t.dataset.arestore);return;}
   if(t.dataset.adelarch!==undefined){if(confirm("Delete this archived action permanently? If it changed your portfolio, that change will be reversed."))deleteArchived(+t.dataset.adelarch);return;}
   if(t.dataset.filt!==undefined){S.portfolioFilter=t.dataset.filt;render();return;}
@@ -1281,6 +1443,76 @@ document.getElementById("mDone").addEventListener("change",e=>{
 document.getElementById("mDate").addEventListener("change",e=>{if(modalIdx!==null){S.actions[modalIdx].date=e.target.value;render();}});
 document.getElementById("mNotes").addEventListener("input",e=>{if(modalIdx!==null){S.actions[modalIdx].notes=e.target.value;scheduleSave();}});
 
+/* ---------- live UK data (ONS CPI + CoinGecko) ---------- */
+async function fetchJson(url,ms){
+  const ctl=new AbortController();const t=setTimeout(()=>ctl.abort(),ms||10000);
+  try{const r=await fetch(url,{signal:ctl.signal,cache:"no-store"});if(!r.ok)throw new Error("HTTP "+r.status);return await r.json();}
+  finally{clearTimeout(t);}
+}
+async function refreshLive(){
+  const msg=document.getElementById("liveMsg");
+  msg.style.color="var(--ink-soft)";msg.textContent="Fetching latest rates…";
+  const [ons,cg]=await Promise.allSettled([
+    fetchJson("https://api.ons.gov.uk/timeseries/d7g7/dataset/mm23/data"),
+    fetchJson("https://api.coingecko.com/api/v3/simple/price?ids=ripple,pax-gold&vs_currencies=gbp&include_24hr_change=true")
+  ]);
+  const live=S.live&&typeof S.live==="object"?S.live:{};
+  let got=[],fail=[];
+  if(ons.status==="fulfilled"){
+    try{const m=ons.value.months;const last=m[m.length-1];
+      live.cpi={v:parseFloat(last.value),date:last.date};got.push("CPI");}catch(e){fail.push("CPI");}
+  }else fail.push("CPI");
+  if(cg.status==="fulfilled"){
+    try{const v=cg.value;
+      if(v.ripple)live.xrp={gbp:+v.ripple.gbp,chg:+(v.ripple.gbp_24h_change||0)};
+      if(v["pax-gold"])live.gold={gbpOz:+v["pax-gold"].gbp,chg:+(v["pax-gold"].gbp_24h_change||0)};
+      got.push("prices");}catch(e){fail.push("prices");}
+  }else fail.push("prices");
+  if(got.length){live.ts=Date.now();S.live=live;}
+  msg.style.color=fail.length?"var(--coral)":"var(--ok)";
+  msg.textContent=fail.length
+    ? (got.length?"Updated "+got.join(" & ")+"; couldn\u2019t reach "+fail.join(" & ")+" \u2014 check you\u2019re online and try again.":"Couldn\u2019t reach the data sources \u2014 are you online? Last saved figures are shown.")
+    : "Updated just now.";
+  render();
+}
+function applyLivePrices(){
+  if(!S.live)return;
+  const notes=[];
+  S.holdings.forEach(x=>{
+    if(!x.units||x.units<=0)return;
+    if(x.wrap==="crypto"&&S.live.xrp){const nv=Math.round(x.units*S.live.xrp.gbp);notes.push("\u201C"+x.name+"\u201D \u2192 "+fmt(nv));x.value=nv;}
+    if(x.wrap==="gold"&&S.live.gold){const nv=Math.round(x.units*S.live.gold.gbpOz);notes.push("\u201C"+x.name+"\u201D \u2192 "+fmt(nv));x.value=nv;}
+  });
+  const msg=document.getElementById("liveMsg");
+  msg.style.color=notes.length?"var(--ok)":"var(--coral)";
+  msg.textContent=notes.length?"\u2713 Holdings revalued: "+notes.join(", "):"Enter units first \u2014 XRP coins or troy oz of gold \u2014 then apply.";
+  render();
+}
+function renderLive(){
+  const box=document.getElementById("liveRows");if(!box)return;
+  const L=S.live||{};
+  const stamp=document.getElementById("liveStamp");
+  stamp.textContent=L.ts?("as of "+new Date(L.ts).toLocaleString("en-GB",{day:"2-digit",month:"short",hour:"2-digit",minute:"2-digit"})):"not fetched yet";
+  const chg=c=>c===undefined?"":`<span class="lv-chg" style="color:${c>=0?"var(--ok)":"var(--coral)"}">${c>=0?"+":""}${c.toFixed(1)}% 24h</span>`;
+  let rows="";
+  rows+=`<div class="live-row"><span class="lv-name">UK inflation \u2014 CPI 12-month rate</span>
+    <span class="lv-val">${L.cpi?L.cpi.v.toFixed(1)+"%":"\u2014"}</span>
+    ${L.cpi?`<span class="lv-sub">${L.cpi.date}</span>`:""}
+    ${L.cpi?`<button class="small ghost no-print" id="useCpi">Use as inflation assumption (now ${(+S.inflation).toFixed(1)}%)</button>`:""}</div>`;
+  const trackables=S.holdings.map((x,i)=>({x,i})).filter(o=>o.x.wrap==="crypto"||o.x.wrap==="gold");
+  trackables.forEach(o=>{
+    const isC=o.x.wrap==="crypto";
+    const price=isC?(L.xrp&&L.xrp.gbp):(L.gold&&L.gold.gbpOz);
+    const c=isC?(L.xrp&&L.xrp.chg):(L.gold&&L.gold.chg);
+    rows+=`<div class="live-row"><span class="lv-name">${String(o.x.name).replace(/</g,"&lt;")}</span>
+      <span class="lv-val">${price?("\u00A3"+price.toLocaleString("en-GB",{maximumFractionDigits:isC?3:0})+(isC?" /XRP":" /oz")):"\u2014"}</span>${chg(c)}
+      <label class="lv-sub">${isC?"coins":"troy oz"} held
+        <input type="number" class="lv-units" data-lu="${o.i}" value="${o.x.units||""}" min="0" step="${isC?"1":"0.1"}" placeholder="units"></label>
+      <span class="lv-sub">${(o.x.units&&price)?("= "+fmt(o.x.units*price)):""}</span></div>`;
+  });
+  box.innerHTML=rows+`<div class="live-row" style="justify-content:flex-end"><button class="small no-print" id="applyLive"${(L.xrp||L.gold)?"":" disabled"}>Apply live prices to holdings</button></div>`;
+}
+
 /* ---------- settings ---------- */
 const setOverlay=document.getElementById("settingsOverlay");
 function openSettings(){renderSettingsControls();setOverlay.classList.add("open");document.getElementById("settingsClose").focus();}
@@ -1350,6 +1582,8 @@ const bind=(id,key,fn)=>document.getElementById(id).addEventListener("change",e=
 bind("topUp","topUp");bind("reliefRate","relief");bind("topUpSource","topUpSource",v=>v);bind("isaFund","isaFund");bind("isaGrowth","isaGrowth");
 bind("annualExtras","annualExtras");bind("strategy","strategy",v=>v);bind("inflation","inflation");bind("giaTax","giaTax");
 document.getElementById("escalate").addEventListener("change",e=>{S.escalate=e.target.checked;render();});
+document.getElementById("realTerms").addEventListener("change",e=>{S.realTerms=e.target.checked;render();});
+document.getElementById("refreshLive").addEventListener("click",refreshLive);
 document.getElementById("addHolding").addEventListener("click",()=>{S.holdings.push({name:"New holding",wrap:"gia",owner:"p1",value:10000,growth:5,start:"2026-06"});render();});
 document.getElementById("addSP500").addEventListener("click",()=>{S.holdings.push({name:"S&P 500 index tracker",wrap:"isa",owner:"p1",value:10000,growth:7,start:"2026-06"});render();});
 document.getElementById("addOneoff").addEventListener("click",()=>{S.oneoffs.push({year:2030,amount:5000,tag:"holidays",note:""});render();});
@@ -1364,10 +1598,10 @@ document.getElementById("archiveToggle").addEventListener("click",function(){
 
 /* reports */
 document.getElementById("dlCsv").addEventListener("click",()=>{
-  const h=["TaxYear","Age","NetNeed","StatePension","PensionDraw","TaxFreeDraws","IncomeTax","PensionPot","PensionP1","PensionP2","ISA","GIA","Investment","Gold","Cash","Crypto","Total","OneOffEvents"];
+  const h=["TaxYear","Age","NetNeed","StatePension","PensionDraw","TaxFreeDraws","IncomeTax","PensionPot","PensionP1","PensionP2","ISA","GIA","Investment","Gold","Cash","PremiumBonds","Crypto","Total","OneOffEvents"];
   const lines=[h.join(",")].concat(window.__rows.map(r=>{
     const ev=S.oneoffs.filter(o=>+o.year===r.year).map(o=>(TAGS[o.tag]||TAGS.other).label+" £"+Math.round(o.amount)+(o.note?" ("+String(o.note).replace(/"/g,"'")+")":"")).join("; ");
-    return [r.year+"/"+String(r.year+1).slice(2),r.age,...[r.need,r.sp,r.pensionDraw,r.taxFreeDraw,r.tax,r.pension,r.pensionP1,r.pensionP2,r.isa,r.gia,r.investment,r.gold,r.cash,r.crypto,r.total].map(v=>Math.round(v)),'"'+ev+'"'].join(",");
+    return [r.year+"/"+String(r.year+1).slice(2),r.age,...[r.need,r.sp,r.pensionDraw,r.taxFreeDraw,r.tax,r.pension,r.pensionP1,r.pensionP2,r.isa,r.gia,r.investment,r.gold,r.cash,r.premium,r.crypto,r.total].map(v=>Math.round(v)),'"'+ev+'"'].join(",");
   }));
   dl(new Blob([lines.join("\n")],{type:"text/csv"}),"retirement-projection.csv");
 });
@@ -1401,17 +1635,22 @@ function renderControls(){
   document.getElementById("escalate").checked=S.escalate;
 }
 
-/* live countdown — days & hours to retirement, 30 June 2027 */
-const RET_DATE=new Date(2027,5,30,17,0,0);          /* 5pm on the last working day */
+/* live countdown — days & hours to the user's own retirement date (5pm, last day of the month) */
+function retDateOf(P){
+  const y=parseInt((P.retire||"2027-06").slice(0,4))||2027,m=parseInt((P.retire||"2027-06").slice(5,7))||6;
+  return new Date(y,m,0,17,0,0);
+}
 function updateCountdown(){
   const el=document.getElementById("countdown");if(!el)return;
-  const n1=S.settings.p1.name||"You";
-  const retAge1=+S.settings.p1.age+(RET_YEAR-NOW_YEAR);
-  const ms=RET_DATE-new Date();
-  if(ms<=0){el.textContent="🎉 Retired · 30 June 2027 · "+n1;return;}
+  const P=S.settings.p1,n1=P.name||"You";
+  const RD=retDateOf(P);
+  const dateLbl=RD.toLocaleDateString("en-GB",{day:"numeric",month:"long",year:"numeric"});
+  const retAge1=+P.age+(RD.getFullYear()-NOW_YEAR);
+  const ms=RD-new Date();
+  if(ms<=0){el.textContent="🎉 Retired · "+dateLbl+" · "+n1;return;}
   const days=Math.floor(ms/86400000);
   const hrs=Math.floor((ms%86400000)/3600000);
-  el.innerHTML='<strong class="cd-num">'+days+'</strong> days <strong class="cd-num">'+hrs+'</strong> hrs to retirement · 30 June 2027 · '+n1+' age '+retAge1;
+  el.innerHTML='<strong class="cd-num">'+days+'</strong> days <strong class="cd-num">'+hrs+'</strong> hrs to retirement · '+dateLbl+' · '+n1+' age '+retAge1;
 }
 setInterval(updateCountdown,60000);
 
