@@ -19,7 +19,7 @@
   --paper:#F4F6F2; --card:#FFFFFF; --ink:#22302B; --ink-soft:#5A6963;
   --pine:#133A33; --pine-deep:#0C2823; --gold:#B98A2F; --gold-soft:#E9DCBE;
   --line:#DDE3DD; --coral:#C4543B; --ok:#2E7D5B;
-  --c-pension:#1F5A4D; --c-isa:#3E8E7E; --c-gia:#7FB6A4; --c-invest:#5B8AA6; --c-gold:#C9A24B; --c-cash:#9AA8A0; --c-premium:#B4637A; --c-crypto:#8A6FA8;
+  --c-pension:#1F5A4D; --c-isa:#3E8E7E; --c-gia:#7FB6A4; --c-invest:#5B8AA6; --c-gold:#C9A24B; --c-cash:#9AA8A0; --c-premium:#B4637A; --c-eis:#A8663B; --c-crypto:#8A6FA8;
   --disp:'Fraunces',Georgia,serif; --body:'Public Sans',system-ui,sans-serif; --mono:'Spline Sans Mono',ui-monospace,monospace;
 }
 *{box-sizing:border-box;margin:0;padding:0}
@@ -589,6 +589,7 @@ const WRAP = {
   isa:{label:"ISA",color:"var(--c-isa)",hex:"#3E8E7E"},
   gia:{label:"Taxable account (GIA)",color:"var(--c-gia)",hex:"#7FB6A4"},
   investment:{label:"Investment (taxable)",color:"var(--c-invest)",hex:"#5B8AA6"},
+  eis:{label:"EIS investment",color:"var(--c-eis)",hex:"#A8663B"},
   gold:{label:"Gold/silver coins (CGT-free)",color:"var(--c-gold)",hex:"#C9A24B"},
   cash:{label:"Cash",color:"var(--c-cash)",hex:"#9AA8A0"},
   premium:{label:"NS&I Premium Bonds",color:"var(--c-premium)",hex:"#B4637A"},
@@ -811,14 +812,14 @@ function moveHolding(i,dir){
 const startYearOf=h=>{const y=parseInt((h.start||"").slice(0,4));return isNaN(y)?NOW_YEAR:Math.max(NOW_YEAR,y);};
 function simulate(){
   const ST=S.settings, couple=!!ST.couple, ENDA=+ST.endAge||97;
-  const pots={isa:0,gia:0,investment:0,gold:0,cash:0,premium:0,crypto:0};
+  const pots={isa:0,gia:0,investment:0,eis:0,gold:0,cash:0,premium:0,crypto:0};
   const pen={p1:0,p2:0};                                  /* pensions are personal — separate pots */
   /* wrapper growth rates: value-weighted across all holdings in that wrapper */
-  const sum={pension:0,isa:0,gia:0,investment:0,gold:0,cash:0,premium:0,crypto:0}, g={pension:0,isa:0,gia:0,investment:0,gold:0,cash:0,premium:0,crypto:0};
+  const sum={pension:0,isa:0,gia:0,investment:0,eis:0,gold:0,cash:0,premium:0,crypto:0}, g={pension:0,isa:0,gia:0,investment:0,eis:0,gold:0,cash:0,premium:0,crypto:0};
   S.holdings.forEach(h=>{sum[h.wrap]+=+h.value; g[h.wrap]+=+h.value*(+h.growth/100);});
   const rate=w=>sum[w]>0?g[w]/sum[w]:(w==="isa"?S.isaGrowth/100:0.03);
   const R={pension:rate("pension"),isa:S.holdings.some(h=>h.wrap==="isa"&&h.value>0)?rate("isa"):S.isaGrowth/100,
-           gia:rate("gia"),investment:rate("investment"),gold:rate("gold"),cash:rate("cash"),premium:rate("premium"),crypto:rate("crypto")};
+           gia:rate("gia"),investment:rate("investment"),eis:rate("eis"),gold:rate("gold"),cash:rate("cash"),premium:rate("premium"),crypto:rate("crypto")};
   /* holdings join the plan in their start year */
   const pending=[];
   S.holdings.forEach(h=>{
@@ -915,6 +916,7 @@ function simulate(){
         if(remaining>0)drawTaxFree("premium",remaining);   /* prizes tax-free; low expected return, so spend before invested pots */
         if(remaining>0)drawTaxFree("isa",remaining);
         if(remaining>0)drawTaxFree("gold",remaining);
+        if(remaining>0)drawTaxFree("eis",remaining);   /* CGT-free disposal (3-yr hold assumed); illiquid, so last of the free pots */
         if(remaining>0)drawGIA("crypto",remaining);
         if(remaining>0)drawGIA("gia",remaining);
         if(remaining>0)drawGIA("investment",remaining);
@@ -945,7 +947,7 @@ function simulate(){
     if(year===hhRy&&potAtRet===null)potAtRet=total;
     rows.push({year,age:age1,need,sp,fixedInc:fixedTot,pensionDraw,taxFreeDraw,tax,
       pension:pen.p1+pen.p2,pensionP1:pen.p1,pensionP2:pen.p2,
-      isa:pots.isa,gia:pots.gia,investment:pots.investment,gold:pots.gold,cash:pots.cash,premium:pots.premium,crypto:pots.crypto,total,
+      isa:pots.isa,gia:pots.gia,investment:pots.investment,eis:pots.eis,gold:pots.gold,cash:pots.cash,premium:pots.premium,crypto:pots.crypto,total,
       short:shortYear===year});
     if(shortYear!==null&&year>=shortYear)break;
   }
@@ -1107,7 +1109,7 @@ function render(){
 
   /* real-terms view: deflate every £ figure back to today's money for display */
   const defl=S.realTerms?(y=>Math.pow(1+S.inflation/100,y-NOW_YEAR)):(()=>1);
-  const MF=["need","sp","fixedInc","pensionDraw","taxFreeDraw","tax","pension","pensionP1","pensionP2","isa","gia","investment","gold","cash","premium","crypto","total"];
+  const MF=["need","sp","fixedInc","pensionDraw","taxFreeDraw","tax","pension","pensionP1","pensionP2","isa","gia","investment","eis","gold","cash","premium","crypto","total"];
   const dispRows=S.realTerms?r.rows.map(row=>{const c=Object.assign({},row);const d=defl(row.year);MF.forEach(k=>c[k]=row[k]/d);return c;}):r.rows;
   document.getElementById("realTerms").checked=!!S.realTerms;
   renderLive();
@@ -1123,7 +1125,7 @@ function render(){
 
 function renderChart(rows){
   const W=1040,H=320,P={l:62,r:10,t:14,b:26};
-  const keys=["pension","isa","gia","investment","gold","cash","premium","crypto"];
+  const keys=["pension","isa","gia","investment","eis","gold","cash","premium","crypto"];
   const maxT=Math.max(...rows.map(r=>r.total),1);
   const x=i=>P.l+(W-P.l-P.r)*i/Math.max(rows.length-1,1);
   const y=v=>H-P.b-(H-P.t-P.b)*v/maxT;
@@ -1219,7 +1221,7 @@ function renderTable(rows){
     <td class="num">${r.pensionDraw?fmt0(r.pensionDraw):"—"}</td><td class="num">${r.taxFreeDraw?fmt0(r.taxFreeDraw):"—"}</td>
     <td class="num">${r.tax?fmt0(r.tax):"—"}</td>
     <td class="num">${fmt0(r.pension)}</td><td class="num">${fmt0(r.isa)}</td>
-    <td class="num">${fmt0(r.gia+r.investment+r.gold+r.cash+r.premium+r.crypto)}</td>
+    <td class="num">${fmt0(r.gia+r.investment+r.eis+r.gold+r.cash+r.premium+r.crypto)}</td>
     <td class="num"><strong>${fmt0(r.total)}</strong></td></tr>`;}).join("");
 }
 
@@ -1239,6 +1241,11 @@ function renderInsights(r,byW,tot){
     ins.push(`<strong>Personal allowance funnel.</strong> Your £${fmt0(pipsMoNow(ST.p1)*12)}/yr pensions in payment leave ~${fmt(pa1)} of allowance unused until state pension age. The tax-optimised strategy fills it with pension drawdown — zero tax, plus 25% of every withdrawal tax-free.`);
   }
   ins.push(`<strong>State pension${couple?"s":""} from ${ST.p1.spAge}${couple&&ST.p2.spAge!==ST.p1.spAge?" / "+ST.p2.spAge:""}.</strong> ${couple?`Together worth ${fmt(+ST.p1.statePension+ +ST.p2.statePension)}/yr (today's money) — they may cover most of your £${fmt0(S.monthly)}/month core need.`:`At ${fmt(ST.p1.statePension)}/yr it covers roughly half your core need.`} The heavy drawdown years are ${r.retY}–${NOW_YEAR+(+ST.p1.spAge-+ST.p1.age)}. Check ${couple?"both NI records":"your NI record"} for gaps; topping up is usually excellent value.`);
+  if(byW.eis>0){
+    const relief=Math.round(byW.eis*0.30);
+    const hasSalary=(+ST.p1.salary>0)||(couple&&+ST.p2.salary>0);
+    ins.push(`<strong>EIS investment (${fmt(byW.eis)}).</strong> EIS carries a rich tax package: <strong>30% income tax relief</strong> on new subscriptions (worth ${fmt(relief)} on this amount — but only against income tax you actually pay${hasSalary?", so claim it while salary lasts":`; <span style="color:var(--coral)">⚠ with no salary in the plan, little relief may be usable — worth timing before retirement</span>`}), growth is <strong>CGT-free after a 3-year hold</strong> (the plan assumes disposals qualify), shares get <strong>IHT business relief after 2 years</strong>, and loss relief softens failures. The trade: unquoted, high-risk, illiquid companies — exits can take 5–10 years and valuations are uncertain. Keep EIS a small slice, and confirm claims (EIS3 forms) with your accountant or IFA.`);
+  }
   if(byW.premium>0){
     const capPer=50000;
     const over=S.holdings.filter(x=>x.wrap==="premium"&&+x.value>capPer).map(x=>x.name);
@@ -1598,10 +1605,10 @@ document.getElementById("archiveToggle").addEventListener("click",function(){
 
 /* reports */
 document.getElementById("dlCsv").addEventListener("click",()=>{
-  const h=["TaxYear","Age","NetNeed","StatePension","PensionDraw","TaxFreeDraws","IncomeTax","PensionPot","PensionP1","PensionP2","ISA","GIA","Investment","Gold","Cash","PremiumBonds","Crypto","Total","OneOffEvents"];
+  const h=["TaxYear","Age","NetNeed","StatePension","PensionDraw","TaxFreeDraws","IncomeTax","PensionPot","PensionP1","PensionP2","ISA","GIA","Investment","EIS","Gold","Cash","PremiumBonds","Crypto","Total","OneOffEvents"];
   const lines=[h.join(",")].concat(window.__rows.map(r=>{
     const ev=S.oneoffs.filter(o=>+o.year===r.year).map(o=>(TAGS[o.tag]||TAGS.other).label+" £"+Math.round(o.amount)+(o.note?" ("+String(o.note).replace(/"/g,"'")+")":"")).join("; ");
-    return [r.year+"/"+String(r.year+1).slice(2),r.age,...[r.need,r.sp,r.pensionDraw,r.taxFreeDraw,r.tax,r.pension,r.pensionP1,r.pensionP2,r.isa,r.gia,r.investment,r.gold,r.cash,r.premium,r.crypto,r.total].map(v=>Math.round(v)),'"'+ev+'"'].join(",");
+    return [r.year+"/"+String(r.year+1).slice(2),r.age,...[r.need,r.sp,r.pensionDraw,r.taxFreeDraw,r.tax,r.pension,r.pensionP1,r.pensionP2,r.isa,r.gia,r.investment,r.eis,r.gold,r.cash,r.premium,r.crypto,r.total].map(v=>Math.round(v)),'"'+ev+'"'].join(",");
   }));
   dl(new Blob([lines.join("\n")],{type:"text/csv"}),"retirement-projection.csv");
 });
