@@ -132,6 +132,22 @@ button.danger:hover{background:#FBF0EC}
 .tile .more{font-size:11px;color:var(--pine);font-weight:600;letter-spacing:.03em}
 .tile .more::after{content:" ›"}
 .tile.done{border-left-color:var(--ok);background:#F4F9F5}
+.tile.duesoon{border-left-color:#D98E04}
+.tile.overdue{border-left-color:var(--coral);background:#FBF0EC}
+.due-lbl{font-size:11px;color:var(--ink-soft);display:flex;align-items:center;gap:6px}
+.due-lbl input[type=date]{font-family:var(--mono);font-size:12px;padding:4px 7px;border:1px solid var(--line);border-radius:7px;width:auto;color:var(--ink-soft)}
+.action-alert{border:1px solid #E8C9A0;background:#FBF3E4;border-radius:12px;padding:12px 16px;font-size:13px;margin-bottom:14px}
+.action-alert.red{border-color:#E0C4BB;background:#FBF0EC}
+.action-alert strong{color:var(--pine)}
+
+/* ---------- collapsible sections ---------- */
+body.collapse-on main>section>h2{cursor:pointer;user-select:none;display:flex;align-items:center;gap:10px}
+body.collapse-on main>section>h2::before{content:"\25BE";color:var(--gold);font-size:.65em;display:inline-block;transition:transform .15s;flex:none}
+body.collapse-on main>section.sec-closed>h2::before{transform:rotate(-90deg)}
+body.collapse-on main>section.sec-closed>*:not(h2){display:none!important}
+body.collapse-on main>section.sec-closed{padding-bottom:14px}
+body.collapse-on main>section>h2:hover{color:var(--pine)}
+@media (prefers-reduced-motion:reduce){body.collapse-on main>section>h2::before{transition:none}}
 .tile .tile-top{display:flex;gap:10px;align-items:flex-start}
 .tile input[type=checkbox]{accent-color:var(--ok);width:18px;height:18px;margin-top:2px;flex:none;cursor:pointer}
 .tile .t-name{font-size:13px;font-weight:600;line-height:1.35;border:none;background:transparent;width:100%;font-family:var(--body);padding:0;color:var(--ink)}
@@ -221,6 +237,7 @@ header{padding-top:calc(26px + env(safe-area-inset-top))}
 .live-row .lv-val{font-family:var(--mono);font-size:14px;color:var(--pine);font-weight:600}
 .live-row .lv-chg{font-family:var(--mono);font-size:11.5px}
 .live-row .lv-units{width:110px!important;text-align:right}
+.live-row .lv-metal{width:auto!important;min-width:84px;padding:5px 7px;font-size:12.5px}
 .live-row .lv-sub{font-size:11px;color:var(--ink-soft)}
 .scroll-hint{display:none;font-size:11px;color:var(--ink-soft);margin-bottom:8px}
 @media(min-width:701px){#holdingsTable{min-width:660px}}
@@ -364,7 +381,7 @@ header{padding-top:calc(26px + env(safe-area-inset-top))}
     </div>
     <div id="liveRows" style="margin-top:12px"></div>
     <div id="liveMsg" style="font-size:12px;margin-top:8px;min-height:1em"></div>
-    <div class="hint" style="margin-top:8px">Sources: ONS (CPI 12-month rate) and CoinGecko (XRP; gold is indicative, via the PAXG token ≈ 1 troy oz). Anonymous requests, needs internet; none of your data is sent. Fund and share prices have no free keyless feed, so update those holdings manually.</div>
+    <div class="hint" style="margin-top:8px">Sources: ONS (CPI 12-month rate) and CoinGecko (XRP; gold and silver are indicative, via the PAXG and KAG tokens ≈ 1 troy oz each). Enter your ounces in the Gold and Silver rows; “Apply live prices” keeps one “Gold coins” and one “Silver coins” holding valued at spot. Anonymous requests, needs internet; none of your data is sent. Fund and share prices have no free keyless feed, so update those holdings manually.</div>
   </div>
 </section>
 
@@ -443,9 +460,15 @@ header{padding-top:calc(26px + env(safe-area-inset-top))}
 <section id="actions">
   <h2>Actions before retirement</h2>
   <p class="section-sub">Your to-do list for the run-up to retirement. Click any tile for detailed suggestions and a notes pad; tick items off as you go and the completion date fills in automatically. Progress: <strong id="actionProgress" class="num"></strong></p>
+  <div id="actionAlert"></div>
   <div id="actionFx" style="font-size:12.5px;color:var(--ok);font-weight:600;margin-bottom:12px;min-height:1em"></div>
   <div class="actions-grid" id="actionTiles"></div>
-  <button class="ghost no-print" id="addAction" style="margin-top:14px">+ Add action</button>
+  <div class="row no-print" style="margin-top:14px;gap:10px">
+    <button class="ghost" id="addAction">+ Add action</button>
+    <button class="ghost" id="dlIcs">📅 Add reminders to calendar (.ics)</button>
+    <button class="ghost" id="emailDue" style="display:none">✉ Email me what's due</button>
+  </div>
+  <div class="hint no-print" style="margin-top:8px">The calendar file carries an alert 10 days before, 5 days before, and on each due date — import it once into your phone or email calendar and the reminders arrive automatically, even when this app is closed. The email button drafts a summary to your Settings email.</div>
   <div id="archiveWrap" style="margin-top:26px">
     <button class="ghost small no-print" id="archiveToggle" aria-expanded="false">▸ Completed &amp; archived (<span id="archiveCount">0</span>)</button>
     <div id="archiveList" style="display:none;margin-top:14px"></div>
@@ -498,6 +521,7 @@ header{padding-top:calc(26px + env(safe-area-inset-top))}
       <input type="file" id="importFile" accept=".json" style="display:none">
       <button id="printReport" class="ghost">Print / save as PDF report</button>
       <button id="resetApp" class="danger no-print">Reset to defaults</button>
+      <button id="clearData" class="danger no-print">Clear all personal data</button>
     </div>
     <div id="saveStatus" class="num" style="font-size:12px;margin-top:12px;color:var(--ink-soft)">Autosave ready…</div>
   </div>
@@ -506,6 +530,18 @@ header{padding-top:calc(26px + env(safe-area-inset-top))}
 <p class="disclaimer"><strong>Important.</strong> This is a planning model, not financial, tax or investment advice. It uses 2025/26 UK allowances (personal allowance £12,570, basic-rate band to £50,270, ISA allowance £20,000, pension annual allowance £60,000) held flat, simplified UFPLS-style pension withdrawals (25% tax-free / 75% taxable), and assumes UK legal-tender gold and silver coins (Sovereigns, Britannias) remain CGT-exempt. Investment growth is assumed, not guaranteed; crypto is volatile and gains above the £3,000 CGT allowance are taxable. Pension rules, tax bands and the state pension will change. Before acting — especially on lump sums, pension contributions and drawdown — speak to a regulated independent financial adviser and check figures on gov.uk.</p>
 
 </main>
+
+<div class="modal-overlay no-print" id="confirmOverlay" role="alertdialog" aria-modal="true" aria-labelledby="confirmMsg">
+  <div class="modal" style="max-width:460px;border-top-color:var(--coral)">
+    <div id="confirmMsg" style="font-size:14px;line-height:1.55"></div>
+    <div id="confirmNote" style="font-size:12.5px;color:var(--ok);font-weight:600;min-height:1.2em;margin-top:10px"></div>
+    <div class="row" style="justify-content:flex-end;margin-top:16px;gap:10px">
+      <button class="ghost" id="confirmCancel">Cancel</button>
+      <button class="ghost" id="confirmAux" style="display:none"></button>
+      <button class="danger" id="confirmOk" style="border-color:var(--coral);background:var(--coral);color:#fff"></button>
+    </div>
+  </div>
+</div>
 
 <div class="modal-overlay no-print" id="settingsOverlay" role="dialog" aria-modal="true" aria-labelledby="settingsTitle">
   <div class="modal">
@@ -560,6 +596,7 @@ header{padding-top:calc(26px + env(safe-area-inset-top))}
       <div class="hint" style="margin-bottom:12px">Assign holdings to your spouse with the “Owner” column in the Portfolio table. Their pension pot gets its own personal allowance in the drawdown maths.</div>
     </div>
 
+    <label class="toggle" style="margin:4px 0 14px"><input type="checkbox" id="s_collapse"> Collapsible sections — tap a section title on the main page to fold it away</label>
     <div class="field"><label for="s_endage">Plan horizon — run projection to age</label><input type="number" id="s_endage" data-set="endAge" min="80" max="105" style="max-width:120px"></div>
     <div class="m-foot">State pension: full new rate is £11,973/yr (2025/26); check each forecast at gov.uk/check-state-pension. Household drawdown starts when the first of you retires; a partner still working offsets the need with their salary (taxed, NI ignored).</div>
   </div>
@@ -572,6 +609,7 @@ header{padding-top:calc(26px + env(safe-area-inset-top))}
     <div class="m-status">
       <label class="toggle"><input type="checkbox" id="mDone"> Done</label>
       <input type="date" id="mDate" aria-label="Date completed">
+      <label style="font-weight:600;font-size:13px">Due <input type="date" id="mDue" aria-label="Due date" style="width:auto;font-size:12.5px;padding:5px 8px"></label>
     </div>
     <div class="m-detail" id="mDetail"></div>
     <label class="m-notes-label" for="mNotes">Your notes</label>
@@ -619,9 +657,9 @@ let S = {
   ],
   actions:[
     {t:"Check state pension forecast & fill NI gaps (gov.uk/check-state-pension)",done:false,date:"",notes:"",d:"<p>Your state pension (~£11,973/yr full rate) does the heavy lifting from age 67 — make sure you're on track for the full amount.</p><ul><li>Get your forecast at <strong>gov.uk/check-state-pension</strong> — it shows exactly how many qualifying NI years you have (35 needed for the full new state pension).</li><li>If years are missing, voluntary Class 3 contributions cost roughly £900 per year purchased and add about £340/yr to your pension <em>for life</em> — typically paying for itself within 3 years of claiming.</li><li>Call the <strong>Future Pension Centre</strong> (0800 731 0175) before paying — not every gap year actually increases your pension.</li><li>You'll keep earning NI through June 2027 from your salary, so check the forecast as at your retirement date, not today.</li></ul>"},
-    {t:"Make one-off pension contribution — before taking any taxable pension income (MPAA)",fx:"pension_topup",done:false,date:"",notes:"",d:"<p>This is your single biggest tax win before retiring, and the order matters.</p><ul><li>About <strong>£24,730</strong> of your £75k salary is taxed at 40%. Contributions up to that get 40% relief — £100 in the pension costs you £60.</li><li>Via <strong>salary sacrifice</strong> you also save 2% employee NI (and your employer may pass on some of their 15% saving — ask).</li><li>The annual allowance is £60,000, and unused allowance from the last 3 tax years can be carried forward if you want to go bigger with a lump sum.</li><li><strong>Critical sequencing:</strong> once you take any taxable income from a pension, the MPAA cuts your future contribution allowance to £10,000/yr. Contribute first, draw later.</li><li>25% of everything in the pension comes back out tax-free.</li></ul>"},
-    {t:"Fund 2026/27 ISA (£20,000)",fx:"isa_2026",done:false,date:"",notes:"",d:"<p>The ISA allowance is use-it-or-lose-it each tax year (6 April – 5 April), and ISA withdrawals in retirement are completely tax-free.</p><ul><li>£20,000 this tax year from your cash — a Stocks &amp; Shares ISA holding a low-cost global or S&amp;P 500 index fund matches your stated goal.</li><li>Compare platform fees: flat-fee providers tend to win once balances exceed ~£50k; percentage-fee platforms are fine below that.</li><li>If markets feel uncomfortable, you can hold the £20k as cash <em>inside</em> the ISA and invest gradually — the allowance is secured either way.</li><li>A <strong>flexible ISA</strong> lets you withdraw and replace money in the same tax year without losing allowance — useful in retirement.</li></ul>"},
-    {t:"Fund 2027/28 ISA (£20,000, after 6 April 2027)",fx:"isa_2027",done:false,date:"",notes:"",d:"<p>A second £20,000 goes in once the new tax year opens on 6 April 2027 — two months before you retire.</p><ul><li>That makes <strong>£40,000 sheltered before retirement</strong>, and you can keep adding £20k every year after from remaining cash (\"Bed &amp; ISA\" from any taxable investments).</li><li>Moving taxable investments into the ISA uses your £3,000 CGT allowance each year — sell in stages if gains are large.</li><li>Set a recurring April reminder; the dashboard's plan assumes this happens every year while cash remains.</li></ul>"},
+    {t:"Make one-off pension contribution — before taking any taxable pension income (MPAA)",fx:"pension_topup",done:false,date:"",due:"2027-05-31",notes:"",d:"<p>This is your single biggest tax win before retiring, and the order matters.</p><ul><li>About <strong>£24,730</strong> of your £75k salary is taxed at 40%. Contributions up to that get 40% relief — £100 in the pension costs you £60.</li><li>Via <strong>salary sacrifice</strong> you also save 2% employee NI (and your employer may pass on some of their 15% saving — ask).</li><li>The annual allowance is £60,000, and unused allowance from the last 3 tax years can be carried forward if you want to go bigger with a lump sum.</li><li><strong>Critical sequencing:</strong> once you take any taxable income from a pension, the MPAA cuts your future contribution allowance to £10,000/yr. Contribute first, draw later.</li><li>25% of everything in the pension comes back out tax-free.</li></ul>"},
+    {t:"Fund 2026/27 ISA (£20,000)",fx:"isa_2026",done:false,date:"",due:"2027-04-05",notes:"",d:"<p>The ISA allowance is use-it-or-lose-it each tax year (6 April – 5 April), and ISA withdrawals in retirement are completely tax-free.</p><ul><li>£20,000 this tax year from your cash — a Stocks &amp; Shares ISA holding a low-cost global or S&amp;P 500 index fund matches your stated goal.</li><li>Compare platform fees: flat-fee providers tend to win once balances exceed ~£50k; percentage-fee platforms are fine below that.</li><li>If markets feel uncomfortable, you can hold the £20k as cash <em>inside</em> the ISA and invest gradually — the allowance is secured either way.</li><li>A <strong>flexible ISA</strong> lets you withdraw and replace money in the same tax year without losing allowance — useful in retirement.</li></ul>"},
+    {t:"Fund 2027/28 ISA (£20,000, after 6 April 2027)",fx:"isa_2027",done:false,date:"",due:"2027-06-30",notes:"",d:"<p>A second £20,000 goes in once the new tax year opens on 6 April 2027 — two months before you retire.</p><ul><li>That makes <strong>£40,000 sheltered before retirement</strong>, and you can keep adding £20k every year after from remaining cash (\"Bed &amp; ISA\" from any taxable investments).</li><li>Moving taxable investments into the ISA uses your £3,000 CGT allowance each year — sell in stages if gains are large.</li><li>Set a recurring April reminder; the dashboard's plan assumes this happens every year while cash remains.</li></ul>"},
     {t:"Decide investment plan for any lump sums",done:false,date:"",notes:"",d:"<p>A big decision if a lump sum is coming. A sensible order of operations:</p><ul><li><strong>1. Buffer:</strong> ring-fence 1–2 years of spending (£30–50k) in easy-access savings / cash ISA.</li><li><strong>2. Pension:</strong> consider topping up further while you still have salary — relief is at 40% only until June 2027 (annual allowance + carry-forward permitting).</li><li><strong>3. ISA:</strong> £20k per year, every year.</li><li><strong>4. The rest:</strong> a taxable account (GIA) in low-cost index funds, harvesting the £3,000 CGT allowance annually, plus Premium Bonds (up to £50k, prizes tax-free) for cash you want accessible.</li><li>Drip-feeding a lump sum over 6–12 months reduces regret risk, though investing immediately wins more often than not historically.</li><li>Check whether any inheritance tax is the <em>estate's</em> liability (it usually is) — what you receive is normally yours free of further tax.</li></ul>"},
     {t:"Book session with a regulated independent financial adviser",done:false,date:"",notes:"",d:"<p>With meaningful savings and an irreversible set of decisions (MPAA, drawdown method), one or two paid advice sessions are worth it.</p><ul><li>Find advisers at <strong>unbiased.co.uk</strong> or <strong>vouchedfor.co.uk</strong> — look for \"Chartered\" or \"Certified\" financial planners who are independent (whole of market), and check the FCA register.</li><li>Ask up front: fixed fee vs % of assets. A one-off retirement plan typically runs £1,500–£3,500 fixed — avoid open-ended % fees if you mainly want a sense-check.</li><li>Bring this dashboard's CSV/JSON export — a concrete plan to critique gets you far more value per hour.</li><li>Also free: <strong>Pension Wise</strong> (MoneyHelper) offers a government-backed guidance appointment for over-50s — book it regardless.</li></ul>"},
     {t:"Confirm pension provider drawdown options & charges",done:false,date:"",notes:"",d:"<p>Check the mechanics of getting money out before you need it.</p><ul><li>Confirm your plan supports <strong>flexi-access drawdown</strong> and partial withdrawals (UFPLS-style), the annual fee on your plan, and how long withdrawals take to process.</li><li>Expect <strong>emergency tax</strong> on your first taxable withdrawal (HMRC applies a Month 1 code) — you reclaim it with form P55/P50Z, usually within 30 days. Plan cash flow around it.</li><li>Decide 25% tax-free as a lump vs taking it gradually with each withdrawal — gradual usually preserves more tax-free growth and is what this dashboard models.</li><li>Compare drawdown fees with one or two other SIPP providers; transfers before drawdown are straightforward.</li></ul>"},
@@ -639,6 +677,11 @@ function retRowOf(P){               /* tax-year row a retirement date lands in, 
   const effM=m>=4?m:m+12, ry=m>=4?y:y-1;
   const frac=Math.min(1,Math.max(1/12,(16-effM)/12));   /* June -> 10/12, matching the original convention */
   return {ry,frac};
+}
+function daysToDue(a){
+  if(!a.due)return null;
+  const d=new Date(a.due+"T23:59:59");if(isNaN(d))return null;
+  return Math.ceil((d-new Date())/86400000);
 }
 function fmtMY(ym){
   const y=parseInt((ym||"").slice(0,4)),m=parseInt((ym||"").slice(5,7));
@@ -699,9 +742,15 @@ function normalizeState(){
   if(!S.wrapperFilter)S.wrapperFilter="all";
   if(S.realTerms===undefined)S.realTerms=false;
   if(S.live===undefined)S.live=null;
-  S.holdings.forEach(x=>{if(x.units!==undefined)x.units=+x.units||0;});
+  S.holdings.forEach(x=>{if(x.units!==undefined)x.units=+x.units||0;if(x.wrap==="gold"&&x.metal!=="silver")x.metal="gold";});
+  if(!S.metals||typeof S.metals!=="object")S.metals={goldOz:0,silverOz:0};
+  if(!S.metals.goldOz)S.metals.goldOz=S.holdings.filter(x=>x.wrap==="gold"&&x.metal==="gold").reduce((a,x)=>a+(+x.units||0),0);
+  if(!S.metals.silverOz)S.metals.silverOz=S.holdings.filter(x=>x.wrap==="gold"&&x.metal==="silver").reduce((a,x)=>a+(+x.units||0),0);
   ["p1","p2"].forEach(p=>{const a=ageFromDob(S.settings[p].dob);if(a!==null)S.settings[p].age=a;});
   S.actions=S.actions||[];S.oneoffs=S.oneoffs||[];
+  S.actions.forEach(a=>{if(a.due===undefined)a.due="";if(!a.remind)a.remind={};});
+  if(!S.collapse||typeof S.collapse!=="object")S.collapse={on:false,closed:{}};
+  if(!S.collapse.closed||typeof S.collapse.closed!=="object")S.collapse.closed={};
   S.isaDone=S.isaDone||{};
   S.archived=S.archived||[];
   S.actions.forEach(a=>{
@@ -1079,17 +1128,34 @@ function render(){
 
   /* action tiles */
   const at=document.getElementById("actionTiles");
-  at.innerHTML=S.actions.map((a,i)=>`<div class="tile${a.done?" done":""}" data-open="${i}" tabindex="0" role="button" aria-label="Open details: ${String(a.t).replace(/"/g,'&quot;')}">
+  at.innerHTML=S.actions.map((a,i)=>{const dd=daysToDue(a);const cls=a.done?" done":(dd!==null&&dd<0?" overdue":(dd!==null&&dd<=10?" duesoon":""));return `<div class="tile${cls}" data-open="${i}" tabindex="0" role="button" aria-label="Open details: ${String(a.t).replace(/"/g,'&quot;')}">
       <button class="x no-print" data-adel="${i}" aria-label="Remove action">✕</button>
       <div class="tile-top">
         <input type="checkbox" data-ai="${i}" data-k="done"${a.done?" checked":""} aria-label="Mark done">
         <input type="text" class="t-name" data-ai="${i}" data-k="t" value="${String(a.t).replace(/"/g,'&quot;')}" aria-label="Action">
       </div>
       <div class="tile-foot">
-        ${a.done?'<span class="badge">✓ Done</span>':'<span class="more">Details</span>'}
-        <input type="date" data-ai="${i}" data-k="date" value="${a.date||""}" aria-label="Date completed"${a.done?"":" disabled"}>
+        ${(()=>{const dd=daysToDue(a);
+          if(a.done)return '<span class="badge">✓ Done</span>';
+          if(dd===null)return '<span class="more">Details</span>';
+          if(dd<0)return '<span class="badge" style="color:var(--coral)">⚠ '+(-dd)+(dd===-1?' day':' days')+' overdue</span>';
+          if(dd<=10)return '<span class="badge" style="color:#B26A00">Due in '+dd+(dd===1?' day':' days')+'</span>';
+          return '<span class="more">Details</span>';})()}
+        <label class="due-lbl">Due <input type="date" data-ai="${i}" data-k="due" value="${a.due||""}" aria-label="Due date"></label>
       </div>
-    </div>`).join("");
+    </div>`;}).join("");
+  /* due/overdue banner */
+  const dueSoon=S.actions.filter(a=>{const d=daysToDue(a);return !a.done&&d!==null&&d>=0&&d<=10;});
+  const over=S.actions.filter(a=>{const d=daysToDue(a);return !a.done&&d!==null&&d<0;});
+  const alrt=document.getElementById("actionAlert");
+  if(over.length||dueSoon.length){
+    alrt.innerHTML=`<div class="action-alert${over.length?" red":""}">`+
+      (over.length?`<strong>⚠ Overdue:</strong> ${over.map(a=>String(a.t).split("—")[0].trim()).join("; ")}.<br>`:"")+
+      (dueSoon.length?`<strong>Due within 10 days:</strong> ${dueSoon.map(a=>{const d=daysToDue(a);return String(a.t).split("—")[0].trim()+" ("+(d===0?"today":d+"d")+")";}).join("; ")}.`:"")+
+      `</div>`;
+  }else alrt.innerHTML="";
+  const eb=document.getElementById("emailDue");
+  if(eb)eb.style.display=(over.length||dueSoon.length)?"inline-block":"none";
   const doneN=S.actions.filter(a=>a.done).length;
   const arch=S.archived||[];
   document.getElementById("actionProgress").textContent=arch.length+" completed · "+S.actions.length+" outstanding";
@@ -1112,6 +1178,7 @@ function render(){
   const MF=["need","sp","fixedInc","pensionDraw","taxFreeDraw","tax","pension","pensionP1","pensionP2","isa","gia","investment","eis","gold","cash","premium","crypto","total"];
   const dispRows=S.realTerms?r.rows.map(row=>{const c=Object.assign({},row);const d=defl(row.year);MF.forEach(k=>c[k]=row[k]/d);return c;}):r.rows;
   document.getElementById("realTerms").checked=!!S.realTerms;
+  applyCollapse();
   renderLive();
   renderChart(dispRows);
   renderIncomeChart(dispRows);
@@ -1310,6 +1377,7 @@ document.body.addEventListener("change",e=>{
   if(t.dataset.tf==="owner"){S.portfolioFilter=t.value;render();return;}
   if(t.dataset.tf==="wrap"){S.wrapperFilter=t.value;render();return;}
   if(t.dataset.lu!==undefined){S.holdings[+t.dataset.lu].units=+t.value||0;render();return;}
+  if(t.dataset.mo!==undefined){S.metals[t.dataset.mo]=+t.value||0;render();return;}
   if(t.dataset.oo!==undefined){const k=t.dataset.k;S.oneoffs[+t.dataset.oo][k]=(k==="tag"||k==="note")?t.value:+t.value;render();}
   if(t.dataset.ai!==undefined){
     const a=S.actions[+t.dataset.ai];
@@ -1327,8 +1395,14 @@ document.body.addEventListener("click",e=>{
   if(t.dataset.adel!==undefined){S.actions.splice(+t.dataset.adel,1);closeModal();render();return;}
   if(t.id==="useCpi"&&S.live&&S.live.cpi){S.inflation=+S.live.cpi.v.toFixed(1);renderControls();render();const m=document.getElementById("liveMsg");m.style.color="var(--ok)";m.textContent="\u2713 Inflation assumption set to "+S.inflation+"% (ONS CPI, "+S.live.cpi.date+").";return;}
   if(t.id==="applyLive"){applyLivePrices();return;}
+  if(S.collapse&&S.collapse.on){
+    const h2=t.closest&&t.closest("main>section>h2");
+    if(h2){const sec=h2.parentElement;S.collapse.closed[sec.id]=!S.collapse.closed[sec.id];applyCollapse();scheduleSave();return;}
+  }
+  const navA=t.closest&&t.closest('nav a[href^="#"]');
+  if(navA&&S.collapse&&S.collapse.on){const id=navA.getAttribute("href").slice(1);if(S.collapse.closed[id]){S.collapse.closed[id]=false;applyCollapse();scheduleSave();}}
   if(t.dataset.arestore!==undefined){restoreAction(+t.dataset.arestore);return;}
-  if(t.dataset.adelarch!==undefined){if(confirm("Delete this archived action permanently? If it changed your portfolio, that change will be reversed."))deleteArchived(+t.dataset.adelarch);return;}
+  if(t.dataset.adelarch!==undefined){const j=+t.dataset.adelarch;appConfirm("Delete this archived action permanently?<br><br>If it changed your portfolio, that change will be reversed.",{okLabel:"Delete"}).then(ok=>{if(ok)deleteArchived(j);});return;}
   if(t.dataset.filt!==undefined){S.portfolioFilter=t.dataset.filt;render();return;}
   if(t.dataset.tfclear!==undefined){S.portfolioFilter="all";S.wrapperFilter="all";render();return;}
   const tile=t.closest("[data-open]");
@@ -1429,6 +1503,7 @@ function openAction(i){
   document.getElementById("modalTitle").textContent=a.t;
   document.getElementById("mDone").checked=!!a.done;
   const md=document.getElementById("mDate");md.value=a.date||"";md.disabled=!a.done;
+  document.getElementById("mDue").value=a.due||"";
   document.getElementById("mDetail").innerHTML=a.d||"<p>No suggestions for this custom action yet — use the notes below to capture your own plan, contacts and deadlines.</p>";
   document.getElementById("mNotes").value=a.notes||"";
   overlay.classList.add("open");
@@ -1439,6 +1514,10 @@ document.getElementById("modalClose").addEventListener("click",closeModal);
 overlay.addEventListener("click",e=>{if(e.target===overlay)closeModal();});
 document.addEventListener("keydown",e=>{if(e.key==="Escape")closeModal();});
 document.body.addEventListener("keydown",e=>{
+  if(S.collapse&&S.collapse.on&&(e.key==="Enter"||e.key===" ")){
+    const h2=e.target.closest&&e.target.closest("main>section>h2");
+    if(h2&&e.target===h2){e.preventDefault();const sec=h2.parentElement;S.collapse.closed[sec.id]=!S.collapse.closed[sec.id];applyCollapse();scheduleSave();return;}
+  }
   const tile=e.target.closest&&e.target.closest("[data-open]");
   if(tile&&(e.key==="Enter"||e.key===" ")&&e.target===tile){e.preventDefault();openAction(+tile.dataset.open);}
 });
@@ -1448,6 +1527,7 @@ document.getElementById("mDone").addEventListener("change",e=>{
   render();openAction(modalIdx);
 });
 document.getElementById("mDate").addEventListener("change",e=>{if(modalIdx!==null){S.actions[modalIdx].date=e.target.value;render();}});
+document.getElementById("mDue").addEventListener("change",e=>{if(modalIdx!==null){S.actions[modalIdx].due=e.target.value;render();}});
 document.getElementById("mNotes").addEventListener("input",e=>{if(modalIdx!==null){S.actions[modalIdx].notes=e.target.value;scheduleSave();}});
 
 /* ---------- live UK data (ONS CPI + CoinGecko) ---------- */
@@ -1461,7 +1541,7 @@ async function refreshLive(){
   msg.style.color="var(--ink-soft)";msg.textContent="Fetching latest rates…";
   const [ons,cg]=await Promise.allSettled([
     fetchJson("https://api.ons.gov.uk/timeseries/d7g7/dataset/mm23/data"),
-    fetchJson("https://api.coingecko.com/api/v3/simple/price?ids=ripple,pax-gold&vs_currencies=gbp&include_24hr_change=true")
+    fetchJson("https://api.coingecko.com/api/v3/simple/price?ids=ripple,pax-gold,kinesis-silver&vs_currencies=gbp&include_24hr_change=true")
   ]);
   const live=S.live&&typeof S.live==="object"?S.live:{};
   let got=[],fail=[];
@@ -1473,6 +1553,7 @@ async function refreshLive(){
     try{const v=cg.value;
       if(v.ripple)live.xrp={gbp:+v.ripple.gbp,chg:+(v.ripple.gbp_24h_change||0)};
       if(v["pax-gold"])live.gold={gbpOz:+v["pax-gold"].gbp,chg:+(v["pax-gold"].gbp_24h_change||0)};
+      if(v["kinesis-silver"])live.silver={gbpOz:+v["kinesis-silver"].gbp,chg:+(v["kinesis-silver"].gbp_24h_change||0)};
       got.push("prices");}catch(e){fail.push("prices");}
   }else fail.push("prices");
   if(got.length){live.ts=Date.now();S.live=live;}
@@ -1488,12 +1569,34 @@ function applyLivePrices(){
   S.holdings.forEach(x=>{
     if(!x.units||x.units<=0)return;
     if(x.wrap==="crypto"&&S.live.xrp){const nv=Math.round(x.units*S.live.xrp.gbp);notes.push("\u201C"+x.name+"\u201D \u2192 "+fmt(nv));x.value=nv;}
-    if(x.wrap==="gold"&&S.live.gold){const nv=Math.round(x.units*S.live.gold.gbpOz);notes.push("\u201C"+x.name+"\u201D \u2192 "+fmt(nv));x.value=nv;}
+  });
+  /* metals: one managed holding each, valued from the oz entered in the live card */
+  [["gold","goldOz","Gold coins"],["silver","silverOz","Silver coins"]].forEach(([mk,ozKey,defName])=>{
+    const met=S.live[mk], oz=+S.metals[ozKey]||0;
+    if(!met||oz<=0)return;
+    let hld=S.holdings.find(x=>x.wrap==="gold"&&x.metal===mk);
+    if(!hld){hld={name:defName,wrap:"gold",owner:"p1",value:0,growth:3,start:"2026-06",metal:mk};S.holdings.push(hld);}
+    if(/Gold & silver/i.test(hld.name))hld.name=defName;   /* legacy combined holding becomes the gold one */
+    hld.units=oz;
+    const nv=Math.round(oz*met.gbpOz);
+    notes.push("\u201C"+hld.name+"\u201D ("+oz+" oz) \u2192 "+fmt(nv));
+    hld.value=nv;
   });
   const msg=document.getElementById("liveMsg");
   msg.style.color=notes.length?"var(--ok)":"var(--coral)";
-  msg.textContent=notes.length?"\u2713 Holdings revalued: "+notes.join(", "):"Enter units first \u2014 XRP coins or troy oz of gold \u2014 then apply.";
+  msg.textContent=notes.length?"\u2713 Holdings revalued: "+notes.join(", "):"Enter your ounces of gold/silver (or XRP coins) first, then apply.";
   render();
+}
+const SEC_IDS=["portfolio","plan","actions","projection","insights","reports"];
+function applyCollapse(){
+  const on=!!(S.collapse&&S.collapse.on);
+  document.body.classList.toggle("collapse-on",on);
+  SEC_IDS.forEach(id=>{
+    const sec=document.getElementById(id);if(!sec)return;
+    sec.classList.toggle("sec-closed",on&&!!S.collapse.closed[id]);
+    const h2=sec.querySelector("h2");
+    if(h2){h2.setAttribute("role",on?"button":"");h2.setAttribute("aria-expanded",on?String(!S.collapse.closed[id]):"");h2.tabIndex=on?0:-1;}
+  });
 }
 function renderLive(){
   const box=document.getElementById("liveRows");if(!box)return;
@@ -1506,19 +1609,56 @@ function renderLive(){
     <span class="lv-val">${L.cpi?L.cpi.v.toFixed(1)+"%":"\u2014"}</span>
     ${L.cpi?`<span class="lv-sub">${L.cpi.date}</span>`:""}
     ${L.cpi?`<button class="small ghost no-print" id="useCpi">Use as inflation assumption (now ${(+S.inflation).toFixed(1)}%)</button>`:""}</div>`;
-  const trackables=S.holdings.map((x,i)=>({x,i})).filter(o=>o.x.wrap==="crypto"||o.x.wrap==="gold");
+  /* fixed metal rows: one for gold, one for silver — enter ounces directly */
+  [["gold","Gold","goldOz"],["silver","Silver","silverOz"]].forEach(([mk,lbl,ozKey])=>{
+    const met=L[mk];
+    const oz=+S.metals[ozKey]||0;
+    rows+=`<div class="live-row"><span class="lv-name">${lbl} \u2014 legal-tender coins</span>
+      <span class="lv-val">${met?("\u00A3"+met.gbpOz.toLocaleString("en-GB",{maximumFractionDigits:2})+" /oz"):"\u2014"}</span>${chg(met&&met.chg)}
+      <label class="lv-sub">troy oz held
+        <input type="number" class="lv-units" data-mo="${ozKey}" value="${oz||""}" min="0" step="0.1" placeholder="oz"></label>
+      <span class="lv-sub">${(oz&&met)?("= "+fmt(oz*met.gbpOz)):""}</span></div>`;
+  });
+  /* crypto rows stay per holding */
+  const trackables=S.holdings.map((x,i)=>({x,i})).filter(o=>o.x.wrap==="crypto");
   trackables.forEach(o=>{
-    const isC=o.x.wrap==="crypto";
-    const price=isC?(L.xrp&&L.xrp.gbp):(L.gold&&L.gold.gbpOz);
-    const c=isC?(L.xrp&&L.xrp.chg):(L.gold&&L.gold.chg);
+    const price=L.xrp&&L.xrp.gbp, c=L.xrp&&L.xrp.chg;
     rows+=`<div class="live-row"><span class="lv-name">${String(o.x.name).replace(/</g,"&lt;")}</span>
-      <span class="lv-val">${price?("\u00A3"+price.toLocaleString("en-GB",{maximumFractionDigits:isC?3:0})+(isC?" /XRP":" /oz")):"\u2014"}</span>${chg(c)}
-      <label class="lv-sub">${isC?"coins":"troy oz"} held
-        <input type="number" class="lv-units" data-lu="${o.i}" value="${o.x.units||""}" min="0" step="${isC?"1":"0.1"}" placeholder="units"></label>
+      <span class="lv-val">${price?("\u00A3"+price.toLocaleString("en-GB",{maximumFractionDigits:3})+" /XRP"):"\u2014"}</span>${chg(c)}
+      <label class="lv-sub">coins held
+        <input type="number" class="lv-units" data-lu="${o.i}" value="${o.x.units||""}" min="0" step="1" placeholder="units"></label>
       <span class="lv-sub">${(o.x.units&&price)?("= "+fmt(o.x.units*price)):""}</span></div>`;
   });
-  box.innerHTML=rows+`<div class="live-row" style="justify-content:flex-end"><button class="small no-print" id="applyLive"${(L.xrp||L.gold)?"":" disabled"}>Apply live prices to holdings</button></div>`;
+  box.innerHTML=rows+`<div class="live-row" style="justify-content:flex-end"><button class="small no-print" id="applyLive"${(L.xrp||L.gold||L.silver)?"":" disabled"}>Apply live prices to holdings</button></div>`;
 }
+
+/* ---------- in-app confirm (native popups are blocked in some embeds) ---------- */
+let __confirmResolve=null,__confirmAuxFn=null;
+function appConfirm(msgHtml,opts){
+  opts=opts||{};
+  return new Promise(res=>{
+    __confirmResolve=res;__confirmAuxFn=opts.onAux||null;
+    document.getElementById("confirmMsg").innerHTML=msgHtml;
+    document.getElementById("confirmNote").textContent="";
+    const ok=document.getElementById("confirmOk");ok.textContent=opts.okLabel||"Yes, continue";
+    const aux=document.getElementById("confirmAux");
+    if(opts.auxLabel){aux.style.display="inline-block";aux.textContent=opts.auxLabel;}else aux.style.display="none";
+    document.getElementById("confirmOverlay").classList.add("open");
+    ok.focus();
+  });
+}
+function closeConfirm(v){
+  document.getElementById("confirmOverlay").classList.remove("open");
+  if(__confirmResolve){const r=__confirmResolve;__confirmResolve=null;__confirmAuxFn=null;r(v);}
+}
+document.getElementById("confirmOk").addEventListener("click",()=>closeConfirm(true));
+document.getElementById("confirmCancel").addEventListener("click",()=>closeConfirm(false));
+document.getElementById("confirmAux").addEventListener("click",()=>{
+  if(__confirmAuxFn)__confirmAuxFn();
+  document.getElementById("confirmNote").textContent="\u2713 Backup downloaded \u2014 safe to continue.";
+});
+document.getElementById("confirmOverlay").addEventListener("click",e=>{if(e.target.id==="confirmOverlay")closeConfirm(false);});
+document.addEventListener("keydown",e=>{if(e.key==="Escape"&&document.getElementById("confirmOverlay").classList.contains("open"))closeConfirm(false);});
 
 /* ---------- settings ---------- */
 const setOverlay=document.getElementById("settingsOverlay");
@@ -1536,6 +1676,7 @@ function renderSettingsControls(){
     el.value=path.length===2?ST[path[0]][path[1]]:ST[path[0]];
   });
   document.getElementById("s_couple").checked=!!ST.couple;
+  const sc=document.getElementById("s_collapse");if(sc)sc.checked=!!(S.collapse&&S.collapse.on);
   document.getElementById("spouseBlock").classList.toggle("off",!ST.couple);
   ["p1","p2"].forEach(pk=>{
     const box=document.getElementById("pips_"+pk);if(!box)return;
@@ -1576,6 +1717,7 @@ setOverlay.addEventListener("change",e=>{
     S.settings[pk].incomes[+i][key]=(key==="mo")?+el.value:el.value;
     render();return;
   }
+  if(el.id==="s_collapse"){S.collapse.on=el.checked;applyCollapse();scheduleSave();return;}
   if(el.id==="s_couple"){S.settings.couple=el.checked;renderSettingsControls();render();return;}
   if(!el.dataset.set)return;
   const path=el.dataset.set.split(".");
@@ -1595,6 +1737,39 @@ document.getElementById("addHolding").addEventListener("click",()=>{S.holdings.p
 document.getElementById("addSP500").addEventListener("click",()=>{S.holdings.push({name:"S&P 500 index tracker",wrap:"isa",owner:"p1",value:10000,growth:7,start:"2026-06"});render();});
 document.getElementById("addOneoff").addEventListener("click",()=>{S.oneoffs.push({year:2030,amount:5000,tag:"holidays",note:""});render();});
 document.getElementById("addAction").addEventListener("click",()=>{S.actions.push({t:"New action",done:false,date:"",notes:"",d:""});render();});
+document.getElementById("dlIcs").addEventListener("click",()=>{
+  const acts=S.actions.filter(a=>!a.done&&a.due);
+  if(!acts.length){const m=document.getElementById("actionFx");m.innerHTML="Set a due date on an action first — then the calendar file has something to remind you about.";return;}
+  const pad=n=>String(n).padStart(2,"0");
+  const stamp=new Date().toISOString().replace(/[-:]/g,"").slice(0,15)+"Z";
+  let ics="BEGIN:VCALENDAR\r\nVERSION:2.0\r\nPRODID:-//Retirement Cockpit//EN\r\nCALSCALE:GREGORIAN\r\n";
+  acts.forEach((a,i)=>{
+    const d=new Date(a.due+"T09:00:00");
+    const dt=d.getFullYear()+pad(d.getMonth()+1)+pad(d.getDate());
+    const esc=s=>String(s).replace(/\\/g,"\\\\").replace(/;/g,"\\;").replace(/,/g,"\\,").replace(/\n/g,"\\n");
+    ics+="BEGIN:VEVENT\r\nUID:cockpit-action-"+i+"-"+dt+"@retirement-cockpit\r\nDTSTAMP:"+stamp+"\r\n"
+      +"DTSTART;VALUE=DATE:"+dt+"\r\nSUMMARY:"+esc("Retirement plan: "+a.t)+"\r\n"
+      +"DESCRIPTION:"+esc("Due "+a.due+" — from your Retirement Cockpit action list.")+"\r\n"
+      +"BEGIN:VALARM\r\nTRIGGER:-P10D\r\nACTION:DISPLAY\r\nDESCRIPTION:"+esc("10 days: "+a.t)+"\r\nEND:VALARM\r\n"
+      +"BEGIN:VALARM\r\nTRIGGER:-P5D\r\nACTION:DISPLAY\r\nDESCRIPTION:"+esc("5 days: "+a.t)+"\r\nEND:VALARM\r\n"
+      +"BEGIN:VALARM\r\nTRIGGER:PT9H\r\nACTION:DISPLAY\r\nDESCRIPTION:"+esc("Due today: "+a.t)+"\r\nEND:VALARM\r\n"
+      +"END:VEVENT\r\n";
+  });
+  ics+="END:VCALENDAR\r\n";
+  dl(new Blob([ics],{type:"text/calendar"}),"retirement-actions.ics");
+  const m=document.getElementById("actionFx");m.innerHTML="✓ Calendar file created for "+acts.length+" action"+(acts.length>1?"s":"")+" — open it and your calendar will alert you 10 days and 5 days before each due date, and on the day.";
+});
+document.getElementById("emailDue").addEventListener("click",()=>{
+  const em=(S.settings.p1.email||"").trim();
+  const dueSoon=S.actions.filter(a=>{const d=daysToDue(a);return !a.done&&d!==null&&d>=0&&d<=10;});
+  const over=S.actions.filter(a=>{const d=daysToDue(a);return !a.done&&d!==null&&d<0;});
+  let body="Retirement Cockpit — action reminders\n\n";
+  if(over.length){body+="OVERDUE:\n"+over.map(a=>"• "+a.t+" (was due "+a.due+")").join("\n")+"\n\n";}
+  if(dueSoon.length){body+="DUE SOON:\n"+dueSoon.map(a=>"• "+a.t+" (due "+a.due+")").join("\n")+"\n";}
+  const subj=(over.length?over.length+" overdue":"")+(over.length&&dueSoon.length?", ":"")+(dueSoon.length?dueSoon.length+" due soon":"")+" — retirement plan actions";
+  location.href="mailto:"+encodeURIComponent(em)+"?subject="+encodeURIComponent(subj)+"&body="+encodeURIComponent(body);
+  if(!em){const m=document.getElementById("actionFx");m.innerHTML="Tip: add your email in ⚙ Settings and this button will address the reminder for you.";}
+});
 document.getElementById("archiveToggle").addEventListener("click",function(){
   const list=document.getElementById("archiveList");
   const open=list.style.display==="none";
@@ -1617,7 +1792,7 @@ document.getElementById("importJson").addEventListener("click",()=>document.getE
 document.getElementById("importFile").addEventListener("change",e=>{
   const f=e.target.files[0];if(!f)return;
   const rd=new FileReader();
-  rd.onload=()=>{try{const j=JSON.parse(rd.result);if(j.holdings)S=Object.assign(S,j);normalizeState();renderControls();renderSettingsControls();render();}catch(err){alert("Could not read that file — is it a scenario JSON saved from this app?");}};
+  rd.onload=()=>{try{const j=JSON.parse(rd.result);if(j.holdings)S=Object.assign(S,j);normalizeState();renderControls();renderSettingsControls();render();}catch(err){const st=document.getElementById("saveStatus");if(st){st.style.color="var(--coral)";st.textContent="Could not read that file \u2014 is it a scenario JSON saved from this app?";}}};
   rd.readAsText(f);
 });
 document.getElementById("printReport").addEventListener("click",()=>window.print());
@@ -1662,10 +1837,41 @@ function updateCountdown(){
 setInterval(updateCountdown,60000);
 
 document.getElementById("resetApp").addEventListener("click",async()=>{
-  if(!confirm("Reset everything to the original defaults? Autosaved changes will be cleared (exported JSON files are unaffected)."))return;
+  if(!await appConfirm("<strong>Reset everything to the original defaults?</strong><br><br>Autosaved changes on this device will be replaced by the app\u2019s original figures. Exported JSON files are unaffected.",{okLabel:"Reset to defaults"}))return;
   await persistClear();
   S=JSON.parse(JSON.stringify(DEFAULTS));
   renderControls();renderSettingsControls();render();
+});
+/* wipe every personal financial detail, leaving a blank, generic app */
+function blankState(){
+  const b=JSON.parse(JSON.stringify(DEFAULTS));
+  ["p1","p2"].forEach((k,ix)=>{const P=b.settings[k];
+    P.name=ix?"Spouse":"You";P.dob="";P.email="";P.age=61;P.salary=0;P.pips=[];P.incomes=[];P.statePension=11973;P.spAge=67;P.retire="2027-06";});
+  b.settings.couple=false;
+  b.holdings=[
+    {name:"Pension / SIPP",wrap:"pension",owner:"p1",value:0,growth:5,start:"2026-06"},
+    {name:"Cash savings",wrap:"cash",owner:"p1",value:0,growth:3.5,start:"2026-06"},
+    {name:"Stocks & Shares ISA",wrap:"isa",owner:"p1",value:0,growth:6,start:"2026-06"},
+    {name:"Gold & silver legal-tender coins",wrap:"gold",owner:"p1",value:0,growth:3,start:"2026-06",metal:"gold"}
+  ];
+  b.oneoffs=[];b.topUp=0;b.topUpSource="__any__";b.metals={goldOz:0,silverOz:0};
+  b.live=null;b.isaDone={};b.archived=[];
+  b.actions.forEach(a=>{a.done=false;a.date="";a.notes="";delete a.applied;
+    
+    });
+  return b;
+}
+document.getElementById("clearData").addEventListener("click",async()=>{
+  const ok1=await appConfirm("<strong>Clear ALL personal financial data?</strong><br><br>Holdings, values, names, emails, pensions, incomes, one-off expenses, notes and the autosaved copy on this device will all be wiped.<br><br>\u26A0 If you may want this data again, save a backup first \u2014 once cleared, it cannot be recovered.",
+    {okLabel:"Clear everything",auxLabel:"Save scenario (JSON) first",onAux:()=>document.getElementById("dlJson").click()});
+  if(!ok1)return;
+  if(!await appConfirm("Last check: clear everything now?<br>This cannot be undone.",{okLabel:"Yes \u2014 clear now"}))return;
+  await persistClear();
+  S=blankState();
+  normalizeState();
+  renderControls();renderSettingsControls();render();
+  const st=document.getElementById("saveStatus");
+  if(st){st.style.color="var(--ok)";st.textContent="\u2713 All personal data cleared. The app is blank \u2014 re-enter figures, or load a saved scenario JSON to restore.";}
 });
 
 /* ---------- start: restore the newest saved state (browser vs embedded-in-file), then render ---------- */
