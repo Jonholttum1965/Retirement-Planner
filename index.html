@@ -104,6 +104,11 @@ button.danger:hover{background:#FBF0EC}
 .table-filter select{width:auto;min-width:120px;padding:6px 8px;font-size:12.5px}
 .table-filter .tf-clear{border:none;background:transparent;color:var(--coral);font-size:12px;font-weight:600;padding:4px 6px;cursor:pointer}
 @media(max-width:700px){.table-filter{justify-content:flex-start}.table-filter select{font-size:16px}}
+.sec-head{display:flex;gap:18px;align-items:center;justify-content:space-between;margin-bottom:18px}
+.count-tile{background:var(--pine);border-radius:14px;color:#F3EEDF;padding:12px 22px;display:flex;flex-direction:column;align-items:center;justify-content:center;min-width:120px;flex:none;box-shadow:0 2px 8px rgba(19,58,51,.18)}
+.count-tile .ct-num{font-family:var(--mono);font-size:26px;font-weight:600;line-height:1;color:#fff}
+.count-tile .ct-label{font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:#BFD0C7;margin-top:4px}
+@media(max-width:700px){.sec-head{flex-direction:column;align-items:stretch;gap:12px}.count-tile{flex-direction:row;gap:10px;padding:10px 16px;min-width:0;align-self:flex-start}.count-tile .ct-label{margin-top:0}}
 .filter-chips{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}
 .filter-chips button{background:transparent;border:1.5px solid var(--line);color:var(--ink-soft);border-radius:999px;padding:7px 16px;font-size:12.5px}
 .filter-chips button:hover{border-color:var(--pine);color:var(--pine);background:transparent}
@@ -209,6 +214,12 @@ footer-actions,.report-actions{display:flex;gap:10px;flex-wrap:wrap}
 button.mv{padding:4px 7px;font-size:9px;line-height:1.2;border-color:var(--line);color:var(--ink-soft)}
 button.mv:hover:not(:disabled){border-color:var(--pine);color:var(--pine);background:#EAF0EC}
 button.mv:disabled{opacity:.3;cursor:default}
+.growth-cell{display:inline-flex;align-items:center;gap:4px}
+td.h-name{white-space:nowrap}
+.h-dot{display:inline-block;width:11px;height:11px;border-radius:50%;margin-right:8px;flex:none;vertical-align:middle;box-shadow:inset 0 0 0 1px rgba(0,0,0,.12)}
+td.h-name input{width:calc(100% - 22px);display:inline-block;vertical-align:middle}
+button.est{padding:4px 8px;font-size:12px;font-family:var(--mono);border-color:var(--line);color:var(--pine)}
+button.est:hover{border-color:var(--pine);background:#EAF0EC}
 @media(max-width:540px){.oneoff-row{grid-template-columns:auto 1fr auto;grid-auto-rows:auto}.oneoff-row select{grid-column:2/4}}
 
 /* ---------- print ---------- */
@@ -271,6 +282,9 @@ header{padding-top:calc(26px + env(safe-area-inset-top))}
   #holdingsTable td{display:block;border:none;padding:0}
   #holdingsTable td[data-label]::before{content:attr(data-label);display:block;font-size:10px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-soft);font-weight:700;margin-bottom:4px}
   #holdingsTable td.h-name,#holdingsTable td.h-wrap{grid-column:1/-1}
+  #holdingsTable td.h-name{display:flex;align-items:center}
+  #holdingsTable td.h-name::before{margin-bottom:0;margin-right:8px}
+  #holdingsTable td.h-name input{flex:1;width:auto}
   #holdingsTable td.h-del{position:absolute;top:8px;right:8px;display:flex;gap:6px;align-items:center}
   #holdingsTable td.h-del::before{display:none}
   #holdingsTable td input,#holdingsTable td select{text-align:left!important;max-width:none!important}
@@ -353,7 +367,13 @@ header{padding-top:calc(26px + env(safe-area-inset-top))}
 <!-- ============ PORTFOLIO ============ -->
 <section id="portfolio">
   <h2>Portfolio</h2>
-  <p class="section-sub">Edit values, growth assumptions and wrappers directly. Add new holdings — e.g. an S&amp;P 500 tracker — and choose which tax wrapper they sit in. Everything below recalculates instantly.</p>
+  <div class="sec-head">
+    <p class="section-sub" style="margin-bottom:0">Edit values, growth assumptions and wrappers directly. Add new holdings — e.g. an S&amp;P 500 tracker — and choose which tax wrapper they sit in. Everything below recalculates instantly.</p>
+    <div class="count-tile" id="holdingsCount" title="Number of separate holdings in the portfolio">
+      <span class="ct-num" id="holdCountNum">0</span>
+      <span class="ct-label" id="holdCountLbl">holdings</span>
+    </div>
+  </div>
   <div class="filter-chips no-print" id="ownerFilter" role="group" aria-label="Filter holdings by owner"></div>
   <div class="kpis" id="kpis"></div>
   <div class="card table-scroll">
@@ -381,7 +401,7 @@ header{padding-top:calc(26px + env(safe-area-inset-top))}
     </div>
     <div id="liveRows" style="margin-top:12px"></div>
     <div id="liveMsg" style="font-size:12px;margin-top:8px;min-height:1em"></div>
-    <div class="hint" style="margin-top:8px">Sources: ONS (CPI 12-month rate) and CoinGecko (XRP; gold and silver are indicative, via the PAXG and KAG tokens ≈ 1 troy oz each). Enter your ounces in the Gold and Silver rows; “Apply live prices” keeps one “Gold coins” and one “Silver coins” holding valued at spot. Anonymous requests, needs internet; none of your data is sent. Fund and share prices have no free keyless feed, so update those holdings manually.</div>
+    <div class="hint" style="margin-top:8px">Sources: ONS (CPI 12-month rate) and CoinGecko (crypto — pick each holding’s coin from its dropdown; gold and silver are indicative, via the PAXG and KAG tokens ≈ 1 troy oz each). Enter your ounces in the Gold and Silver rows; “Apply live prices” keeps one “Gold coins” and one “Silver coins” holding valued at spot. Anonymous requests, needs internet; none of your data is sent. Fund and share prices have no free keyless feed, so update those holdings manually.</div>
   </div>
 </section>
 
@@ -531,6 +551,26 @@ header{padding-top:calc(26px + env(safe-area-inset-top))}
 
 </main>
 
+<div class="modal-overlay no-print" id="estOverlay" role="dialog" aria-modal="true" aria-labelledby="estTitle">
+  <div class="modal" style="max-width:440px">
+    <button class="m-close" id="estClose" aria-label="Close">✕</button>
+    <h3 id="estTitle">Estimate annual growth</h3>
+    <p style="font-size:12.5px;color:var(--ink-soft);margin:6px 0 14px" id="estSub"></p>
+    <div class="set-grid">
+      <div class="field"><label for="estV0">Bought / valued at £</label><input type="number" id="estV0" min="0" step="100"></div>
+      <div class="field"><label for="estD0">On date</label><input type="date" id="estD0"></div>
+      <div class="field"><label for="estV1">Worth £ now (or at sale)</label><input type="number" id="estV1" min="0" step="100"></div>
+      <div class="field"><label for="estD1">As of</label><input type="date" id="estD1"></div>
+    </div>
+    <div id="estResult" style="font-family:var(--mono);font-size:15px;font-weight:600;color:var(--pine);min-height:1.4em;margin:4px 0 14px"></div>
+    <div class="row" style="justify-content:flex-end;gap:10px">
+      <button class="ghost" id="estCancel">Cancel</button>
+      <button id="estUse" disabled>Use this rate</button>
+    </div>
+    <div class="m-foot">Annualised (CAGR) from your own two valuations — e.g. NVIDIA bought for £5,000 in Jan 2024, worth £9,200 today. Past growth is no guarantee: consider a more conservative rate for planning.</div>
+  </div>
+</div>
+
 <div class="modal-overlay no-print" id="confirmOverlay" role="alertdialog" aria-modal="true" aria-labelledby="confirmMsg">
   <div class="modal" style="max-width:460px;border-top-color:var(--coral)">
     <div id="confirmMsg" style="font-size:14px;line-height:1.55"></div>
@@ -555,7 +595,7 @@ header{padding-top:calc(26px + env(safe-area-inset-top))}
       <div class="field"><label for="s_p1_email">Email</label><input type="email" id="s_p1_email" data-set="p1.email" placeholder="you@example.com"></div>
       <div class="field"><label for="s_p1_dob">Date of birth</label><input type="date" id="s_p1_dob" data-set="p1.dob" min="1940-01-01" max="1986-12-31"></div>
       <div class="field"><label for="s_p1_age">Age today</label><input type="number" id="s_p1_age" data-set="p1.age" min="40" max="80"><div class="hint">Auto-filled from date of birth.</div></div>
-      <div class="field"><label for="s_p1_retire">Retirement date</label><input type="month" id="s_p1_retire" data-set="p1.retire" min="2026-07" max="2045-12"></div>
+      <div class="field"><label for="s_p1_retire">Retirement date</label><input type="date" id="s_p1_retire" data-set="p1.retire" min="2026-07-01" max="2045-12-31"></div>
       <div class="field"><label for="s_p1_salary">Salary £/yr (until your retirement date)</label><input type="number" id="s_p1_salary" data-set="p1.salary" min="0" step="1000"></div>
       <div class="field" style="grid-column:1/-1"><label>Pensions in payment</label>
         <div id="pips_p1"></div>
@@ -580,7 +620,7 @@ header{padding-top:calc(26px + env(safe-area-inset-top))}
         <div class="field"><label for="s_p2_email">Email</label><input type="email" id="s_p2_email" data-set="p2.email" placeholder="name@example.com"></div>
         <div class="field"><label for="s_p2_dob">Date of birth</label><input type="date" id="s_p2_dob" data-set="p2.dob" min="1940-01-01" max="1986-12-31"></div>
         <div class="field"><label for="s_p2_age">Age today</label><input type="number" id="s_p2_age" data-set="p2.age" min="40" max="80"><div class="hint">Auto-filled from date of birth.</div></div>
-        <div class="field"><label for="s_p2_retire">Retirement date</label><input type="month" id="s_p2_retire" data-set="p2.retire" min="2026-07" max="2045-12"></div>
+        <div class="field"><label for="s_p2_retire">Retirement date</label><input type="date" id="s_p2_retire" data-set="p2.retire" min="2026-07-01" max="2045-12-31"></div>
         <div class="field"><label for="s_p2_salary">Salary £/yr (until their retirement date)</label><input type="number" id="s_p2_salary" data-set="p2.salary" min="0" step="1000"></div>
         <div class="field" style="grid-column:1/-1"><label>Pensions in payment</label>
           <div id="pips_p2"></div>
@@ -642,12 +682,30 @@ const TAGS={
   holidays:{label:"Holidays",p:'<path d="M3 10.5L19 4l-6 16-2.6-7L3 10.5z"/><path d="M10.4 13L19 4"/>'},
   other:{label:"Other",p:'<text x="11" y="16" text-anchor="middle" font-size="14" font-family="Georgia,serif" fill="currentColor" stroke="none">£</text>'}
 };
+const COINS=[
+  {id:"ripple",sym:"XRP",label:"XRP"},
+  {id:"bitcoin",sym:"BTC",label:"Bitcoin"},
+  {id:"ethereum",sym:"ETH",label:"Ethereum"},
+  {id:"solana",sym:"SOL",label:"Solana"},
+  {id:"cardano",sym:"ADA",label:"Cardano"},
+  {id:"dogecoin",sym:"DOGE",label:"Dogecoin"},
+  {id:"litecoin",sym:"LTC",label:"Litecoin"},
+  {id:"polkadot",sym:"DOT",label:"Polkadot"},
+  {id:"chainlink",sym:"LINK",label:"Chainlink"},
+  {id:"binancecoin",sym:"BNB",label:"BNB"}
+];
+const coinOf=id=>COINS.find(c=>c.id===id)||COINS[0];
+function guessCoin(name){
+  const n=String(name||"").toLowerCase();
+  const hit=COINS.find(c=>n.includes(c.sym.toLowerCase())||n.includes(c.label.toLowerCase()));
+  return hit?hit.id:"ripple";
+}
 const tagIcon=(k,size)=>`<svg viewBox="0 0 22 22" width="${size}" height="${size}" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${(TAGS[k]||TAGS.other).p}</svg>`;
 let S = {
   settings:{
     couple:false, endAge:97,
-    p1:{name:"You", dob:"", email:"", age:61, retire:"2027-06", salary:0, pips:[], incomes:[], statePension:11973, spAge:67},
-    p2:{name:"Spouse", dob:"", email:"", age:61, retire:"2027-06", salary:0, pips:[], incomes:[], statePension:11973, spAge:67}
+    p1:{name:"You", dob:"", email:"", age:61, retire:"2027-06-30", salary:0, pips:[], incomes:[], statePension:11973, spAge:67},
+    p2:{name:"Spouse", dob:"", email:"", age:61, retire:"2027-06-30", salary:0, pips:[], incomes:[], statePension:11973, spAge:67}
   },
   holdings:[
     {name:"Pension / SIPP",wrap:"pension",owner:"p1",value:0,growth:5,start:"2026-06"},
@@ -672,7 +730,7 @@ let S = {
 };
 const DEFAULTS=JSON.parse(JSON.stringify(S));
 function retRowOf(P){               /* tax-year row a retirement date lands in, + need-fraction of that row */
-  const s=P.retire||"2027-06";
+  const s=P.retire||"2027-06-30";
   const y=parseInt(s.slice(0,4))||2027, m=parseInt(s.slice(5,7))||6;
   const effM=m>=4?m:m+12, ry=m>=4?y:y-1;
   const frac=Math.min(1,Math.max(1/12,(16-effM)/12));   /* June -> 10/12, matching the original convention */
@@ -733,7 +791,11 @@ function normalizeState(){
       delete P.pensionsMo;delete P.pensionsStart;
     }
     P.pips.forEach(x=>{x.mo=+x.mo||0;x.start=x.start||"2026-06";x.label=x.label||"Pension in payment";});
-    if(!P.retire||!/^\d{4}-\d{2}$/.test(P.retire))P.retire="2027-06";
+    if(P.retire&&/^\d{4}-\d{2}$/.test(P.retire)){
+      const ry=+P.retire.slice(0,4),rm=+P.retire.slice(5,7);
+      P.retire=P.retire+"-"+String(new Date(ry,rm,0).getDate()).padStart(2,"0");   /* old saves: month -> its last day */
+    }
+    if(!P.retire||!/^\d{4}-\d{2}-\d{2}$/.test(P.retire))P.retire="2027-06-30";
     if(!Array.isArray(P.incomes))P.incomes=[];
     P.incomes.forEach(x=>{x.mo=+x.mo||0;x.start=x.start||"2027-07";x.end=x.end||"2032-06";x.label=x.label||"Other income";});
   });
@@ -742,7 +804,7 @@ function normalizeState(){
   if(!S.wrapperFilter)S.wrapperFilter="all";
   if(S.realTerms===undefined)S.realTerms=false;
   if(S.live===undefined)S.live=null;
-  S.holdings.forEach(x=>{if(x.units!==undefined)x.units=+x.units||0;if(x.wrap==="gold"&&x.metal!=="silver")x.metal="gold";});
+  S.holdings.forEach(x=>{if(x.units!==undefined)x.units=+x.units||0;if(x.wrap==="gold"&&x.metal!=="silver")x.metal="gold";if(x.wrap==="crypto"&&!x.coin)x.coin=guessCoin(x.name);});
   if(!S.metals||typeof S.metals!=="object")S.metals={goldOz:0,silverOz:0};
   if(!S.metals.goldOz)S.metals.goldOz=S.holdings.filter(x=>x.wrap==="gold"&&x.metal==="gold").reduce((a,x)=>a+(+x.units||0),0);
   if(!S.metals.silverOz)S.metals.silverOz=S.holdings.filter(x=>x.wrap==="gold"&&x.metal==="silver").reduce((a,x)=>a+(+x.units||0),0);
@@ -1050,6 +1112,9 @@ function render(){
 
   /* KPIs — computed over the filtered view */
   const fHoldings=S.holdings.filter(inFilter);
+  const hcN=document.getElementById("holdCountNum"),hcL=document.getElementById("holdCountLbl");
+  if(hcN){hcN.textContent=fHoldings.length;
+    hcL.textContent=(filt==="all"&&wFilt==="all")?(fHoldings.length===1?"holding":"holdings"):"holdings shown";}
   const tot=fHoldings.reduce((a,h)=>a+ +h.value,0);
   const byW={};fHoldings.forEach(h=>byW[h.wrap]=(byW[h.wrap]||0)+ +h.value);
   document.getElementById("kpis").innerHTML=
@@ -1070,12 +1135,12 @@ function render(){
   S.holdings.forEach((h,i)=>{
     if(!inFilter(h))return;
     const tr=document.createElement("tr");
-    tr.innerHTML=`<td class="h-name" data-label="Holding"><input type="text" data-i="${i}" data-k="name" value="${h.name.replace(/"/g,'&quot;')}" aria-label="Holding name"></td>
+    tr.innerHTML=`<td class="h-name" data-label="Holding"><span class="h-dot" style="background:${(WRAP[h.wrap]||WRAP.cash).hex}" title="${(WRAP[h.wrap]||WRAP.cash).label}" aria-hidden="true"></span><input type="text" data-i="${i}" data-k="name" value="${h.name.replace(/"/g,'&quot;')}" aria-label="Holding name"></td>
       <td class="h-wrap" data-label="Wrapper"><select data-i="${i}" data-k="wrap" aria-label="Wrapper">${Object.keys(WRAP).map(w=>`<option value="${w}"${w===h.wrap?" selected":""}>${WRAP[w].label}</option>`).join("")}</select></td>
       ${couple?`<td data-label="Owner"><select data-i="${i}" data-k="owner" aria-label="Owner"><option value="p1"${ownerOf(h)==="p1"?" selected":""}>${n1}</option><option value="p2"${ownerOf(h)==="p2"?" selected":""}>${n2}</option><option value="joint"${ownerOf(h)==="joint"?" selected":""}>Joint</option></select></td>`:""}
       <td data-label="Starts"><input type="month" data-i="${i}" data-k="start" value="${h.start||"2026-06"}" min="2026-06" max="2060-12" style="min-width:130px" aria-label="Start date"></td>
       <td class="num" data-label="Value £"><input type="number" data-i="${i}" data-k="value" value="${h.value}" min="0" step="500" style="text-align:right" aria-label="Value"></td>
-      <td class="num" data-label="Growth %/yr"><input type="number" data-i="${i}" data-k="growth" value="${h.growth}" step="0.5" style="text-align:right;max-width:90px" aria-label="Growth"></td>
+      <td class="num" data-label="Growth %/yr"><span class="growth-cell"><input type="number" data-i="${i}" data-k="growth" value="${h.growth}" step="0.5" style="text-align:right;max-width:90px" aria-label="Growth">${(h.wrap==="investment"||h.wrap==="gia"||h.wrap==="crypto")?`<button class="small ghost est no-print" data-est="${i}" title="Estimate annual growth from what you paid vs what it\u2019s worth">\u2248</button>`:""}</span></td>
       <td class="h-del"><span class="mv-group no-print"><button class="small ghost mv" data-mvu="${i}"${firstVis===i?" disabled":""} aria-label="Move up" title="Move up">▲</button><button class="small ghost mv" data-mvd="${i}"${lastVis===i?" disabled":""} aria-label="Move down" title="Move down">▼</button></span><button class="small danger no-print" data-del="${i}" aria-label="Remove holding">✕</button></td>`;
     tb.appendChild(tr);
   });
@@ -1378,6 +1443,7 @@ document.body.addEventListener("change",e=>{
   if(t.dataset.tf==="wrap"){S.wrapperFilter=t.value;render();return;}
   if(t.dataset.lu!==undefined){S.holdings[+t.dataset.lu].units=+t.value||0;render();return;}
   if(t.dataset.mo!==undefined){S.metals[t.dataset.mo]=+t.value||0;render();return;}
+  if(t.dataset.lc!==undefined){S.holdings[+t.dataset.lc].coin=t.value;render();const m=document.getElementById("liveMsg");if(m&&!(S.live&&S.live.coins&&S.live.coins[t.value])){m.style.color="var(--ink-soft)";m.textContent="Coin changed \u2014 hit \u21BB Refresh to fetch its price.";}return;}
   if(t.dataset.oo!==undefined){const k=t.dataset.k;S.oneoffs[+t.dataset.oo][k]=(k==="tag"||k==="note")?t.value:+t.value;render();}
   if(t.dataset.ai!==undefined){
     const a=S.actions[+t.dataset.ai];
@@ -1388,9 +1454,16 @@ document.body.addEventListener("change",e=>{
 });
 document.body.addEventListener("click",e=>{
   const t=e.target;
+  if(t.dataset.est!==undefined){openEst(+t.dataset.est);return;}
   if(t.dataset.mvu!==undefined){moveHolding(+t.dataset.mvu,-1);return;}
   if(t.dataset.mvd!==undefined){moveHolding(+t.dataset.mvd,1);return;}
-  if(t.dataset.del!==undefined){S.holdings.splice(+t.dataset.del,1);render();return;}
+  if(t.dataset.del!==undefined){
+    const di=+t.dataset.del,hd=S.holdings[di];
+    if(!hd)return;
+    appConfirm("Delete the holding <strong>\u201C"+String(hd.name).replace(/</g,"&lt;")+"\u201D</strong> ("+fmt(+hd.value||0)+", "+(WRAP[hd.wrap]||WRAP.cash).label+")?<br><br>It will be removed from the portfolio and every projection.",{okLabel:"Delete holding"})
+      .then(ok=>{if(ok){S.holdings.splice(di,1);render();}});
+    return;
+  }
   if(t.dataset.oodel!==undefined){S.oneoffs.splice(+t.dataset.oodel,1);render();return;}
   if(t.dataset.adel!==undefined){S.actions.splice(+t.dataset.adel,1);closeModal();render();return;}
   if(t.id==="useCpi"&&S.live&&S.live.cpi){S.inflation=+S.live.cpi.v.toFixed(1);renderControls();render();const m=document.getElementById("liveMsg");m.style.color="var(--ok)";m.textContent="\u2713 Inflation assumption set to "+S.inflation+"% (ONS CPI, "+S.live.cpi.date+").";return;}
@@ -1539,9 +1612,12 @@ async function fetchJson(url,ms){
 async function refreshLive(){
   const msg=document.getElementById("liveMsg");
   msg.style.color="var(--ink-soft)";msg.textContent="Fetching latest rates…";
+  const heldCoins=[...new Set(S.holdings.filter(x=>x.wrap==="crypto").map(x=>x.coin||"ripple"))];
+  if(!heldCoins.length)heldCoins.push("ripple");
+  const ids=heldCoins.concat(["pax-gold","kinesis-silver"]).join(",");
   const [ons,cg]=await Promise.allSettled([
     fetchJson("https://api.ons.gov.uk/timeseries/d7g7/dataset/mm23/data"),
-    fetchJson("https://api.coingecko.com/api/v3/simple/price?ids=ripple,pax-gold,kinesis-silver&vs_currencies=gbp&include_24hr_change=true")
+    fetchJson("https://api.coingecko.com/api/v3/simple/price?ids="+ids+"&vs_currencies=gbp&include_24hr_change=true")
   ]);
   const live=S.live&&typeof S.live==="object"?S.live:{};
   let got=[],fail=[];
@@ -1551,7 +1627,9 @@ async function refreshLive(){
   }else fail.push("CPI");
   if(cg.status==="fulfilled"){
     try{const v=cg.value;
-      if(v.ripple)live.xrp={gbp:+v.ripple.gbp,chg:+(v.ripple.gbp_24h_change||0)};
+      live.coins=live.coins||{};
+      heldCoins.forEach(id=>{if(v[id])live.coins[id]={gbp:+v[id].gbp,chg:+(v[id].gbp_24h_change||0)};});
+      if(live.coins.ripple)live.xrp=live.coins.ripple;   /* back-compat for older saves */
       if(v["pax-gold"])live.gold={gbpOz:+v["pax-gold"].gbp,chg:+(v["pax-gold"].gbp_24h_change||0)};
       if(v["kinesis-silver"])live.silver={gbpOz:+v["kinesis-silver"].gbp,chg:+(v["kinesis-silver"].gbp_24h_change||0)};
       got.push("prices");}catch(e){fail.push("prices");}
@@ -1568,7 +1646,7 @@ function applyLivePrices(){
   const notes=[];
   S.holdings.forEach(x=>{
     if(!x.units||x.units<=0)return;
-    if(x.wrap==="crypto"&&S.live.xrp){const nv=Math.round(x.units*S.live.xrp.gbp);notes.push("\u201C"+x.name+"\u201D \u2192 "+fmt(nv));x.value=nv;}
+    if(x.wrap==="crypto"){const pc=S.live.coins&&S.live.coins[x.coin||"ripple"];if(pc){const nv=Math.round(x.units*pc.gbp);notes.push("\u201C"+x.name+"\u201D \u2192 "+fmt(nv));x.value=nv;}}
   });
   /* metals: one managed holding each, valued from the oz entered in the live card */
   [["gold","goldOz","Gold coins"],["silver","silverOz","Silver coins"]].forEach(([mk,ozKey,defName])=>{
@@ -1622,15 +1700,58 @@ function renderLive(){
   /* crypto rows stay per holding */
   const trackables=S.holdings.map((x,i)=>({x,i})).filter(o=>o.x.wrap==="crypto");
   trackables.forEach(o=>{
-    const price=L.xrp&&L.xrp.gbp, c=L.xrp&&L.xrp.chg;
+    const cid=o.x.coin||"ripple", co=coinOf(cid);
+    const pc=L.coins&&L.coins[cid];
+    const price=pc&&pc.gbp, c=pc&&pc.chg;
     rows+=`<div class="live-row"><span class="lv-name">${String(o.x.name).replace(/</g,"&lt;")}</span>
-      <span class="lv-val">${price?("\u00A3"+price.toLocaleString("en-GB",{maximumFractionDigits:3})+" /XRP"):"\u2014"}</span>${chg(c)}
+      <select class="lv-metal" data-lc="${o.i}" aria-label="Coin">${COINS.map(k=>`<option value="${k.id}"${k.id===cid?" selected":""}>${k.label}</option>`).join("")}</select>
+      <span class="lv-val">${price?("\u00A3"+price.toLocaleString("en-GB",{maximumFractionDigits:price<10?3:0})+" /"+co.sym):"\u2014"}</span>${chg(c)}
       <label class="lv-sub">coins held
-        <input type="number" class="lv-units" data-lu="${o.i}" value="${o.x.units||""}" min="0" step="1" placeholder="units"></label>
+        <input type="number" class="lv-units" data-lu="${o.i}" value="${o.x.units||""}" min="0" step="any" placeholder="units"></label>
       <span class="lv-sub">${(o.x.units&&price)?("= "+fmt(o.x.units*price)):""}</span></div>`;
   });
-  box.innerHTML=rows+`<div class="live-row" style="justify-content:flex-end"><button class="small no-print" id="applyLive"${(L.xrp||L.gold||L.silver)?"":" disabled"}>Apply live prices to holdings</button></div>`;
+  box.innerHTML=rows+`<div class="live-row" style="justify-content:flex-end"><button class="small no-print" id="applyLive"${((L.coins&&Object.keys(L.coins).length)||L.gold||L.silver)?"":" disabled"}>Apply live prices to holdings</button></div>`;
 }
+
+/* ---------- growth estimator (CAGR from two valuations) ---------- */
+let estIdx=null;
+function estCalc(){
+  const v0=+document.getElementById("estV0").value,v1=+document.getElementById("estV1").value;
+  const d0=new Date(document.getElementById("estD0").value),d1=new Date(document.getElementById("estD1").value);
+  const out=document.getElementById("estResult"),use=document.getElementById("estUse");
+  const yrs=(d1-d0)/31557600000;
+  if(!(v0>0)||!(v1>0)||isNaN(yrs)||yrs<=0.08){out.textContent=isNaN(yrs)||yrs<=0.08?"Dates need to span at least a month.":"Enter both values.";out.style.color="var(--ink-soft)";use.disabled=true;return null;}
+  const r=(Math.pow(v1/v0,1/yrs)-1)*100;
+  out.style.color=r>=0?"var(--pine)":"var(--coral)";
+  out.textContent="\u2248 "+r.toFixed(1)+"% per year over "+yrs.toFixed(1)+" years"+(r>15?" \u2014 strong run; consider planning on less":"");
+  use.disabled=false;
+  return r;
+}
+function openEst(i){
+  estIdx=i;const x=S.holdings[i];if(!x)return;
+  document.getElementById("estTitle").textContent="Estimate annual growth";
+  document.getElementById("estSub").textContent="\u201C"+x.name+"\u201D \u2014 enter what it cost and what it\u2019s worth; the annualised rate is worked out for you.";
+  document.getElementById("estV0").value="";
+  const st=x.start||"";
+  document.getElementById("estD0").value=st.length===10?st:(st.length===7?st+"-01":"2024-01-01");
+  document.getElementById("estV1").value=x.value||"";
+  document.getElementById("estD1").value=new Date().toISOString().slice(0,10);
+  document.getElementById("estResult").textContent="";document.getElementById("estUse").disabled=true;
+  document.getElementById("estOverlay").classList.add("open");
+  document.getElementById("estV0").focus();
+}
+function closeEst(){document.getElementById("estOverlay").classList.remove("open");estIdx=null;}
+["estV0","estD0","estV1","estD1"].forEach(id=>document.getElementById(id).addEventListener("input",estCalc));
+document.getElementById("estClose").addEventListener("click",closeEst);
+document.getElementById("estCancel").addEventListener("click",closeEst);
+document.getElementById("estOverlay").addEventListener("click",e=>{if(e.target.id==="estOverlay")closeEst();});
+document.getElementById("estUse").addEventListener("click",()=>{
+  const r=estCalc();
+  if(r===null||estIdx===null)return;
+  S.holdings[estIdx].growth=+r.toFixed(1);
+  closeEst();render();
+});
+document.addEventListener("keydown",e=>{if(e.key==="Escape"&&document.getElementById("estOverlay").classList.contains("open"))closeEst();});
 
 /* ---------- in-app confirm (native popups are blocked in some embeds) ---------- */
 let __confirmResolve=null,__confirmAuxFn=null;
@@ -1819,8 +1940,10 @@ function renderControls(){
 
 /* live countdown — days & hours to the user's own retirement date (5pm, last day of the month) */
 function retDateOf(P){
-  const y=parseInt((P.retire||"2027-06").slice(0,4))||2027,m=parseInt((P.retire||"2027-06").slice(5,7))||6;
-  return new Date(y,m,0,17,0,0);
+  const s=P.retire||"2027-06-30";
+  const y=parseInt(s.slice(0,4))||2027,m=parseInt(s.slice(5,7))||6;
+  const d=parseInt(s.slice(8,10))||new Date(y,m,0).getDate();
+  return new Date(y,m-1,d,17,0,0);
 }
 function updateCountdown(){
   const el=document.getElementById("countdown");if(!el)return;
@@ -1846,7 +1969,7 @@ document.getElementById("resetApp").addEventListener("click",async()=>{
 function blankState(){
   const b=JSON.parse(JSON.stringify(DEFAULTS));
   ["p1","p2"].forEach((k,ix)=>{const P=b.settings[k];
-    P.name=ix?"Spouse":"You";P.dob="";P.email="";P.age=61;P.salary=0;P.pips=[];P.incomes=[];P.statePension=11973;P.spAge=67;P.retire="2027-06";});
+    P.name=ix?"Spouse":"You";P.dob="";P.email="";P.age=61;P.salary=0;P.pips=[];P.incomes=[];P.statePension=11973;P.spAge=67;P.retire="2027-06-30";});
   b.settings.couple=false;
   b.holdings=[
     {name:"Pension / SIPP",wrap:"pension",owner:"p1",value:0,growth:5,start:"2026-06"},
