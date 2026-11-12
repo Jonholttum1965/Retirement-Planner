@@ -19,7 +19,7 @@
   --paper:#F4F6F2; --card:#FFFFFF; --ink:#22302B; --ink-soft:#5A6963;
   --pine:#133A33; --pine-deep:#0C2823; --gold:#B98A2F; --gold-soft:#E9DCBE;
   --line:#DDE3DD; --coral:#C4543B; --ok:#2E7D5B;
-  --c-pension:#1F5A4D; --c-isa:#3E8E7E; --c-gia:#7FB6A4; --c-invest:#5B8AA6; --c-gold:#C9A24B; --c-cash:#9AA8A0; --c-premium:#B4637A; --c-eis:#A8663B; --c-crypto:#8A6FA8;
+  --c-pension:#1F5A4D; --c-isa:#3E8E7E; --c-gia:#7FB6A4; --c-invest:#5B8AA6; --c-gold:#C9A24B; --c-cash:#9AA8A0; --c-premium:#B4637A; --c-eis:#A8663B; --c-vct:#6B5B95; --c-crypto:#8A6FA8;
   --disp:'Fraunces',Georgia,serif; --body:'Public Sans',system-ui,sans-serif; --mono:'Spline Sans Mono',ui-monospace,monospace;
 }
 *{box-sizing:border-box;margin:0;padding:0}
@@ -29,7 +29,7 @@ body{font-family:var(--body);background:var(--paper);color:var(--ink);line-heigh
 a{color:var(--pine)}
 h1,h2,h3{font-family:var(--disp);font-weight:650;line-height:1.15}
 .num{font-family:var(--mono);font-variant-numeric:tabular-nums}
-.wrap{max-width:1100px;margin:0 auto;padding:0 20px}
+.wrap{max-width:none;width:100%;margin:0;padding:0 clamp(20px,2.5vw,48px)}
 
 /* ---------- header ---------- */
 header{background:var(--pine-deep);color:#EAF0EC;padding:26px 0 0}
@@ -41,6 +41,8 @@ header{background:var(--pine-deep);color:#EAF0EC;padding:26px 0 0}
 nav{display:flex;gap:4px;margin-top:18px;overflow-x:auto;padding-bottom:0}
 nav a{color:#BFD0C7;text-decoration:none;font-size:13px;font-weight:600;padding:9px 14px;border-radius:8px 8px 0 0;white-space:nowrap}
 nav a:hover,nav a:focus-visible{background:#1A4239;color:#fff}
+.nav-ver{margin-left:auto;align-self:center;font-family:var(--mono);font-size:12px;color:#A8BFB5;padding:9px 6px;white-space:nowrap}
+@media print{.nav-ver{display:none}}
 
 /* ---------- tuner band (signature) ---------- */
 .tuner{background:var(--pine);color:#EAF0EC;padding:26px 0 30px;border-top:1px solid #245247}
@@ -99,7 +101,34 @@ button.danger:hover{background:#FBF0EC}
 /* ---------- wrapper chips & legend ---------- */
 .chip{display:inline-block;font-family:var(--mono);font-size:11px;padding:2px 8px;border-radius:999px;color:#fff}
 .legend{display:flex;gap:14px;flex-wrap:wrap;font-size:12px;color:var(--ink-soft);margin-top:10px}
-.table-filter{display:flex;justify-content:flex-end;align-items:center;gap:8px;margin-bottom:12px;flex-wrap:wrap}
+.view-bar{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:12px;flex-wrap:wrap}
+.view-toggle{display:inline-flex;border:1.5px solid var(--line);border-radius:9px;overflow:hidden;flex:none}
+.view-toggle button{border:none;background:#fff;color:var(--ink-soft);padding:7px 13px;font-size:14px;border-radius:0;line-height:1}
+.view-toggle button:hover{background:#F2F6F2;color:var(--pine)}
+.view-toggle button.on,.view-toggle button.on:hover{background:var(--pine);color:#fff}
+.table-filter{display:flex;justify-content:flex-end;align-items:center;gap:8px;margin-bottom:0;flex-wrap:wrap}
+tr.grp td{background:var(--paper);font-size:10.5px;letter-spacing:.07em;text-transform:uppercase;font-weight:700;color:var(--ink-soft);padding:7px 10px;border-bottom:1px solid var(--line)}
+tr.grp:hover{background:transparent}
+tr.grp .grp-sub{float:right;font-family:var(--mono);text-transform:none;letter-spacing:0;color:var(--pine)}
+.hgrp-head{display:flex;align-items:center;justify-content:space-between;font-size:10.5px;letter-spacing:.07em;text-transform:uppercase;font-weight:700;color:var(--ink-soft);margin:16px 2px 8px}
+.hgrp-head:first-child{margin-top:0}
+.hgrp-head .grp-sub{font-family:var(--mono);text-transform:none;letter-spacing:0;color:var(--pine);font-size:12px}
+.hold-tiles{display:grid;grid-template-columns:repeat(auto-fill,minmax(269px,1fr));gap:10px}
+.hold-tile{border:1px solid var(--line);border-top:6px solid var(--gold);border-radius:12px;padding:12px 14px;background:#FDFEFD;cursor:pointer;transition:box-shadow .15s,transform .15s}
+.hold-tile:hover{box-shadow:0 4px 14px rgba(19,58,51,.10);transform:translateY(-1px)}
+.hold-tile:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+.hold-tile .ht-name{font-size:13px;font-weight:600;line-height:1.3;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.hold-tile .ht-val{font-family:var(--mono);font-size:18px;font-weight:600;color:var(--pine);margin-top:6px}
+.hold-tile .ht-meta{font-size:11px;color:var(--ink-soft);margin-top:4px}
+.hold-tile .ht-note{font-size:11.5px;color:var(--ink);margin-top:8px;padding-top:7px;border-top:1px dashed var(--line);line-height:1.45;word-break:break-word;display:-webkit-box;-webkit-line-clamp:4;-webkit-box-orient:vertical;overflow:hidden}
+.hold-tile .ht-note a{color:var(--pine);font-weight:600;text-decoration-color:var(--gold)}
+.hold-tile .ht-addnote{margin-top:8px;border:1px dashed var(--line);background:transparent;color:var(--ink-soft);font-size:11px;font-weight:600;padding:4px 10px;border-radius:7px}
+.hold-tile .ht-addnote:hover{border-color:var(--pine);color:var(--pine);background:#F2F6F2}
+@media(max-width:700px){
+  .view-bar{flex-direction:column;align-items:stretch}
+  #holdingsTable tr.grp{display:block;border:none;background:transparent;padding:0;margin:6px 0 8px}
+  #holdingsTable tr.grp td{display:block;background:transparent;border:none;padding:2px 0}
+}
 .table-filter label{font-size:10px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-soft);font-weight:700}
 .table-filter select{width:auto;min-width:120px;padding:6px 8px;font-size:12.5px}
 .table-filter .tf-clear{border:none;background:transparent;color:var(--coral);font-size:12px;font-weight:600;padding:4px 6px;cursor:pointer}
@@ -192,6 +221,14 @@ body.collapse-on main>section>h2:hover{color:var(--pine)}
 .modal .m-foot{font-size:11.5px;color:var(--ink-soft);margin-top:14px;border-top:1px solid var(--line);padding-top:10px}
 .set-h{font-family:var(--disp);font-size:15px;color:var(--pine);margin:4px 0 10px;border-bottom:1px solid var(--line);padding-bottom:5px}
 .set-grid{display:grid;grid-template-columns:1fr 1fr;gap:0 14px;margin-bottom:8px}
+details.set-sec{border:1px solid var(--line);border-radius:12px;margin:0 0 10px;padding:0 16px;background:#FDFEFD}
+details.set-sec>summary{font-family:var(--disp);font-size:15px;font-weight:650;color:var(--pine);padding:12px 0;cursor:pointer;user-select:none;list-style:none;display:flex;align-items:center;gap:9px}
+details.set-sec>summary::-webkit-details-marker{display:none}
+details.set-sec>summary::before{content:"\25B8";color:var(--gold);font-size:.7em;display:inline-block;transition:transform .15s}
+details.set-sec[open]>summary::before{transform:rotate(90deg)}
+details.set-sec[open]>summary{border-bottom:1px solid var(--line);margin-bottom:12px}
+details.set-sec>summary:focus-visible{outline:2px solid var(--gold);outline-offset:2px;border-radius:6px}
+@media (prefers-reduced-motion:reduce){details.set-sec>summary::before{transition:none}}
 @media(max-width:480px){.set-grid{grid-template-columns:1fr}}
 #spouseBlock.off{opacity:.4;pointer-events:none}
 .pip-row{display:grid;grid-template-columns:1.3fr .9fr 1fr auto;gap:8px;margin-bottom:8px;align-items:center}
@@ -235,7 +272,7 @@ button.est:hover{border-color:var(--pine);background:#EAF0EC}
 /* =================================================================
    MOBILE REFACTOR — tuned for iPhone 14 Pro (393×852, Dynamic Island)
    ================================================================= */
-.wrap{padding-left:max(20px,env(safe-area-inset-left));padding-right:max(20px,env(safe-area-inset-right))}
+.wrap{padding-left:max(clamp(20px,2.5vw,48px),env(safe-area-inset-left));padding-right:max(clamp(20px,2.5vw,48px),env(safe-area-inset-right))}
 header{padding-top:calc(26px + env(safe-area-inset-top))}
 .disclaimer{padding-bottom:calc(40px + env(safe-area-inset-bottom))}
 .table-scroll{-webkit-overflow-scrolling:touch}
@@ -249,6 +286,13 @@ header{padding-top:calc(26px + env(safe-area-inset-top))}
 .live-row .lv-chg{font-family:var(--mono);font-size:11.5px}
 .live-row .lv-units{width:110px!important;text-align:right}
 .live-row .lv-metal{width:auto!important;min-width:84px;padding:5px 7px;font-size:12.5px}
+.live-head{cursor:pointer;user-select:none;display:flex;align-items:center;gap:8px}
+.live-head:hover{color:var(--pine)}
+.live-head:focus-visible{outline:2px solid var(--gold);outline-offset:2px;border-radius:4px}
+.live-chev{color:var(--gold);font-size:.65em;display:inline-block;transition:transform .15s}
+#liveCard.live-collapsed .live-chev{transform:rotate(-90deg)}
+#liveCard.live-collapsed #liveBody{display:none}
+@media (prefers-reduced-motion:reduce){.live-chev{transition:none}}
 .live-row .lv-sub{font-size:11px;color:var(--ink-soft)}
 .scroll-hint{display:none;font-size:11px;color:var(--ink-soft);margin-bottom:8px}
 @media(min-width:701px){#holdingsTable{min-width:660px}}
@@ -329,6 +373,7 @@ header{padding-top:calc(26px + env(safe-area-inset-top))}
       <a href="#insights">Tax insights</a>
       <a href="#reports">Reports</a>
       <a href="#" id="openSettings">⚙ Settings</a>
+      <span id="appVer" class="nav-ver" title="App version — set in Settings"></span>
     </nav>
   </div>
 </header>
@@ -377,7 +422,14 @@ header{padding-top:calc(26px + env(safe-area-inset-top))}
   <div class="filter-chips no-print" id="ownerFilter" role="group" aria-label="Filter holdings by owner"></div>
   <div class="kpis" id="kpis"></div>
   <div class="card table-scroll">
-    <div class="table-filter no-print" id="tableFilter"></div>
+    <div class="view-bar no-print">
+      <div class="view-toggle" role="group" aria-label="Holdings view">
+        <button id="viewLine" type="button" title="Line view" aria-label="Line view">&#9776;</button>
+        <button id="viewTile" type="button" title="Tile view" aria-label="Tile view">&#9638;</button>
+      </div>
+      <div class="table-filter" id="tableFilter"></div>
+    </div>
+    <div id="holdingsTiles" style="display:none"></div>
     <table id="holdingsTable">
       <thead><tr id="holdHeadRow"></tr></thead>
       <tbody></tbody>
@@ -393,15 +445,17 @@ header{padding-top:calc(26px + env(safe-area-inset-top))}
 
   <div class="card" style="margin-top:18px" id="liveCard">
     <div class="row" style="justify-content:space-between;align-items:baseline">
-      <h3 style="font-size:16px">Live UK data</h3>
+      <h3 style="font-size:16px" id="liveHead" class="live-head" tabindex="0" role="button" aria-controls="liveBody" aria-expanded="true"><span class="live-chev" aria-hidden="true">&#9662;</span>Live UK data</h3>
       <div class="row">
         <span id="liveStamp" class="num" style="font-size:11.5px;color:var(--ink-soft)"></span>
         <button class="small no-print" id="refreshLive">↻ Refresh</button>
       </div>
     </div>
+    <div id="liveBody">
     <div id="liveRows" style="margin-top:12px"></div>
     <div id="liveMsg" style="font-size:12px;margin-top:8px;min-height:1em"></div>
-    <div class="hint" style="margin-top:8px">Sources: ONS (CPI 12-month rate) and CoinGecko (crypto — pick each holding’s coin from its dropdown; gold and silver are indicative, via the PAXG and KAG tokens ≈ 1 troy oz each). Enter your ounces in the Gold and Silver rows; “Apply live prices” keeps one “Gold coins” and one “Silver coins” holding valued at spot. Anonymous requests, needs internet; none of your data is sent. Fund and share prices have no free keyless feed, so update those holdings manually.</div>
+    <div class="hint" style="margin-top:8px">Sources: ONS (CPI 12-month rate) and CoinGecko. Crypto: “+ Add coin” tracks another coin as its own holding; each row’s dropdown only changes that one row. Gold and silver are indicative, via the PAXG and KAG tokens ≈ 1 troy oz each. Enter your ounces in the Gold and Silver rows; “Apply live prices” keeps one “Gold coins” and one “Silver coins” holding valued at spot. Anonymous requests, needs internet; none of your data is sent. Fund and share prices have no free keyless feed, so update those holdings manually.</div>
+    </div>
   </div>
 </section>
 
@@ -488,7 +542,7 @@ header{padding-top:calc(26px + env(safe-area-inset-top))}
     <button class="ghost" id="dlIcs">📅 Add reminders to calendar (.ics)</button>
     <button class="ghost" id="emailDue" style="display:none">✉ Email me what's due</button>
   </div>
-  <div class="hint no-print" style="margin-top:8px">The calendar file carries an alert 10 days before, 5 days before, and on each due date — import it once into your phone or email calendar and the reminders arrive automatically, even when this app is closed. The email button drafts a summary to your Settings email.</div>
+  <div class="hint no-print" style="margin-top:8px">The calendar file carries your 1st and 2nd Alerts (set in ⚙ Settings) before each due date, plus one on the day — import it once into your phone or email calendar and the reminders arrive automatically, even when this app is closed. The email button drafts a summary to your Settings email.</div>
   <div id="archiveWrap" style="margin-top:26px">
     <button class="ghost small no-print" id="archiveToggle" aria-expanded="false">▸ Completed &amp; archived (<span id="archiveCount">0</span>)</button>
     <div id="archiveList" style="display:none;margin-top:14px"></div>
@@ -551,6 +605,31 @@ header{padding-top:calc(26px + env(safe-area-inset-top))}
 
 </main>
 
+<div class="modal-overlay no-print" id="heOverlay" role="dialog" aria-modal="true" aria-labelledby="heTitle">
+  <div class="modal" style="max-width:440px">
+    <button class="m-close" id="heClose" aria-label="Close">✕</button>
+    <h3 id="heTitle">Edit holding</h3>
+    <div class="set-grid" style="margin-top:14px">
+      <div class="field" style="grid-column:1/-1"><label for="he_name">Name</label><input type="text" id="he_name"></div>
+      <div class="field"><label for="he_wrap">Wrapper</label><select id="he_wrap"></select></div>
+      <div class="field" id="heOwnerField"><label for="he_owner">Owner</label><select id="he_owner"></select></div>
+      <div class="field"><label for="he_start">Starts</label><input type="month" id="he_start" min="2026-06" max="2060-12"></div>
+      <div class="field"><label for="he_value">Value £</label><input type="number" id="he_value" min="0" step="500"></div>
+      <div class="field"><label for="he_growth">Growth %/yr</label><input type="number" id="he_growth" step="0.5"></div>
+      <div class="field" style="grid-column:1/-1"><label for="he_note">Notes</label>
+        <textarea id="he_note" rows="3" style="width:100%;font-family:var(--body);font-size:13px;border:1px solid var(--line);border-radius:9px;padding:9px 11px;resize:vertical" placeholder="Account numbers to look up, platform links, reminders\u2026 URLs become clickable on the tile."></textarea>
+      </div>
+    </div>
+    <div class="row" style="justify-content:space-between;margin-top:6px">
+      <span class="row" style="gap:8px">
+        <button class="small danger" id="heDelete">Delete holding</button>
+        <button class="small ghost" id="heEst" style="display:none">&#8776; Estimate growth</button>
+      </span>
+      <button id="heDone">Done</button>
+    </div>
+  </div>
+</div>
+
 <div class="modal-overlay no-print" id="estOverlay" role="dialog" aria-modal="true" aria-labelledby="estTitle">
   <div class="modal" style="max-width:440px">
     <button class="m-close" id="estClose" aria-label="Close">✕</button>
@@ -589,7 +668,7 @@ header{padding-top:calc(26px + env(safe-area-inset-top))}
     <h3 id="settingsTitle">Settings</h3>
     <p style="font-size:12.5px;color:var(--ink-soft);margin:6px 0 14px">Personal details that drive the tax engine. Changes apply and autosave immediately.</p>
 
-    <h4 class="set-h">You</h4>
+    <details class="set-sec" data-sec="you" open><summary>You</summary>
     <div class="set-grid">
       <div class="field"><label for="s_p1_name">Name</label><input type="text" id="s_p1_name" data-set="p1.name"></div>
       <div class="field"><label for="s_p1_email">Email</label><input type="email" id="s_p1_email" data-set="p1.email" placeholder="you@example.com"></div>
@@ -611,10 +690,12 @@ header{padding-top:calc(26px + env(safe-area-inset-top))}
       <div class="field"><label for="s_p1_spage">…from age</label><input type="number" id="s_p1_spage" data-set="p1.spAge" min="66" max="68"></div>
     </div>
 
+    </details>
+
+    <details class="set-sec" data-sec="spouse"><summary>Spouse / partner</summary>
     <label class="toggle" style="margin:6px 0 12px"><input type="checkbox" id="s_couple"> Plan as a couple — include spouse/partner</label>
 
     <div id="spouseBlock">
-      <h4 class="set-h">Spouse / partner</h4>
       <div class="set-grid">
         <div class="field"><label for="s_p2_name">Name</label><input type="text" id="s_p2_name" data-set="p2.name"></div>
         <div class="field"><label for="s_p2_email">Email</label><input type="email" id="s_p2_email" data-set="p2.email" placeholder="name@example.com"></div>
@@ -635,9 +716,30 @@ header{padding-top:calc(26px + env(safe-area-inset-top))}
       </div>
       <div class="hint" style="margin-bottom:12px">Assign holdings to your spouse with the “Owner” column in the Portfolio table. Their pension pot gets its own personal allowance in the drawdown maths.</div>
     </div>
+    </details>
 
+    <details class="set-sec" data-sec="display"><summary>Display &amp; app</summary>
+    <div class="field"><label for="s_holdview">Default holdings view</label>
+      <select id="s_holdview" style="max-width:180px"><option value="line">Line (table)</option><option value="tile">Tiles</option></select>
+    </div>
+    <div class="field"><label for="s_appver">App version label</label>
+      <input type="text" id="s_appver" maxlength="24" placeholder="e.g. v1.4" style="max-width:180px">
+      <div class="hint">Shown at the right of the menu bar &#8212; handy for telling which copy (phone, GitHub, desktop) you&#8217;re looking at.</div>
+    </div>
     <label class="toggle" style="margin:4px 0 14px"><input type="checkbox" id="s_collapse"> Collapsible sections — tap a section title on the main page to fold it away</label>
+    </details>
+
+    <details class="set-sec" data-sec="alerts"><summary>Action alerts</summary>
+    <div class="set-grid">
+      <div class="field"><label for="s_alert1">1st Alert &#8212; days before due</label><input type="number" id="s_alert1" min="1" max="60" step="1"></div>
+      <div class="field"><label for="s_alert2">2nd Alert &#8212; days before due</label><input type="number" id="s_alert2" min="0" max="60" step="1"></div>
+    </div>
+    <div class="hint" style="margin-bottom:12px">The 1st Alert turns action tiles amber and drives the &#8220;due soon&#8221; banner and email summary. Both alerts become reminders in the calendar (.ics) export, plus one on the due day itself. The 2nd Alert must not exceed the 1st; set it to 0 to skip it.</div>
+    </details>
+
+    <details class="set-sec" data-sec="plan"><summary>Plan horizon</summary>
     <div class="field"><label for="s_endage">Plan horizon — run projection to age</label><input type="number" id="s_endage" data-set="endAge" min="80" max="105" style="max-width:120px"></div>
+    </details>
     <div class="m-foot">State pension: full new rate is £11,973/yr (2025/26); check each forecast at gov.uk/check-state-pension. Household drawdown starts when the first of you retires; a partner still working offsets the need with their salary (taxed, NI ignored).</div>
   </div>
 </div>
@@ -667,7 +769,8 @@ const WRAP = {
   isa:{label:"ISA",color:"var(--c-isa)",hex:"#3E8E7E"},
   gia:{label:"Taxable account (GIA)",color:"var(--c-gia)",hex:"#7FB6A4"},
   investment:{label:"Investment (taxable)",color:"var(--c-invest)",hex:"#5B8AA6"},
-  eis:{label:"EIS investment",color:"var(--c-eis)",hex:"#A8663B"},
+  eis:{label:"EIS Investment",color:"var(--c-eis)",hex:"#A8663B"},
+  vct:{label:"VCT",color:"var(--c-vct)",hex:"#6B5B95"},
   gold:{label:"Gold/silver coins (CGT-free)",color:"var(--c-gold)",hex:"#C9A24B"},
   cash:{label:"Cash",color:"var(--c-cash)",hex:"#9AA8A0"},
   premium:{label:"NS&I Premium Bonds",color:"var(--c-premium)",hex:"#B4637A"},
@@ -741,6 +844,13 @@ function daysToDue(a){
   const d=new Date(a.due+"T23:59:59");if(isNaN(d))return null;
   return Math.ceil((d-new Date())/86400000);
 }
+function linkify(t){
+  const esc=String(t||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
+  return esc.replace(/(https?:\/\/[^\s<]+)|(^|[\s(])(www\.[^\s<]+)/g,(m,p1,pre,p3)=>{
+    if(p1)return '<a href="'+p1+'" target="_blank" rel="noopener">'+p1+'</a>';
+    return (pre||"")+'<a href="https://'+p3+'" target="_blank" rel="noopener">'+p3+'</a>';
+  }).replace(/\n/g,"<br>");
+}
 function fmtMY(ym){
   const y=parseInt((ym||"").slice(0,4)),m=parseInt((ym||"").slice(5,7));
   if(!y||!m)return "June 2027";
@@ -813,6 +923,12 @@ function normalizeState(){
   S.actions.forEach(a=>{if(a.due===undefined)a.due="";if(!a.remind)a.remind={};});
   if(!S.collapse||typeof S.collapse!=="object")S.collapse={on:false,closed:{}};
   if(!S.collapse.closed||typeof S.collapse.closed!=="object")S.collapse.closed={};
+  if(S.holdingsView!=="tile")S.holdingsView="line";
+  if(S.liveCollapsed===undefined)S.liveCollapsed=false;
+  if(typeof S.appVersion!=="string")S.appVersion="";
+  if(!S.setOpen||typeof S.setOpen!=="object")S.setOpen={you:true};
+  S.alert1=Math.min(60,Math.max(1,parseInt(S.alert1)||10));
+  S.alert2=Math.min(S.alert1,Math.max(0,parseInt(S.alert2===undefined?5:S.alert2)||0));
   S.isaDone=S.isaDone||{};
   S.archived=S.archived||[];
   S.actions.forEach(a=>{
@@ -910,27 +1026,25 @@ function holdingVisible(x){
   return (filt==="all"||ownerKeyOf(x)===filt)&&(wf==="all"||x.wrap===wf);
 }
 function moveHolding(i,dir){
-  const vis=S.holdings.map((x,j)=>holdingVisible(x)?j:-1).filter(j=>j>=0);
-  const pos=vis.indexOf(i);
-  if(pos<0)return;
-  const target=vis[pos+dir];
-  if(target===undefined)return;                      /* already at the visible edge */
-  const [item]=S.holdings.splice(i,1);
-  const tAdj=target>i?target-1:target;               /* removal shifted later indices left */
-  S.holdings.splice(dir>0?tAdj+1:tAdj,0,item);
+  const x=S.holdings[i];if(!x)return;
+  /* holdings are grouped by wrapper, so reordering moves within the wrapper group */
+  const seg=S.holdings.map((y,j)=>(y.wrap===x.wrap&&holdingVisible(y))?j:-1).filter(j=>j>=0);
+  const pos=seg.indexOf(i);if(pos<0)return;
+  const j=seg[pos+dir];if(j===undefined)return;
+  S.holdings[i]=S.holdings[j];S.holdings[j]=x;
   render();
 }
 const startYearOf=h=>{const y=parseInt((h.start||"").slice(0,4));return isNaN(y)?NOW_YEAR:Math.max(NOW_YEAR,y);};
 function simulate(){
   const ST=S.settings, couple=!!ST.couple, ENDA=+ST.endAge||97;
-  const pots={isa:0,gia:0,investment:0,eis:0,gold:0,cash:0,premium:0,crypto:0};
+  const pots={isa:0,gia:0,investment:0,eis:0,vct:0,gold:0,cash:0,premium:0,crypto:0};
   const pen={p1:0,p2:0};                                  /* pensions are personal — separate pots */
   /* wrapper growth rates: value-weighted across all holdings in that wrapper */
-  const sum={pension:0,isa:0,gia:0,investment:0,eis:0,gold:0,cash:0,premium:0,crypto:0}, g={pension:0,isa:0,gia:0,investment:0,eis:0,gold:0,cash:0,premium:0,crypto:0};
+  const sum={pension:0,isa:0,gia:0,investment:0,eis:0,vct:0,gold:0,cash:0,premium:0,crypto:0}, g={pension:0,isa:0,gia:0,investment:0,eis:0,vct:0,gold:0,cash:0,premium:0,crypto:0};
   S.holdings.forEach(h=>{sum[h.wrap]+=+h.value; g[h.wrap]+=+h.value*(+h.growth/100);});
   const rate=w=>sum[w]>0?g[w]/sum[w]:(w==="isa"?S.isaGrowth/100:0.03);
   const R={pension:rate("pension"),isa:S.holdings.some(h=>h.wrap==="isa"&&h.value>0)?rate("isa"):S.isaGrowth/100,
-           gia:rate("gia"),investment:rate("investment"),eis:rate("eis"),gold:rate("gold"),cash:rate("cash"),premium:rate("premium"),crypto:rate("crypto")};
+           gia:rate("gia"),investment:rate("investment"),eis:rate("eis"),vct:rate("vct"),gold:rate("gold"),cash:rate("cash"),premium:rate("premium"),crypto:rate("crypto")};
   /* holdings join the plan in their start year */
   const pending=[];
   S.holdings.forEach(h=>{
@@ -1027,6 +1141,7 @@ function simulate(){
         if(remaining>0)drawTaxFree("premium",remaining);   /* prizes tax-free; low expected return, so spend before invested pots */
         if(remaining>0)drawTaxFree("isa",remaining);
         if(remaining>0)drawTaxFree("gold",remaining);
+        if(remaining>0)drawTaxFree("vct",remaining);   /* CGT-free and listed \u2014 more liquid than EIS */
         if(remaining>0)drawTaxFree("eis",remaining);   /* CGT-free disposal (3-yr hold assumed); illiquid, so last of the free pots */
         if(remaining>0)drawGIA("crypto",remaining);
         if(remaining>0)drawGIA("gia",remaining);
@@ -1058,7 +1173,7 @@ function simulate(){
     if(year===hhRy&&potAtRet===null)potAtRet=total;
     rows.push({year,age:age1,need,sp,fixedInc:fixedTot,pensionDraw,taxFreeDraw,tax,
       pension:pen.p1+pen.p2,pensionP1:pen.p1,pensionP2:pen.p2,
-      isa:pots.isa,gia:pots.gia,investment:pots.investment,eis:pots.eis,gold:pots.gold,cash:pots.cash,premium:pots.premium,crypto:pots.crypto,total,
+      isa:pots.isa,gia:pots.gia,investment:pots.investment,eis:pots.eis,vct:pots.vct,gold:pots.gold,cash:pots.cash,premium:pots.premium,crypto:pots.crypto,total,
       short:shortYear===year});
     if(shortYear!==null&&year>=shortYear)break;
   }
@@ -1130,10 +1245,21 @@ function render(){
     `<th>Holding</th><th>Wrapper</th>${couple?"<th>Owner</th>":""}<th>Starts</th><th class="num">Value £</th><th class="num">Growth %/yr</th><th></th>`;
   const tb=document.querySelector("#holdingsTable tbody");
   tb.innerHTML="";
-  const visIdx=S.holdings.map((x,j)=>inFilter(x)?j:-1).filter(j=>j>=0);
-  const firstVis=visIdx[0], lastVis=visIdx[visIdx.length-1];
-  S.holdings.forEach((h,i)=>{
-    if(!inFilter(h))return;
+  /* grouped by wrapper, in WRAP order; original order kept within each group */
+  const visIdx=[];
+  Object.keys(WRAP).forEach(w=>{S.holdings.forEach((x,j)=>{if(x.wrap===w&&inFilter(x))visIdx.push(j);});});
+  const segFirst={},segLast={};
+  visIdx.forEach(j=>{const w=S.holdings[j].wrap;if(segFirst[w]===undefined)segFirst[w]=j;segLast[w]=j;});
+  const grpSub=w=>S.holdings.filter(x=>x.wrap===w&&inFilter(x)).reduce((a,x)=>a+ +x.value,0);
+  let curW=null;
+  visIdx.forEach(i=>{
+    const h=S.holdings[i];
+    if(h.wrap!==curW){
+      curW=h.wrap;
+      const trg=document.createElement("tr");trg.className="grp";
+      trg.innerHTML=`<td colspan="${couple?7:6}"><span class="h-dot" style="background:${WRAP[curW].hex};width:9px;height:9px"></span>${WRAP[curW].label}<span class="grp-sub">${fmt(grpSub(curW))}</span></td>`;
+      tb.appendChild(trg);
+    }
     const tr=document.createElement("tr");
     tr.innerHTML=`<td class="h-name" data-label="Holding"><span class="h-dot" style="background:${(WRAP[h.wrap]||WRAP.cash).hex}" title="${(WRAP[h.wrap]||WRAP.cash).label}" aria-hidden="true"></span><input type="text" data-i="${i}" data-k="name" value="${h.name.replace(/"/g,'&quot;')}" aria-label="Holding name"></td>
       <td class="h-wrap" data-label="Wrapper"><select data-i="${i}" data-k="wrap" aria-label="Wrapper">${Object.keys(WRAP).map(w=>`<option value="${w}"${w===h.wrap?" selected":""}>${WRAP[w].label}</option>`).join("")}</select></td>
@@ -1141,9 +1267,36 @@ function render(){
       <td data-label="Starts"><input type="month" data-i="${i}" data-k="start" value="${h.start||"2026-06"}" min="2026-06" max="2060-12" style="min-width:130px" aria-label="Start date"></td>
       <td class="num" data-label="Value £"><input type="number" data-i="${i}" data-k="value" value="${h.value}" min="0" step="500" style="text-align:right" aria-label="Value"></td>
       <td class="num" data-label="Growth %/yr"><span class="growth-cell"><input type="number" data-i="${i}" data-k="growth" value="${h.growth}" step="0.5" style="text-align:right;max-width:90px" aria-label="Growth">${(h.wrap==="investment"||h.wrap==="gia"||h.wrap==="crypto")?`<button class="small ghost est no-print" data-est="${i}" title="Estimate annual growth from what you paid vs what it\u2019s worth">\u2248</button>`:""}</span></td>
-      <td class="h-del"><span class="mv-group no-print"><button class="small ghost mv" data-mvu="${i}"${firstVis===i?" disabled":""} aria-label="Move up" title="Move up">▲</button><button class="small ghost mv" data-mvd="${i}"${lastVis===i?" disabled":""} aria-label="Move down" title="Move down">▼</button></span><button class="small danger no-print" data-del="${i}" aria-label="Remove holding">✕</button></td>`;
+      <td class="h-del"><span class="mv-group no-print"><button class="small ghost mv" data-mvu="${i}"${segFirst[h.wrap]===i?" disabled":""} aria-label="Move up" title="Move up">▲</button><button class="small ghost mv" data-mvd="${i}"${segLast[h.wrap]===i?" disabled":""} aria-label="Move down" title="Move down">▼</button></span><button class="small danger no-print" data-del="${i}" aria-label="Remove holding">✕</button></td>`;
     tb.appendChild(tr);
   });
+  /* tile view */
+  const tileMode=S.holdingsView==="tile";
+  document.getElementById("holdingsTable").style.display=tileMode?"none":"";
+  const tilesBox=document.getElementById("holdingsTiles");
+  tilesBox.style.display=tileMode?"block":"none";
+  document.getElementById("viewLine").classList.toggle("on",!tileMode);
+  document.getElementById("viewTile").classList.toggle("on",tileMode);
+  if(tileMode){
+    let htm="",cw=null;
+    visIdx.forEach(i=>{
+      const x=S.holdings[i];
+      if(x.wrap!==cw){
+        if(cw!==null)htm+="</div>";
+        cw=x.wrap;
+        htm+=`<div class="hgrp-head"><span><span class="h-dot" style="background:${WRAP[cw].hex};width:9px;height:9px"></span>${WRAP[cw].label}</span><span class="grp-sub">${fmt(grpSub(cw))}</span></div><div class="hold-tiles">`;
+      }
+      const ownLbl=couple?(ownerOf(x)==="p2"?n2:ownerOf(x)==="joint"?"Joint":n1):"";
+      htm+=`<div class="hold-tile" data-he="${i}" tabindex="0" role="button" aria-label="Edit ${String(x.name).replace(/"/g,'&quot;')}" style="border-top-color:${(WRAP[x.wrap]||WRAP.cash).hex}">
+        <div class="ht-name">${String(x.name).replace(/</g,"&lt;")}</div>
+        <div class="ht-val">${fmt(+x.value||0)}</div>
+        <div class="ht-meta">${(+x.growth).toFixed(1)}%/yr \u00B7 from ${x.start||"\u2014"}${ownLbl?" \u00B7 "+ownLbl:""}</div>
+        ${String(x.note||"").trim()?`<div class="ht-note">${linkify(x.note)}</div>`:`<button type="button" class="ht-addnote no-print" data-addnote="${i}">+ Add note</button>`}
+      </div>`;
+    });
+    if(cw!==null)htm+="</div>";
+    tilesBox.innerHTML=htm||'<div class="hint">No holdings match the current filter.</div>';
+  }
   const avgG=tot>0?fHoldings.reduce((a,h)=>a+ +h.value*+h.growth,0)/tot:0;
   const totLabel=(filt==="all"&&wFilt==="all")?"Total":"Total (filtered)";
   document.getElementById("holdFootRow").innerHTML=
@@ -1153,6 +1306,7 @@ function render(){
   /* personalised header */
   document.getElementById("planFor").textContent="Plan for "+n1+(couple?" & "+n2+" — joint household view":"");
   updateCountdown();
+  const avEl=document.getElementById("appVer");if(avEl){avEl.textContent=S.appVersion||"";avEl.style.display=S.appVersion?"":"none";}
   const earliest=(!couple||retRowOf(S.settings.p1).ry<=retRowOf(S.settings.p2).ry)?S.settings.p1.retire:S.settings.p2.retire;
   const tf=document.getElementById("tunerFrom");if(tf)tf.textContent=fmtMY(earliest);
   const prs=document.getElementById("potAtRetSub");if(prs)prs.textContent=fmtMY(earliest)+", all wrappers";
@@ -1193,7 +1347,7 @@ function render(){
 
   /* action tiles */
   const at=document.getElementById("actionTiles");
-  at.innerHTML=S.actions.map((a,i)=>{const dd=daysToDue(a);const cls=a.done?" done":(dd!==null&&dd<0?" overdue":(dd!==null&&dd<=10?" duesoon":""));return `<div class="tile${cls}" data-open="${i}" tabindex="0" role="button" aria-label="Open details: ${String(a.t).replace(/"/g,'&quot;')}">
+  at.innerHTML=S.actions.map((a,i)=>{const dd=daysToDue(a);const cls=a.done?" done":(dd!==null&&dd<0?" overdue":(dd!==null&&dd<=S.alert1?" duesoon":""));return `<div class="tile${cls}" data-open="${i}" tabindex="0" role="button" aria-label="Open details: ${String(a.t).replace(/"/g,'&quot;')}">
       <button class="x no-print" data-adel="${i}" aria-label="Remove action">✕</button>
       <div class="tile-top">
         <input type="checkbox" data-ai="${i}" data-k="done"${a.done?" checked":""} aria-label="Mark done">
@@ -1204,19 +1358,19 @@ function render(){
           if(a.done)return '<span class="badge">✓ Done</span>';
           if(dd===null)return '<span class="more">Details</span>';
           if(dd<0)return '<span class="badge" style="color:var(--coral)">⚠ '+(-dd)+(dd===-1?' day':' days')+' overdue</span>';
-          if(dd<=10)return '<span class="badge" style="color:#B26A00">Due in '+dd+(dd===1?' day':' days')+'</span>';
+          if(dd<=S.alert1)return '<span class="badge" style="color:#B26A00">Due in '+dd+(dd===1?' day':' days')+'</span>';
           return '<span class="more">Details</span>';})()}
         <label class="due-lbl">Due <input type="date" data-ai="${i}" data-k="due" value="${a.due||""}" aria-label="Due date"></label>
       </div>
     </div>`;}).join("");
   /* due/overdue banner */
-  const dueSoon=S.actions.filter(a=>{const d=daysToDue(a);return !a.done&&d!==null&&d>=0&&d<=10;});
+  const dueSoon=S.actions.filter(a=>{const d=daysToDue(a);return !a.done&&d!==null&&d>=0&&d<=S.alert1;});
   const over=S.actions.filter(a=>{const d=daysToDue(a);return !a.done&&d!==null&&d<0;});
   const alrt=document.getElementById("actionAlert");
   if(over.length||dueSoon.length){
     alrt.innerHTML=`<div class="action-alert${over.length?" red":""}">`+
       (over.length?`<strong>⚠ Overdue:</strong> ${over.map(a=>String(a.t).split("—")[0].trim()).join("; ")}.<br>`:"")+
-      (dueSoon.length?`<strong>Due within 10 days:</strong> ${dueSoon.map(a=>{const d=daysToDue(a);return String(a.t).split("—")[0].trim()+" ("+(d===0?"today":d+"d")+")";}).join("; ")}.`:"")+
+      (dueSoon.length?`<strong>Due within ${S.alert1} days:</strong> ${dueSoon.map(a=>{const d=daysToDue(a);return String(a.t).split("—")[0].trim()+" ("+(d===0?"today":d+"d")+")";}).join("; ")}.`:"")+
       `</div>`;
   }else alrt.innerHTML="";
   const eb=document.getElementById("emailDue");
@@ -1240,7 +1394,7 @@ function render(){
 
   /* real-terms view: deflate every £ figure back to today's money for display */
   const defl=S.realTerms?(y=>Math.pow(1+S.inflation/100,y-NOW_YEAR)):(()=>1);
-  const MF=["need","sp","fixedInc","pensionDraw","taxFreeDraw","tax","pension","pensionP1","pensionP2","isa","gia","investment","eis","gold","cash","premium","crypto","total"];
+  const MF=["need","sp","fixedInc","pensionDraw","taxFreeDraw","tax","pension","pensionP1","pensionP2","isa","gia","investment","eis","vct","gold","cash","premium","crypto","total"];
   const dispRows=S.realTerms?r.rows.map(row=>{const c=Object.assign({},row);const d=defl(row.year);MF.forEach(k=>c[k]=row[k]/d);return c;}):r.rows;
   document.getElementById("realTerms").checked=!!S.realTerms;
   applyCollapse();
@@ -1257,7 +1411,7 @@ function render(){
 
 function renderChart(rows){
   const W=1040,H=320,P={l:62,r:10,t:14,b:26};
-  const keys=["pension","isa","gia","investment","eis","gold","cash","premium","crypto"];
+  const keys=["pension","isa","gia","investment","eis","vct","gold","cash","premium","crypto"];
   const maxT=Math.max(...rows.map(r=>r.total),1);
   const x=i=>P.l+(W-P.l-P.r)*i/Math.max(rows.length-1,1);
   const y=v=>H-P.b-(H-P.t-P.b)*v/maxT;
@@ -1353,7 +1507,7 @@ function renderTable(rows){
     <td class="num">${r.pensionDraw?fmt0(r.pensionDraw):"—"}</td><td class="num">${r.taxFreeDraw?fmt0(r.taxFreeDraw):"—"}</td>
     <td class="num">${r.tax?fmt0(r.tax):"—"}</td>
     <td class="num">${fmt0(r.pension)}</td><td class="num">${fmt0(r.isa)}</td>
-    <td class="num">${fmt0(r.gia+r.investment+r.eis+r.gold+r.cash+r.premium+r.crypto)}</td>
+    <td class="num">${fmt0(r.gia+r.investment+r.eis+r.vct+r.gold+r.cash+r.premium+r.crypto)}</td>
     <td class="num"><strong>${fmt0(r.total)}</strong></td></tr>`;}).join("");
 }
 
@@ -1373,10 +1527,15 @@ function renderInsights(r,byW,tot){
     ins.push(`<strong>Personal allowance funnel.</strong> Your £${fmt0(pipsMoNow(ST.p1)*12)}/yr pensions in payment leave ~${fmt(pa1)} of allowance unused until state pension age. The tax-optimised strategy fills it with pension drawdown — zero tax, plus 25% of every withdrawal tax-free.`);
   }
   ins.push(`<strong>State pension${couple?"s":""} from ${ST.p1.spAge}${couple&&ST.p2.spAge!==ST.p1.spAge?" / "+ST.p2.spAge:""}.</strong> ${couple?`Together worth ${fmt(+ST.p1.statePension+ +ST.p2.statePension)}/yr (today's money) — they may cover most of your £${fmt0(S.monthly)}/month core need.`:`At ${fmt(ST.p1.statePension)}/yr it covers roughly half your core need.`} The heavy drawdown years are ${r.retY}–${NOW_YEAR+(+ST.p1.spAge-+ST.p1.age)}. Check ${couple?"both NI records":"your NI record"} for gaps; topping up is usually excellent value.`);
+  if(byW.vct>0){
+    const vctRelief=Math.round(byW.vct*0.30);
+    const hasSal=(+ST.p1.salary>0)||(couple&&+ST.p2.salary>0);
+    ins.push(`<strong>VCT (${fmt(byW.vct)}).</strong> New VCT shares earn <strong>30% income tax relief</strong> (worth ${fmt(vctRelief)} on this amount \u2014 only against tax you actually pay${hasSal?", so the window is while salary lasts":`; <span style="color:var(--coral)">\u26A0 with no salary in the plan, little relief may be usable</span>`}, and shares must be held <strong>5 years</strong> to keep it). <strong>Dividends are tax-free</strong> \u2014 a VCT paying ~5% complements the personal-allowance strategy nicely \u2014 and disposals are CGT-free. Trade-offs: venture-capital risk, high fees, and discounts to NAV when selling. Modelling tip: fold the expected dividend yield into this holding\u2019s growth rate \u2014 don\u2019t enter it as \u201COther income\u201D in Settings, which the plan (correctly for most income, wrongly for VCT dividends) taxes. Relief claims go through your tax return; confirm with your IFA.`);
+  }
   if(byW.eis>0){
     const relief=Math.round(byW.eis*0.30);
     const hasSalary=(+ST.p1.salary>0)||(couple&&+ST.p2.salary>0);
-    ins.push(`<strong>EIS investment (${fmt(byW.eis)}).</strong> EIS carries a rich tax package: <strong>30% income tax relief</strong> on new subscriptions (worth ${fmt(relief)} on this amount — but only against income tax you actually pay${hasSalary?", so claim it while salary lasts":`; <span style="color:var(--coral)">⚠ with no salary in the plan, little relief may be usable — worth timing before retirement</span>`}), growth is <strong>CGT-free after a 3-year hold</strong> (the plan assumes disposals qualify), shares get <strong>IHT business relief after 2 years</strong>, and loss relief softens failures. The trade: unquoted, high-risk, illiquid companies — exits can take 5–10 years and valuations are uncertain. Keep EIS a small slice, and confirm claims (EIS3 forms) with your accountant or IFA.`);
+    ins.push(`<strong>EIS Investment (${fmt(byW.eis)}).</strong> EIS carries a rich tax package: <strong>30% income tax relief</strong> on new subscriptions (worth ${fmt(relief)} on this amount — but only against income tax you actually pay${hasSalary?", so claim it while salary lasts":`; <span style="color:var(--coral)">⚠ with no salary in the plan, little relief may be usable — worth timing before retirement</span>`}), growth is <strong>CGT-free after a 3-year hold</strong> (the plan assumes disposals qualify), shares get <strong>IHT business relief after 2 years</strong>, and loss relief softens failures. The trade: unquoted, high-risk, illiquid companies — exits can take 5–10 years and valuations are uncertain. Keep EIS a small slice, and confirm claims (EIS3 forms) with your accountant or IFA.`);
   }
   if(byW.premium>0){
     const capPer=50000;
@@ -1443,7 +1602,24 @@ document.body.addEventListener("change",e=>{
   if(t.dataset.tf==="wrap"){S.wrapperFilter=t.value;render();return;}
   if(t.dataset.lu!==undefined){S.holdings[+t.dataset.lu].units=+t.value||0;render();return;}
   if(t.dataset.mo!==undefined){S.metals[t.dataset.mo]=+t.value||0;render();return;}
-  if(t.dataset.lc!==undefined){S.holdings[+t.dataset.lc].coin=t.value;render();const m=document.getElementById("liveMsg");if(m&&!(S.live&&S.live.coins&&S.live.coins[t.value])){m.style.color="var(--ink-soft)";m.textContent="Coin changed \u2014 hit \u21BB Refresh to fetch its price.";}return;}
+  if(t.dataset.lc!==undefined){
+    const x=S.holdings[+t.dataset.lc];if(!x)return;
+    const oldCo=coinOf(x.coin||"ripple"),newId=t.value,newCo=coinOf(newId);
+    const autoNamed=[oldCo.label.toLowerCase(),oldCo.sym.toLowerCase()].includes(String(x.name||"").trim().toLowerCase());
+    const hasPosition=(+x.units>0)||(+x.value>0);
+    const doSwitch=()=>{
+      x.coin=newId;
+      if(autoNamed)x.name=newCo.label;
+      render();
+      const m=document.getElementById("liveMsg");
+      if(m&&!(S.live&&S.live.coins&&S.live.coins[newId])){m.style.color="var(--ink-soft)";m.textContent="Coin changed to "+newCo.label+" \u2014 hit \u21BB Refresh to fetch its price.";}
+    };
+    if(hasPosition&&newId!==x.coin){
+      appConfirm("Switch <strong>\u201C"+String(x.name).replace(/</g,"&lt;")+"\u201D</strong> from "+oldCo.label+" to "+newCo.label+"?<br><br>Its "+(x.units?x.units+" units and ":"")+fmt(+x.value||0)+" value would then be repriced as "+newCo.label+". To track "+newCo.label+" <em>as well</em>, use \u201C+ Add coin\u201D instead.",{okLabel:"Switch coin"})
+        .then(ok=>{if(ok)doSwitch();else render();});
+    }else doSwitch();
+    return;
+  }
   if(t.dataset.oo!==undefined){const k=t.dataset.k;S.oneoffs[+t.dataset.oo][k]=(k==="tag"||k==="note")?t.value:+t.value;render();}
   if(t.dataset.ai!==undefined){
     const a=S.actions[+t.dataset.ai];
@@ -1454,6 +1630,11 @@ document.body.addEventListener("change",e=>{
 });
 document.body.addEventListener("click",e=>{
   const t=e.target;
+  if(t.id==="viewLine"||t.id==="viewTile"){S.holdingsView=t.id==="viewTile"?"tile":"line";render();return;}
+  if(t.closest&&t.closest(".ht-note a"))return;        /* let note links open normally */
+  if(t.dataset.addnote!==undefined){openHoldEdit(+t.dataset.addnote);setTimeout(()=>{const n=document.getElementById("he_note");if(n)n.focus();},0);return;}
+  const ht=t.closest&&t.closest("[data-he]");
+  if(ht){openHoldEdit(+ht.dataset.he);return;}
   if(t.dataset.est!==undefined){openEst(+t.dataset.est);return;}
   if(t.dataset.mvu!==undefined){moveHolding(+t.dataset.mvu,-1);return;}
   if(t.dataset.mvd!==undefined){moveHolding(+t.dataset.mvd,1);return;}
@@ -1477,6 +1658,15 @@ document.body.addEventListener("click",e=>{
   if(t.dataset.arestore!==undefined){restoreAction(+t.dataset.arestore);return;}
   if(t.dataset.adelarch!==undefined){const j=+t.dataset.adelarch;appConfirm("Delete this archived action permanently?<br><br>If it changed your portfolio, that change will be reversed.",{okLabel:"Delete"}).then(ok=>{if(ok)deleteArchived(j);});return;}
   if(t.dataset.filt!==undefined){S.portfolioFilter=t.dataset.filt;render();return;}
+  if(t.id==="addCoinRow"){
+    const held=new Set(S.holdings.filter(x=>x.wrap==="crypto").map(x=>x.coin||"ripple"));
+    const next=COINS.find(c=>!held.has(c.id))||COINS[0];
+    S.holdings.push({name:next.label,wrap:"crypto",owner:"p1",value:0,growth:0,start:"2026-06",coin:next.id,units:0});
+    render();
+    const m=document.getElementById("liveMsg");
+    if(m){m.style.color="var(--ink-soft)";m.textContent="\u201C"+next.label+"\u201D added as a new Crypto holding \u2014 set its coin and units, then \u21BB Refresh to fetch its price.";}
+    return;
+  }
   if(t.dataset.tfclear!==undefined){S.portfolioFilter="all";S.wrapperFilter="all";render();return;}
   const tile=t.closest("[data-open]");
   if(tile&&!t.closest("input,button,select,textarea,a"))openAction(+tile.dataset.open);
@@ -1591,6 +1781,8 @@ document.body.addEventListener("keydown",e=>{
     const h2=e.target.closest&&e.target.closest("main>section>h2");
     if(h2&&e.target===h2){e.preventDefault();const sec=h2.parentElement;S.collapse.closed[sec.id]=!S.collapse.closed[sec.id];applyCollapse();scheduleSave();return;}
   }
+  const htile=e.target.closest&&e.target.closest("[data-he]");
+  if(htile&&(e.key==="Enter"||e.key===" ")&&e.target===htile){e.preventDefault();openHoldEdit(+htile.dataset.he);return;}
   const tile=e.target.closest&&e.target.closest("[data-open]");
   if(tile&&(e.key==="Enter"||e.key===" ")&&e.target===tile){e.preventDefault();openAction(+tile.dataset.open);}
 });
@@ -1677,6 +1869,9 @@ function applyCollapse(){
   });
 }
 function renderLive(){
+  const lc=document.getElementById("liveCard");
+  if(lc){lc.classList.toggle("live-collapsed",!!S.liveCollapsed);
+    const lh=document.getElementById("liveHead");if(lh)lh.setAttribute("aria-expanded",String(!S.liveCollapsed));}
   const box=document.getElementById("liveRows");if(!box)return;
   const L=S.live||{};
   const stamp=document.getElementById("liveStamp");
@@ -1708,10 +1903,52 @@ function renderLive(){
       <span class="lv-val">${price?("\u00A3"+price.toLocaleString("en-GB",{maximumFractionDigits:price<10?3:0})+" /"+co.sym):"\u2014"}</span>${chg(c)}
       <label class="lv-sub">coins held
         <input type="number" class="lv-units" data-lu="${o.i}" value="${o.x.units||""}" min="0" step="any" placeholder="units"></label>
-      <span class="lv-sub">${(o.x.units&&price)?("= "+fmt(o.x.units*price)):""}</span></div>`;
+      <span class="lv-sub">${(o.x.units&&price)?("= "+fmt(o.x.units*price)):""}</span>
+      <button class="small danger no-print" data-del="${o.i}" aria-label="Remove this coin holding" title="Remove holding">\u2715</button></div>`;
   });
+  rows+=`<div class="live-row" style="border-bottom:none"><button class="small ghost no-print" id="addCoinRow" type="button">+ Add coin</button><span class="lv-sub">Tracks another cryptocurrency as its own holding \u2014 existing coins are never overwritten.</span></div>`;
   box.innerHTML=rows+`<div class="live-row" style="justify-content:flex-end"><button class="small no-print" id="applyLive"${((L.coins&&Object.keys(L.coins).length)||L.gold||L.silver)?"":" disabled"}>Apply live prices to holdings</button></div>`;
 }
+
+/* ---------- holding edit modal (tile view) ---------- */
+let heIdx=null;
+function openHoldEdit(i){
+  const x=S.holdings[i];if(!x)return;
+  heIdx=i;
+  const couple=!!S.settings.couple,n1=S.settings.p1.name||"You",n2=S.settings.p2.name||"Spouse";
+  document.getElementById("heTitle").textContent="Edit holding";
+  document.getElementById("he_name").value=x.name||"";
+  document.getElementById("he_wrap").innerHTML=Object.keys(WRAP).map(w=>`<option value="${w}"${w===x.wrap?" selected":""}>${WRAP[w].label}</option>`).join("");
+  document.getElementById("heOwnerField").style.display=couple?"":"none";
+  if(couple)document.getElementById("he_owner").innerHTML=`<option value="p1"${ownerKeyOf(x)==="p1"?" selected":""}>${n1}</option><option value="p2"${ownerKeyOf(x)==="p2"?" selected":""}>${n2}</option><option value="joint"${ownerKeyOf(x)==="joint"?" selected":""}>Joint</option>`;
+  document.getElementById("he_start").value=x.start||"2026-06";
+  document.getElementById("he_value").value=x.value;
+  document.getElementById("he_growth").value=x.growth;
+  document.getElementById("he_note").value=x.note||"";
+  document.getElementById("heEst").style.display=(x.wrap==="investment"||x.wrap==="gia"||x.wrap==="crypto")?"inline-block":"none";
+  document.getElementById("heOverlay").classList.add("open");
+  document.getElementById("he_name").focus();
+}
+function closeHoldEdit(){document.getElementById("heOverlay").classList.remove("open");heIdx=null;}
+[["he_name","name",v=>v],["he_wrap","wrap",v=>v],["he_owner","owner",v=>v],["he_start","start",v=>v],["he_value","value",v=>+v||0],["he_growth","growth",v=>+v||0],["he_note","note",v=>v]].forEach(([id,key,cast])=>{
+  document.getElementById(id).addEventListener("change",e=>{
+    if(heIdx===null)return;
+    S.holdings[heIdx][key]=cast(e.target.value);
+    if(key==="wrap")document.getElementById("heEst").style.display=(e.target.value==="investment"||e.target.value==="gia"||e.target.value==="crypto")?"inline-block":"none";
+    render();
+  });
+});
+document.getElementById("heClose").addEventListener("click",closeHoldEdit);
+document.getElementById("heDone").addEventListener("click",closeHoldEdit);
+document.getElementById("heOverlay").addEventListener("click",e=>{if(e.target.id==="heOverlay")closeHoldEdit();});
+document.getElementById("heEst").addEventListener("click",()=>{if(heIdx!==null)openEst(heIdx);});
+document.getElementById("heDelete").addEventListener("click",()=>{
+  if(heIdx===null)return;
+  const di=heIdx,hd=S.holdings[di];
+  appConfirm("Delete the holding <strong>\u201C"+String(hd.name).replace(/</g,"&lt;")+"\u201D</strong> ("+fmt(+hd.value||0)+")?",{okLabel:"Delete holding"})
+    .then(ok=>{if(ok){closeHoldEdit();S.holdings.splice(di,1);render();}});
+});
+document.addEventListener("keydown",e=>{if(e.key==="Escape"&&document.getElementById("heOverlay").classList.contains("open")&&!document.getElementById("estOverlay").classList.contains("open"))closeHoldEdit();});
 
 /* ---------- growth estimator (CAGR from two valuations) ---------- */
 let estIdx=null;
@@ -1788,6 +2025,9 @@ function closeSettings(){setOverlay.classList.remove("open");}
 document.getElementById("openSettings").addEventListener("click",e=>{e.preventDefault();openSettings();});
 document.getElementById("openSettingsInline").addEventListener("click",openSettings);
 document.getElementById("settingsClose").addEventListener("click",closeSettings);
+document.querySelectorAll("details.set-sec").forEach(d=>{
+  d.addEventListener("toggle",()=>{S.setOpen=S.setOpen||{};S.setOpen[d.dataset.sec]=d.open;scheduleSave();});
+});
 setOverlay.addEventListener("click",e=>{if(e.target===setOverlay)closeSettings();});
 document.addEventListener("keydown",e=>{if(e.key==="Escape")closeSettings();});
 function renderSettingsControls(){
@@ -1798,6 +2038,11 @@ function renderSettingsControls(){
   });
   document.getElementById("s_couple").checked=!!ST.couple;
   const sc=document.getElementById("s_collapse");if(sc)sc.checked=!!(S.collapse&&S.collapse.on);
+  const hv=document.getElementById("s_holdview");if(hv)hv.value=S.holdingsView||"line";
+  const av=document.getElementById("s_appver");if(av)av.value=S.appVersion||"";
+  const a1=document.getElementById("s_alert1");if(a1)a1.value=S.alert1;
+  const a2=document.getElementById("s_alert2");if(a2)a2.value=S.alert2;
+  document.querySelectorAll("details.set-sec").forEach(d=>{d.open=!!(S.setOpen&&S.setOpen[d.dataset.sec]);});
   document.getElementById("spouseBlock").classList.toggle("off",!ST.couple);
   ["p1","p2"].forEach(pk=>{
     const box=document.getElementById("pips_"+pk);if(!box)return;
@@ -1838,6 +2083,14 @@ setOverlay.addEventListener("change",e=>{
     S.settings[pk].incomes[+i][key]=(key==="mo")?+el.value:el.value;
     render();return;
   }
+  if(el.id==="s_alert1"||el.id==="s_alert2"){
+    if(el.id==="s_alert1")S.alert1=parseInt(el.value)||10;else S.alert2=parseInt(el.value)||0;
+    S.alert1=Math.min(60,Math.max(1,S.alert1));
+    S.alert2=Math.min(S.alert1,Math.max(0,S.alert2));
+    renderSettingsControls();render();return;
+  }
+  if(el.id==="s_appver"){S.appVersion=el.value.trim();render();return;}
+  if(el.id==="s_holdview"){S.holdingsView=el.value==="tile"?"tile":"line";render();return;}
   if(el.id==="s_collapse"){S.collapse.on=el.checked;applyCollapse();scheduleSave();return;}
   if(el.id==="s_couple"){S.settings.couple=el.checked;renderSettingsControls();render();return;}
   if(!el.dataset.set)return;
@@ -1854,6 +2107,9 @@ bind("annualExtras","annualExtras");bind("strategy","strategy",v=>v);bind("infla
 document.getElementById("escalate").addEventListener("change",e=>{S.escalate=e.target.checked;render();});
 document.getElementById("realTerms").addEventListener("change",e=>{S.realTerms=e.target.checked;render();});
 document.getElementById("refreshLive").addEventListener("click",refreshLive);
+function toggleLive(){S.liveCollapsed=!S.liveCollapsed;renderLive();scheduleSave();}
+document.getElementById("liveHead").addEventListener("click",toggleLive);
+document.getElementById("liveHead").addEventListener("keydown",e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();toggleLive();}});
 document.getElementById("addHolding").addEventListener("click",()=>{S.holdings.push({name:"New holding",wrap:"gia",owner:"p1",value:10000,growth:5,start:"2026-06"});render();});
 document.getElementById("addSP500").addEventListener("click",()=>{S.holdings.push({name:"S&P 500 index tracker",wrap:"isa",owner:"p1",value:10000,growth:7,start:"2026-06"});render();});
 document.getElementById("addOneoff").addEventListener("click",()=>{S.oneoffs.push({year:2030,amount:5000,tag:"holidays",note:""});render();});
@@ -1871,18 +2127,18 @@ document.getElementById("dlIcs").addEventListener("click",()=>{
     ics+="BEGIN:VEVENT\r\nUID:cockpit-action-"+i+"-"+dt+"@retirement-cockpit\r\nDTSTAMP:"+stamp+"\r\n"
       +"DTSTART;VALUE=DATE:"+dt+"\r\nSUMMARY:"+esc("Retirement plan: "+a.t)+"\r\n"
       +"DESCRIPTION:"+esc("Due "+a.due+" — from your Retirement Cockpit action list.")+"\r\n"
-      +"BEGIN:VALARM\r\nTRIGGER:-P10D\r\nACTION:DISPLAY\r\nDESCRIPTION:"+esc("10 days: "+a.t)+"\r\nEND:VALARM\r\n"
-      +"BEGIN:VALARM\r\nTRIGGER:-P5D\r\nACTION:DISPLAY\r\nDESCRIPTION:"+esc("5 days: "+a.t)+"\r\nEND:VALARM\r\n"
+      +"BEGIN:VALARM\r\nTRIGGER:-P"+S.alert1+"D\r\nACTION:DISPLAY\r\nDESCRIPTION:"+esc(S.alert1+" days: "+a.t)+"\r\nEND:VALARM\r\n"
+      +(S.alert2>0?"BEGIN:VALARM\r\nTRIGGER:-P"+S.alert2+"D\r\nACTION:DISPLAY\r\nDESCRIPTION:"+esc(S.alert2+" days: "+a.t)+"\r\nEND:VALARM\r\n":"")
       +"BEGIN:VALARM\r\nTRIGGER:PT9H\r\nACTION:DISPLAY\r\nDESCRIPTION:"+esc("Due today: "+a.t)+"\r\nEND:VALARM\r\n"
       +"END:VEVENT\r\n";
   });
   ics+="END:VCALENDAR\r\n";
   dl(new Blob([ics],{type:"text/calendar"}),"retirement-actions.ics");
-  const m=document.getElementById("actionFx");m.innerHTML="✓ Calendar file created for "+acts.length+" action"+(acts.length>1?"s":"")+" — open it and your calendar will alert you 10 days and 5 days before each due date, and on the day.";
+  const m=document.getElementById("actionFx");m.innerHTML="✓ Calendar file created for "+acts.length+" action"+(acts.length>1?"s":"")+" — open it and your calendar will alert you "+S.alert1+(S.alert2>0?" and "+S.alert2:"")+" days before each due date, and on the day.";
 });
 document.getElementById("emailDue").addEventListener("click",()=>{
   const em=(S.settings.p1.email||"").trim();
-  const dueSoon=S.actions.filter(a=>{const d=daysToDue(a);return !a.done&&d!==null&&d>=0&&d<=10;});
+  const dueSoon=S.actions.filter(a=>{const d=daysToDue(a);return !a.done&&d!==null&&d>=0&&d<=S.alert1;});
   const over=S.actions.filter(a=>{const d=daysToDue(a);return !a.done&&d!==null&&d<0;});
   let body="Retirement Cockpit — action reminders\n\n";
   if(over.length){body+="OVERDUE:\n"+over.map(a=>"• "+a.t+" (was due "+a.due+")").join("\n")+"\n\n";}
@@ -1901,10 +2157,10 @@ document.getElementById("archiveToggle").addEventListener("click",function(){
 
 /* reports */
 document.getElementById("dlCsv").addEventListener("click",()=>{
-  const h=["TaxYear","Age","NetNeed","StatePension","PensionDraw","TaxFreeDraws","IncomeTax","PensionPot","PensionP1","PensionP2","ISA","GIA","Investment","EIS","Gold","Cash","PremiumBonds","Crypto","Total","OneOffEvents"];
+  const h=["TaxYear","Age","NetNeed","StatePension","PensionDraw","TaxFreeDraws","IncomeTax","PensionPot","PensionP1","PensionP2","ISA","GIA","Investment","EIS","VCT","Gold","Cash","PremiumBonds","Crypto","Total","OneOffEvents"];
   const lines=[h.join(",")].concat(window.__rows.map(r=>{
     const ev=S.oneoffs.filter(o=>+o.year===r.year).map(o=>(TAGS[o.tag]||TAGS.other).label+" £"+Math.round(o.amount)+(o.note?" ("+String(o.note).replace(/"/g,"'")+")":"")).join("; ");
-    return [r.year+"/"+String(r.year+1).slice(2),r.age,...[r.need,r.sp,r.pensionDraw,r.taxFreeDraw,r.tax,r.pension,r.pensionP1,r.pensionP2,r.isa,r.gia,r.investment,r.eis,r.gold,r.cash,r.premium,r.crypto,r.total].map(v=>Math.round(v)),'"'+ev+'"'].join(",");
+    return [r.year+"/"+String(r.year+1).slice(2),r.age,...[r.need,r.sp,r.pensionDraw,r.taxFreeDraw,r.tax,r.pension,r.pensionP1,r.pensionP2,r.isa,r.gia,r.investment,r.eis,r.vct,r.gold,r.cash,r.premium,r.crypto,r.total].map(v=>Math.round(v)),'"'+ev+'"'].join(",");
   }));
   dl(new Blob([lines.join("\n")],{type:"text/csv"}),"retirement-projection.csv");
 });
