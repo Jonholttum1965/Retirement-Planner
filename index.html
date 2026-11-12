@@ -568,7 +568,7 @@ header{padding-top:calc(26px + env(safe-area-inset-top))}
     <div class="scroll-hint">Swipe sideways to see all columns →</div>
     <table id="projTable">
       <thead><tr>
-        <th>Tax yr</th><th class="num">Age</th><th class="num">Net need £</th><th class="num">State pen £</th><th class="num">Pension draw £</th><th class="num">Tax-free draws £</th><th class="num">Income tax £</th><th class="num">Pension pot £</th><th class="num">ISA £</th><th class="num">Other £</th><th class="num">Total £</th>
+        <th>Tax yr</th><th class="num">Age</th><th class="num">Net need £</th><th class="num">State pen £</th><th class="num" title="Pensions in payment, other income and any salary — excludes state pension">Fixed inc £</th><th class="num">Pension draw £</th><th class="num">Tax-free draws £</th><th class="num">Income tax £</th><th class="num">Pension pot £</th><th class="num">ISA £</th><th class="num">Other £</th><th class="num">Total £</th>
       </tr></thead>
       <tbody></tbody>
     </table>
@@ -1503,7 +1503,7 @@ function renderTable(rows){
       .map(o=>`<span title="${(TAGS[o.tag]||TAGS.other).label}: £${fmt0(o.amount)}${o.note?" — "+String(o.note).replace(/"/g,'&quot;'):""}" style="cursor:help;color:var(--gold);vertical-align:-2px;display:inline-block">${tagIcon(o.tag,13)}</span>`).join(" ");
     return `<tr${r.short?' style="background:#FBF0EC"':""}>
     <td class="num">${r.year}/${String(r.year+1).slice(2)}</td><td class="num">${r.age}</td>
-    <td class="num">${r.need?fmt0(r.need):"—"}${icons?" "+icons:""}</td><td class="num">${r.sp?fmt0(r.sp):"—"}</td>
+    <td class="num">${r.need?fmt0(r.need):"—"}${icons?" "+icons:""}</td><td class="num">${r.sp?fmt0(r.sp):"—"}</td><td class="num">${(r.fixedInc-r.sp)>1?fmt0(r.fixedInc-r.sp):"—"}</td>
     <td class="num">${r.pensionDraw?fmt0(r.pensionDraw):"—"}</td><td class="num">${r.taxFreeDraw?fmt0(r.taxFreeDraw):"—"}</td>
     <td class="num">${r.tax?fmt0(r.tax):"—"}</td>
     <td class="num">${fmt0(r.pension)}</td><td class="num">${fmt0(r.isa)}</td>
@@ -2157,10 +2157,10 @@ document.getElementById("archiveToggle").addEventListener("click",function(){
 
 /* reports */
 document.getElementById("dlCsv").addEventListener("click",()=>{
-  const h=["TaxYear","Age","NetNeed","StatePension","PensionDraw","TaxFreeDraws","IncomeTax","PensionPot","PensionP1","PensionP2","ISA","GIA","Investment","EIS","VCT","Gold","Cash","PremiumBonds","Crypto","Total","OneOffEvents"];
+  const h=["TaxYear","Age","NetNeed","StatePension","FixedIncome","PensionDraw","TaxFreeDraws","IncomeTax","PensionPot","PensionP1","PensionP2","ISA","GIA","Investment","EIS","VCT","Gold","Cash","PremiumBonds","Crypto","Total","OneOffEvents"];
   const lines=[h.join(",")].concat(window.__rows.map(r=>{
     const ev=S.oneoffs.filter(o=>+o.year===r.year).map(o=>(TAGS[o.tag]||TAGS.other).label+" £"+Math.round(o.amount)+(o.note?" ("+String(o.note).replace(/"/g,"'")+")":"")).join("; ");
-    return [r.year+"/"+String(r.year+1).slice(2),r.age,...[r.need,r.sp,r.pensionDraw,r.taxFreeDraw,r.tax,r.pension,r.pensionP1,r.pensionP2,r.isa,r.gia,r.investment,r.eis,r.vct,r.gold,r.cash,r.premium,r.crypto,r.total].map(v=>Math.round(v)),'"'+ev+'"'].join(",");
+    return [r.year+"/"+String(r.year+1).slice(2),r.age,...[r.need,r.sp,Math.max(0,(r.fixedInc||0)-r.sp),r.pensionDraw,r.taxFreeDraw,r.tax,r.pension,r.pensionP1,r.pensionP2,r.isa,r.gia,r.investment,r.eis,r.vct,r.gold,r.cash,r.premium,r.crypto,r.total].map(v=>Math.round(v)),'"'+ev+'"'].join(",");
   }));
   dl(new Blob([lines.join("\n")],{type:"text/csv"}),"retirement-projection.csv");
 });

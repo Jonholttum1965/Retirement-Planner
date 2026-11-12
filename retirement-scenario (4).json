@@ -1,0 +1,324 @@
+{
+  "settings": {
+    "couple": false,
+    "endAge": 97,
+    "p1": {
+      "name": "You",
+      "dob": "",
+      "email": "",
+      "age": 61,
+      "retire": "2027-06-30",
+      "salary": 75000,
+      "pips": [
+        {
+          "label": "Pension in payment",
+          "mo": 160,
+          "start": "2026-06"
+        },
+        {
+          "label": "Pension in payment",
+          "mo": 160,
+          "start": "2026-06"
+        }
+      ],
+      "incomes": [
+        {
+          "label": "Part-time work",
+          "mo": 800,
+          "start": "2027-07",
+          "end": "2030-02"
+        }
+      ],
+      "statePension": 11973,
+      "spAge": 67
+    },
+    "p2": {
+      "name": "Spouse",
+      "dob": "",
+      "email": "",
+      "age": 61,
+      "retire": "2027-06-30",
+      "salary": 0,
+      "pips": [],
+      "incomes": [],
+      "statePension": 11973,
+      "spAge": 67
+    }
+  },
+  "holdings": [
+    {
+      "name": "PensionBee pension",
+      "wrap": "pension",
+      "value": 115000,
+      "growth": 5,
+      "start": "2026-06",
+      "owner": "p1"
+    },
+    {
+      "name": "Philips  Pension",
+      "wrap": "pension",
+      "owner": "p1",
+      "value": 78000,
+      "growth": 5,
+      "start": "2026-07"
+    },
+    {
+      "name": "Inheritance (cash)",
+      "wrap": "cash",
+      "value": 100000,
+      "growth": 3.5,
+      "start": "2026-08",
+      "owner": "p1"
+    },
+    {
+      "name": "Gold coins",
+      "wrap": "gold",
+      "value": 8792,
+      "growth": 3.8,
+      "start": "2026-06",
+      "owner": "p1",
+      "units": 3,
+      "metal": "gold"
+    },
+    {
+      "name": "Silver coins",
+      "wrap": "gold",
+      "owner": "p1",
+      "value": 8496,
+      "growth": 3,
+      "start": "2026-06",
+      "metal": "silver",
+      "units": 222
+    },
+    {
+      "name": "MONZO Shares ISA",
+      "wrap": "isa",
+      "value": 16000,
+      "growth": 6,
+      "start": "2026-07",
+      "owner": "p1"
+    },
+    {
+      "name": "Stock Investment",
+      "wrap": "investment",
+      "value": 0,
+      "growth": 5,
+      "start": "2026-06",
+      "owner": "p1"
+    },
+    {
+      "name": "Bonds",
+      "wrap": "premium",
+      "owner": "p1",
+      "value": 50000,
+      "growth": 3.8,
+      "start": "2026-06"
+    },
+    {
+      "name": "Cash ISA",
+      "wrap": "isa",
+      "owner": "p1",
+      "value": 20000,
+      "growth": 5,
+      "start": "2026-06"
+    },
+    {
+      "name": "New holding",
+      "wrap": "gia",
+      "owner": "p1",
+      "value": 10000,
+      "growth": 5,
+      "start": "2026-06"
+    },
+    {
+      "name": "New holding",
+      "wrap": "eis",
+      "owner": "p1",
+      "value": 25000,
+      "growth": 5,
+      "start": "2026-10"
+    },
+    {
+      "name": "XRP",
+      "wrap": "crypto",
+      "value": 775,
+      "growth": 2.5,
+      "start": "",
+      "owner": "p1",
+      "units": 1000,
+      "coin": "ripple"
+    },
+    {
+      "name": "Ethereum",
+      "wrap": "crypto",
+      "owner": "p1",
+      "value": 98,
+      "growth": 5,
+      "start": "2026-06",
+      "coin": "ethereum",
+      "units": 0.0647
+    },
+    {
+      "name": "Litecoin",
+      "wrap": "crypto",
+      "owner": "p1",
+      "value": 47,
+      "growth": 5,
+      "start": "2026-06",
+      "coin": "litecoin",
+      "units": 1.266
+    }
+  ],
+  "actions": [
+    {
+      "t": "Check state pension forecast & fill NI gaps (gov.uk/check-state-pension)",
+      "done": false,
+      "date": "",
+      "notes": "",
+      "d": "<p>Your state pension (~£11,973/yr full rate) does the heavy lifting from age 67 — make sure you're on track for the full amount.</p><ul><li>Get your forecast at <strong>gov.uk/check-state-pension</strong> — it shows exactly how many qualifying NI years you have (35 needed for the full new state pension).</li><li>If years are missing, voluntary Class 3 contributions cost roughly £900 per year purchased and add about £340/yr to your pension <em>for life</em> — typically paying for itself within 3 years of claiming.</li><li>Call the <strong>Future Pension Centre</strong> (0800 731 0175) before paying — not every gap year actually increases your pension.</li><li>You'll keep earning NI through June 2027 from your salary, so check the forecast as at your retirement date, not today.</li></ul>",
+      "due": "",
+      "remind": {}
+    },
+    {
+      "t": "Make one-off pension contribution — before taking any taxable pension income (MPAA)",
+      "done": false,
+      "date": "",
+      "notes": "",
+      "d": "<p>This is your single biggest tax win before retiring, and the order matters.</p><ul><li>About <strong>£24,730</strong> of your £75k salary is taxed at 40%. Contributions up to that get 40% relief — £100 in the pension costs you £60.</li><li>Via <strong>salary sacrifice</strong> you also save 2% employee NI (and your employer may pass on some of their 15% saving — ask).</li><li>The annual allowance is £60,000, and unused allowance from the last 3 tax years can be carried forward if you want to go bigger with the inheritance.</li><li><strong>Critical sequencing:</strong> once you take any taxable income from a pension, the MPAA cuts your future contribution allowance to £10,000/yr. Contribute first, draw later.</li><li>25% of everything in the pension comes back out tax-free.</li></ul>",
+      "fx": "pension_topup",
+      "due": "",
+      "remind": {}
+    },
+    {
+      "t": "Fund 2026/27 ISA (£20,000)",
+      "done": false,
+      "date": "",
+      "notes": "",
+      "d": "<p>The ISA allowance is use-it-or-lose-it each tax year (6 April – 5 April), and ISA withdrawals in retirement are completely tax-free.</p><ul><li>£20,000 this tax year from your cash — a Stocks &amp; Shares ISA holding a low-cost global or S&amp;P 500 index fund matches your stated goal.</li><li>Compare platform fees: flat-fee providers tend to win once balances exceed ~£50k; percentage-fee platforms are fine below that.</li><li>If markets feel uncomfortable, you can hold the £20k as cash <em>inside</em> the ISA and invest gradually — the allowance is secured either way.</li><li>A <strong>flexible ISA</strong> lets you withdraw and replace money in the same tax year without losing allowance — useful in retirement.</li></ul>",
+      "fx": "isa_2026",
+      "due": "",
+      "remind": {}
+    },
+    {
+      "t": "Fund 2027/28 ISA (£20,000, after 6 April 2027)",
+      "done": false,
+      "date": "",
+      "notes": "",
+      "d": "<p>A second £20,000 goes in once the new tax year opens on 6 April 2027 — two months before you retire.</p><ul><li>That makes <strong>£40,000 sheltered before retirement</strong>, and you can keep adding £20k every year after from remaining cash (\"Bed &amp; ISA\" from any taxable investments).</li><li>Moving taxable investments into the ISA uses your £3,000 CGT allowance each year — sell in stages if gains are large.</li><li>Set a recurring April reminder; the dashboard's plan assumes this happens every year while cash remains.</li></ul>",
+      "fx": "isa_2027",
+      "due": "",
+      "remind": {}
+    },
+    {
+      "t": "Decide investment plan for £200k inheritance",
+      "done": false,
+      "date": "",
+      "notes": "",
+      "d": "<p>The largest single decision in the plan. A sensible order of operations:</p><ul><li><strong>1. Buffer:</strong> ring-fence 1–2 years of spending (£30–50k) in easy-access savings / cash ISA.</li><li><strong>2. Pension:</strong> consider topping up further while you still have salary — relief is at 40% only until June 2027 (annual allowance + carry-forward permitting).</li><li><strong>3. ISA:</strong> £20k per year, every year.</li><li><strong>4. The rest:</strong> a taxable account (GIA) in low-cost index funds, harvesting the £3,000 CGT allowance annually, plus Premium Bonds (up to £50k, prizes tax-free) for cash you want accessible.</li><li>Drip-feeding a lump sum over 6–12 months reduces regret risk, though investing immediately wins more often than not historically.</li><li>Check whether any inheritance tax is the <em>estate's</em> liability (it usually is) — what you receive is normally yours free of further tax.</li></ul>",
+      "due": "",
+      "remind": {}
+    },
+    {
+      "t": "Book session with a regulated independent financial adviser",
+      "done": false,
+      "date": "",
+      "notes": "",
+      "d": "<p>With ~£400k+ and an irreversible set of decisions (MPAA, drawdown method, inheritance), one or two paid advice sessions are worth it.</p><ul><li>Find advisers at <strong>unbiased.co.uk</strong> or <strong>vouchedfor.co.uk</strong> — look for \"Chartered\" or \"Certified\" financial planners who are independent (whole of market), and check the FCA register.</li><li>Ask up front: fixed fee vs % of assets. A one-off retirement plan typically runs £1,500–£3,500 fixed — avoid open-ended % fees if you mainly want a sense-check.</li><li>Bring this dashboard's CSV/JSON export — a concrete plan to critique gets you far more value per hour.</li><li>Also free: <strong>Pension Wise</strong> (MoneyHelper) offers a government-backed guidance appointment for over-50s — book it regardless.</li></ul>",
+      "due": "",
+      "remind": {}
+    },
+    {
+      "t": "Confirm PensionBee drawdown options & charges",
+      "done": false,
+      "date": "",
+      "notes": "",
+      "d": "<p>Check the mechanics of getting money out before you need it.</p><ul><li>Confirm your plan supports <strong>flexi-access drawdown</strong> and partial withdrawals (UFPLS-style), the annual fee on your plan, and how long withdrawals take to process.</li><li>Expect <strong>emergency tax</strong> on your first taxable withdrawal (HMRC applies a Month 1 code) — you reclaim it with form P55/P50Z, usually within 30 days. Plan cash flow around it.</li><li>Decide 25% tax-free as a lump vs taking it gradually with each withdrawal — gradual usually preserves more tax-free growth and is what this dashboard models.</li><li>Compare drawdown fees with one or two other SIPP providers; transfers before drawdown are straightforward.</li></ul>",
+      "due": "",
+      "remind": {}
+    },
+    {
+      "t": "Ring-fence 1–2 years' spending as cash buffer",
+      "done": false,
+      "date": "",
+      "notes": "",
+      "d": "<p>A cash buffer means you never sell investments in a downturn to pay for groceries.</p><ul><li>Target <strong>£30,000–£50,000</strong>: roughly 1–2 years of your £2k/month core spending plus holiday money.</li><li>Spread across: easy-access savings for year one, a 1-year fixed-rate account for year two, and/or a cash ISA portion.</li><li>Mind <strong>FSCS protection</strong> — £85,000 per banking licence. With the inheritance landing, split across institutions.</li><li>Your CGT-free gold and silver coins (£30k) are a decent second-line reserve for lumpy expenses — they're in the plan as exactly that.</li></ul>",
+      "due": "",
+      "remind": {}
+    }
+  ],
+  "monthly": 2500,
+  "annualExtras": 6000,
+  "oneoffs": [
+    {
+      "year": 2029,
+      "amount": 8000,
+      "tag": "home"
+    }
+  ],
+  "topUp": 60000,
+  "relief": 0.4,
+  "topUpSource": "__any__",
+  "isaFund": 20000,
+  "isaGrowth": 6,
+  "strategy": "opt",
+  "portfolioFilter": "all",
+  "wrapperFilter": "all",
+  "realTerms": false,
+  "live": {
+    "xrp": {
+      "gbp": 0.774591,
+      "chg": -2.9600065953193795
+    },
+    "gold": {
+      "gbpOz": 2930.74,
+      "chg": -3.177442362051512
+    },
+    "ts": 1794492566325,
+    "silver": {
+      "gbpOz": 38.27,
+      "chg": -3.559992059716027
+    },
+    "coins": {
+      "ripple": {
+        "gbp": 0.774591,
+        "chg": -2.9600065953193795
+      },
+      "ethereum": {
+        "gbp": 1514.21,
+        "chg": -2.191403319793723
+      },
+      "litecoin": {
+        "gbp": 36.76,
+        "chg": -4.890610342511168
+      }
+    }
+  },
+  "inflation": 2.5,
+  "giaTax": 5,
+  "escalate": true,
+  "isaDone": {},
+  "archived": [],
+  "_saved": 1794492675427,
+  "metals": {
+    "goldOz": 3,
+    "silverOz": 222
+  },
+  "collapse": {
+    "on": true,
+    "closed": {
+      "portfolio": false,
+      "plan": true,
+      "actions": false,
+      "projection": true,
+      "insights": true
+    }
+  },
+  "holdingsView": "line",
+  "liveCollapsed": false,
+  "appVersion": "",
+  "setOpen": {
+    "you": true
+  },
+  "alert1": 10,
+  "alert2": 5
+}
