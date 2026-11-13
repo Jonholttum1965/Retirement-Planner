@@ -203,6 +203,16 @@ body.collapse-on main>section>h2:hover{color:var(--pine)}
 /* ---------- action modal ---------- */
 .modal-overlay{position:fixed;inset:0;background:rgba(12,40,35,.55);display:none;align-items:flex-start;justify-content:center;padding:40px 16px;z-index:50;overflow-y:auto}
 .modal-overlay.open{display:flex}
+details.g-sec{border:1px solid var(--line);border-radius:12px;margin:0 0 10px;padding:0 16px;background:#FDFEFD}
+details.g-sec>summary{font-family:var(--disp);font-size:14.5px;font-weight:650;color:var(--pine);padding:11px 0;cursor:pointer;user-select:none;list-style:none;display:flex;align-items:center;gap:9px}
+details.g-sec>summary::-webkit-details-marker{display:none}
+details.g-sec>summary::before{content:"\25B8";color:var(--gold);font-size:.7em;display:inline-block;transition:transform .15s}
+details.g-sec[open]>summary::before{transform:rotate(90deg)}
+details.g-sec[open]>summary{border-bottom:1px solid var(--line);margin-bottom:10px}
+.g-body{font-size:13px;line-height:1.55;color:var(--ink);padding-bottom:12px}
+.g-body ul{margin:6px 0;padding-left:18px}
+.g-body li{margin:3px 0}
+.g-body b{color:var(--pine)}
 .modal{background:var(--card);border-radius:16px;max-width:620px;width:100%;padding:26px 28px 22px;position:relative;border-top:5px solid var(--gold);box-shadow:0 20px 60px rgba(12,40,35,.35)}
 .modal h3{font-size:20px;margin-bottom:4px;padding-right:36px}
 .modal .m-status{display:flex;gap:14px;align-items:center;flex-wrap:wrap;margin:12px 0 16px;padding:10px 12px;background:var(--paper);border-radius:10px;font-size:13px;font-weight:600}
@@ -662,6 +672,80 @@ header{padding-top:calc(26px + env(safe-area-inset-top))}
   </div>
 </div>
 
+<div class="modal-overlay no-print" id="guideOverlay" role="dialog" aria-modal="true" aria-labelledby="guideTitle" style="z-index:60">
+  <div class="modal" style="max-width:720px">
+    <button class="m-close" id="guideClose" aria-label="Close guide">✕</button>
+    <h3 id="guideTitle">Setup &amp; User Guide</h3>
+    <p style="font-size:12.5px;color:var(--ink-soft);margin:6px 0 14px">Tap a section to open it. Every input field also has its own tooltip — hover, or long-press on a phone.</p>
+
+    <details class="g-sec" open><summary>1 · Getting started</summary><div class="g-body">
+      The Cockpit is one self-contained file — it runs in any browser, needs no account and sends nothing anywhere. Everything you type <b>autosaves on the device you’re using</b>.
+      <ul><li><b>Computer:</b> open the HTML file and just start — edits save automatically.</li>
+      <li><b>iPhone:</b> host the app folder (GitHub Pages or Netlify), open the address in Safari, Share → <b>Add to Home Screen</b>. It then works offline, full-screen, with its own icon.</li>
+      <li>The hosted copy ships blank by design; your figures go on via <b>Load scenario (JSON)</b> and live only on the phone.</li></ul>
+    </div></details>
+
+    <details class="g-sec"><summary>2 · Getting your data in</summary><div class="g-body">
+      <ul><li><b>⚙ Settings</b> — names, dates of birth, retirement dates, salaries, state pensions, pensions in payment and other income; tick <b>Plan as a couple</b> to add a partner.</li>
+      <li><b>Portfolio</b> — add each holding with its wrapper, owner, start month, value and growth.</li>
+      <li>Moving between devices: <b>Save scenario (JSON)</b> on one, <b>Load scenario (JSON)</b> on the other (AirDrop is ideal — it never touches the internet).</li></ul>
+    </div></details>
+
+    <details class="g-sec"><summary>3 · The income tuner</summary><div class="g-body">
+      Drag the slider to set your target monthly income after tax, in today’s money — the whole plan recalculates live.
+      <ul><li><b>Plan funded to age</b> works in reverse too: click the age, type a target, and the Cockpit solves the income that gets you there.</li>
+      <li><b>Escalate with inflation</b> keeps spending power level; <b>today’s money</b> shows all figures in current purchasing power.</li></ul>
+    </div></details>
+
+    <details class="g-sec"><summary>4 · Portfolio</summary><div class="g-body">
+      <ul><li>Each wrapper (pension, ISA, taxable, EIS, VCT, gold, cash, Premium Bonds, crypto) is taxed by its own rules — the coloured dot shows which is which.</li>
+      <li><b>Start month</b> keeps money out of the plan until it actually arrives (an inheritance, a maturing bond).</li>
+      <li>Switch between <b>table and tile</b> views; tiles open an editor with a notes field (links become clickable). Reorder with the arrows; filter by name, wrapper or owner.</li>
+      <li>For taxable investments, the <b>estimate button</b> works out annual growth from what you paid vs what it’s worth.</li></ul>
+    </div></details>
+
+    <details class="g-sec"><summary>5 · Plan &amp; tax levers</summary><div class="g-body">
+      <ul><li><b>One-off pension contribution</b> before retirement, with 20% or 40% relief, paid from a cash pot you choose.</li>
+      <li><b>ISA funding</b> moves cash into shelter each April (£20k per person).</li>
+      <li><b>Drawdown order</b>: Tax-optimised fills each personal allowance with zero-tax pension withdrawals first, then spends tax-free pots before taxed ones.</li>
+      <li><b>One-off expenses</b> (car, holidays, family…) are drawn tax-efficiently in their year and flagged in the projection.</li></ul>
+    </div></details>
+
+    <details class="g-sec"><summary>6 · Actions</summary><div class="g-body">
+      Tiles for the real-world steps. Click one for detail and suggestions; give it a <b>due date</b> and it turns amber as the date nears (alert windows are set in Settings).
+      <ul><li><b>Ticking an action done</b> applies its portfolio effect automatically (e.g. moving cash) and archives it — restorable from the archive.</li>
+      <li><b>Calendar (.ics)</b> adds reminders to your phone’s calendar at both alert points and on the day; the <b>email button</b> drafts a summary to your address.</li></ul>
+    </div></details>
+
+    <details class="g-sec"><summary>7 · Projection</summary><div class="g-body">
+      Year by year to your chosen horizon: income need, state pensions, <b>Fixed inc £</b> (pensions in payment and other income), pension drawdown, tax paid and every pot’s balance. Icons mark one-off expenses. <b>Download CSV</b> exports the full table, including per-wrapper balances, for a spreadsheet.
+    </div></details>
+
+    <details class="g-sec"><summary>8 · Settings reference</summary><div class="g-body">
+      Grouped into collapsible areas: <b>You</b>, <b>Spouse / partner</b>, <b>Display &amp; app</b>, <b>Action alerts</b>, <b>Plan horizon</b>.
+      <ul><li>Retirement dates drive the countdown, salary cut-off and drawdown start — each of you can have your own.</li>
+      <li>Pensions in payment and ranged other income (e.g. part-time work) are taxed and prorated by month.</li>
+      <li>The <b>app version label</b> appears in the menu bar — handy for telling copies apart.</li></ul>
+    </div></details>
+
+    <details class="g-sec"><summary>9 · Reports, backups and resets</summary><div class="g-body">
+      <ul><li><b>Save / Load scenario (JSON)</b> — your backup and transfer format. Save one after any big change.</li>
+      <li><b>Download app + data</b> — a single HTML file with your figures embedded: the whole app and plan in one portable, private file.</li>
+      <li><b>Clear all personal data</b> wipes figures (it prompts you to save first); <b>Reset to defaults</b> restores the built-in example plan.</li></ul>
+    </div></details>
+
+    <details class="g-sec"><summary>10 · Troubleshooting</summary><div class="g-body">
+      <ul><li><b>Old version on the phone</b> — the offline cache is serving the previous copy: open the address in Safari while online, refresh, reopen the icon.</li>
+      <li><b>Data gone after clearing Safari data</b> — that wipes home-screen app storage too; load your latest scenario JSON.</li>
+      <li><b>Live UK data blank</b> — it needs an internet connection; the rest of the app works offline.</li>
+      <li><b>“Add to Home Screen” missing</b> — you’re not in Safari.</li></ul>
+    </div></details>
+
+    <div class="m-foot">Figures use 2025/26 UK allowances. A planning tool, not financial advice.
+      <a id="guidePdfLink" href="retirement-cockpit-guide.pdf" target="_blank" rel="noopener" style="display:none;margin-left:8px;color:var(--gold);font-weight:600">Download the PDF guide</a></div>
+  </div>
+</div>
+
 <div class="modal-overlay no-print" id="settingsOverlay" role="dialog" aria-modal="true" aria-labelledby="settingsTitle">
   <div class="modal">
     <button class="m-close" id="settingsClose" aria-label="Close settings">✕</button>
@@ -727,6 +811,8 @@ header{padding-top:calc(26px + env(safe-area-inset-top))}
       <div class="hint">Shown at the right of the menu bar &#8212; handy for telling which copy (phone, GitHub, desktop) you&#8217;re looking at.</div>
     </div>
     <label class="toggle" style="margin:4px 0 14px"><input type="checkbox" id="s_collapse"> Collapsible sections — tap a section title on the main page to fold it away</label>
+    <button class="ghost" id="openGuideBtn" type="button" style="margin:2px 0 14px">&#128214; Setup &amp; User Guide</button>
+    <div class="hint" style="margin:-6px 0 12px">How every part of the Cockpit works — setup, the income tuner, tax levers, actions and backups.</div>
     </details>
 
     <details class="set-sec" data-sec="alerts"><summary>Action alerts</summary>
@@ -1261,12 +1347,12 @@ function render(){
       tb.appendChild(trg);
     }
     const tr=document.createElement("tr");
-    tr.innerHTML=`<td class="h-name" data-label="Holding"><span class="h-dot" style="background:${(WRAP[h.wrap]||WRAP.cash).hex}" title="${(WRAP[h.wrap]||WRAP.cash).label}" aria-hidden="true"></span><input type="text" data-i="${i}" data-k="name" value="${h.name.replace(/"/g,'&quot;')}" aria-label="Holding name"></td>
-      <td class="h-wrap" data-label="Wrapper"><select data-i="${i}" data-k="wrap" aria-label="Wrapper">${Object.keys(WRAP).map(w=>`<option value="${w}"${w===h.wrap?" selected":""}>${WRAP[w].label}</option>`).join("")}</select></td>
-      ${couple?`<td data-label="Owner"><select data-i="${i}" data-k="owner" aria-label="Owner"><option value="p1"${ownerOf(h)==="p1"?" selected":""}>${n1}</option><option value="p2"${ownerOf(h)==="p2"?" selected":""}>${n2}</option><option value="joint"${ownerOf(h)==="joint"?" selected":""}>Joint</option></select></td>`:""}
-      <td data-label="Starts"><input type="month" data-i="${i}" data-k="start" value="${h.start||"2026-06"}" min="2026-06" max="2060-12" style="min-width:130px" aria-label="Start date"></td>
-      <td class="num" data-label="Value £"><input type="number" data-i="${i}" data-k="value" value="${h.value}" min="0" step="500" style="text-align:right" aria-label="Value"></td>
-      <td class="num" data-label="Growth %/yr"><span class="growth-cell"><input type="number" data-i="${i}" data-k="growth" value="${h.growth}" step="0.5" style="text-align:right;max-width:90px" aria-label="Growth">${(h.wrap==="investment"||h.wrap==="gia"||h.wrap==="crypto")?`<button class="small ghost est no-print" data-est="${i}" title="Estimate annual growth from what you paid vs what it\u2019s worth">\u2248</button>`:""}</span></td>
+    tr.innerHTML=`<td class="h-name" data-label="Holding"><span class="h-dot" style="background:${(WRAP[h.wrap]||WRAP.cash).hex}" title="${(WRAP[h.wrap]||WRAP.cash).label}" aria-hidden="true"></span><input type="text" data-i="${i}" data-k="name" value="${h.name.replace(/"/g,'&quot;')}" aria-label="Holding name" title="What this money is — free text, e.g. provider or fund name"></td>
+      <td class="h-wrap" data-label="Wrapper"><select data-i="${i}" data-k="wrap" aria-label="Wrapper" title="Tax wrapper — decides how and when withdrawals are taxed">${Object.keys(WRAP).map(w=>`<option value="${w}"${w===h.wrap?" selected":""}>${WRAP[w].label}</option>`).join("")}</select></td>
+      ${couple?`<td data-label="Owner"><select data-i="${i}" data-k="owner" aria-label="Owner" title="Whose name it’s held in — decides whose tax allowances it uses"><option value="p1"${ownerOf(h)==="p1"?" selected":""}>${n1}</option><option value="p2"${ownerOf(h)==="p2"?" selected":""}>${n2}</option><option value="joint"${ownerOf(h)==="joint"?" selected":""}>Joint</option></select></td>`:""}
+      <td data-label="Starts"><input type="month" data-i="${i}" data-k="start" value="${h.start||"2026-06"}" min="2026-06" max="2060-12" style="min-width:130px" aria-label="Start date" title="Month this money joins the plan — it’s excluded from the simulation before then"></td>
+      <td class="num" data-label="Value £"><input type="number" data-i="${i}" data-k="value" value="${h.value}" min="0" step="500" style="text-align:right" aria-label="Value" title="Current value in £ today"></td>
+      <td class="num" data-label="Growth %/yr"><span class="growth-cell"><input type="number" data-i="${i}" data-k="growth" value="${h.growth}" step="0.5" style="text-align:right;max-width:90px" aria-label="Growth" title="Assumed annual growth % after charges — the estimate button next door can work it out from past performance">${(h.wrap==="investment"||h.wrap==="gia"||h.wrap==="crypto")?`<button class="small ghost est no-print" data-est="${i}" title="Estimate annual growth from what you paid vs what it\u2019s worth">\u2248</button>`:""}</span></td>
       <td class="h-del"><span class="mv-group no-print"><button class="small ghost mv" data-mvu="${i}"${segFirst[h.wrap]===i?" disabled":""} aria-label="Move up" title="Move up">▲</button><button class="small ghost mv" data-mvd="${i}"${segLast[h.wrap]===i?" disabled":""} aria-label="Move down" title="Move down">▼</button></span><button class="small danger no-print" data-del="${i}" aria-label="Remove holding">✕</button></td>`;
     tb.appendChild(tr);
   });
@@ -1337,11 +1423,11 @@ function render(){
     const tag=TAGS[o.tag]?o.tag:"other";
     const d=document.createElement("div");d.className="oneoff-row";
     d.innerHTML=`<span class="oo-icon" title="${TAGS[tag].label}" aria-hidden="true">${tagIcon(tag,17)}</span>
-      <select data-oo="${i}" data-k="tag" aria-label="Category">${Object.keys(TAGS).map(k=>`<option value="${k}"${k===tag?" selected":""}>${TAGS[k].label}</option>`).join("")}</select>
-      <input type="number" data-oo="${i}" data-k="year" value="${o.year}" min="${RET_YEAR}" max="2060" aria-label="Year">
-      <input type="number" data-oo="${i}" data-k="amount" value="${o.amount}" min="0" step="500" aria-label="Amount £">
+      <select data-oo="${i}" data-k="tag" aria-label="Category" title="What the spend is for — picks the icon">${Object.keys(TAGS).map(k=>`<option value="${k}"${k===tag?" selected":""}>${TAGS[k].label}</option>`).join("")}</select>
+      <input type="number" data-oo="${i}" data-k="year" value="${o.year}" min="${RET_YEAR}" max="2060" aria-label="Year" title="Year the expense lands — drawn tax-efficiently alongside that year’s income">
+      <input type="number" data-oo="${i}" data-k="amount" value="${o.amount}" min="0" step="500" aria-label="Amount £" title="One-off cost in today’s £">
       <button class="small danger no-print" data-oodel="${i}">✕</button>
-      <input type="text" class="oo-note" data-oo="${i}" data-k="note" value="${String(o.note||"").replace(/"/g,'&quot;')}" placeholder="Add a note — e.g. replace the Golf, kitchen refit quote…" aria-label="Note">`;
+      <input type="text" class="oo-note" data-oo="${i}" data-k="note" value="${String(o.note||"").replace(/"/g,'&quot;')}" placeholder="Add a note — e.g. replace the Golf, kitchen refit quote…" aria-label="Note" title="Optional note — shows in the projection tooltips and CSV export">`;
     oo.appendChild(d);
   });
 
@@ -1350,8 +1436,8 @@ function render(){
   at.innerHTML=S.actions.map((a,i)=>{const dd=daysToDue(a);const cls=a.done?" done":(dd!==null&&dd<0?" overdue":(dd!==null&&dd<=S.alert1?" duesoon":""));return `<div class="tile${cls}" data-open="${i}" tabindex="0" role="button" aria-label="Open details: ${String(a.t).replace(/"/g,'&quot;')}">
       <button class="x no-print" data-adel="${i}" aria-label="Remove action">✕</button>
       <div class="tile-top">
-        <input type="checkbox" data-ai="${i}" data-k="done"${a.done?" checked":""} aria-label="Mark done">
-        <input type="text" class="t-name" data-ai="${i}" data-k="t" value="${String(a.t).replace(/"/g,'&quot;')}" aria-label="Action">
+        <input type="checkbox" data-ai="${i}" data-k="done"${a.done?" checked":""} aria-label="Mark done" title="Tick to complete — archives the action and applies any portfolio effect automatically">
+        <input type="text" class="t-name" data-ai="${i}" data-k="t" value="${String(a.t).replace(/"/g,'&quot;')}" aria-label="Action" title="Action title — edit freely">
       </div>
       <div class="tile-foot">
         ${(()=>{const dd=daysToDue(a);
@@ -1360,7 +1446,7 @@ function render(){
           if(dd<0)return '<span class="badge" style="color:var(--coral)">⚠ '+(-dd)+(dd===-1?' day':' days')+' overdue</span>';
           if(dd<=S.alert1)return '<span class="badge" style="color:#B26A00">Due in '+dd+(dd===1?' day':' days')+'</span>';
           return '<span class="more">Details</span>';})()}
-        <label class="due-lbl">Due <input type="date" data-ai="${i}" data-k="due" value="${a.due||""}" aria-label="Due date"></label>
+        <label class="due-lbl">Due <input type="date" data-ai="${i}" data-k="due" value="${a.due||""}" aria-label="Due date" title="When this should be done by — drives the amber alerts, banner and calendar reminders"></label>
       </div>
     </div>`;}).join("");
   /* due/overdue banner */
@@ -1889,7 +1975,7 @@ function renderLive(){
     rows+=`<div class="live-row"><span class="lv-name">${lbl} \u2014 legal-tender coins</span>
       <span class="lv-val">${met?("\u00A3"+met.gbpOz.toLocaleString("en-GB",{maximumFractionDigits:2})+" /oz"):"\u2014"}</span>${chg(met&&met.chg)}
       <label class="lv-sub">troy oz held
-        <input type="number" class="lv-units" data-mo="${ozKey}" value="${oz||""}" min="0" step="0.1" placeholder="oz"></label>
+        <input type="number" class="lv-units" data-mo="${ozKey}" value="${oz||""}" min="0" step="0.1" placeholder="oz" title="Troy ounces you hold — updates the coin holding at the live spot price"></label>
       <span class="lv-sub">${(oz&&met)?("= "+fmt(oz*met.gbpOz)):""}</span></div>`;
   });
   /* crypto rows stay per holding */
@@ -1899,10 +1985,10 @@ function renderLive(){
     const pc=L.coins&&L.coins[cid];
     const price=pc&&pc.gbp, c=pc&&pc.chg;
     rows+=`<div class="live-row"><span class="lv-name">${String(o.x.name).replace(/</g,"&lt;")}</span>
-      <select class="lv-metal" data-lc="${o.i}" aria-label="Coin">${COINS.map(k=>`<option value="${k.id}"${k.id===cid?" selected":""}>${k.label}</option>`).join("")}</select>
+      <select class="lv-metal" data-lc="${o.i}" aria-label="Coin" title="Which cryptocurrency this holding tracks — switching converts the value at the new live price">${COINS.map(k=>`<option value="${k.id}"${k.id===cid?" selected":""}>${k.label}</option>`).join("")}</select>
       <span class="lv-val">${price?("\u00A3"+price.toLocaleString("en-GB",{maximumFractionDigits:price<10?3:0})+" /"+co.sym):"\u2014"}</span>${chg(c)}
       <label class="lv-sub">coins held
-        <input type="number" class="lv-units" data-lu="${o.i}" value="${o.x.units||""}" min="0" step="any" placeholder="units"></label>
+        <input type="number" class="lv-units" data-lu="${o.i}" value="${o.x.units||""}" min="0" step="any" placeholder="units" title="Number of coins you hold — the live price sets the holding’s value"></label>
       <span class="lv-sub">${(o.x.units&&price)?("= "+fmt(o.x.units*price)):""}</span>
       <button class="small danger no-print" data-del="${o.i}" aria-label="Remove this coin holding" title="Remove holding">\u2715</button></div>`;
   });
@@ -2030,6 +2116,15 @@ document.querySelectorAll("details.set-sec").forEach(d=>{
 });
 setOverlay.addEventListener("click",e=>{if(e.target===setOverlay)closeSettings();});
 document.addEventListener("keydown",e=>{if(e.key==="Escape")closeSettings();});
+const guideOv=document.getElementById("guideOverlay");
+function openGuide(){guideOv.classList.add("open");document.getElementById("guideClose").focus();}
+function closeGuide(){guideOv.classList.remove("open");}
+document.getElementById("openGuideBtn").addEventListener("click",openGuide);
+document.getElementById("guideClose").addEventListener("click",closeGuide);
+guideOv.addEventListener("click",e=>{if(e.target===guideOv)closeGuide();});
+document.addEventListener("keydown",e=>{if(e.key==="Escape"&&guideOv.classList.contains("open"))closeGuide();});
+const gpdf=document.getElementById("guidePdfLink");
+if(gpdf&&typeof location!=="undefined"&&location.protocol&&location.protocol.startsWith("http"))gpdf.style.display="inline";
 function renderSettingsControls(){
   const ST=S.settings;
   document.querySelectorAll("[data-set]").forEach(el=>{
@@ -2048,18 +2143,18 @@ function renderSettingsControls(){
     const box=document.getElementById("pips_"+pk);if(!box)return;
     const pips=ST[pk].pips||[];
     box.innerHTML=pips.length?pips.map((x,i)=>`<div class="pip-row">
-        <input class="pip-label" type="text" data-pip="${pk}:${i}:label" value="${String(x.label||"").replace(/"/g,'&quot;')}" placeholder="e.g. BT pension" aria-label="Pension name">
-        <input type="number" data-pip="${pk}:${i}:mo" value="${x.mo}" min="0" step="25" aria-label="£ per month">
-        <input type="month" data-pip="${pk}:${i}:start" value="${x.start}" min="2026-06" max="2060-12" aria-label="Paying from">
+        <input class="pip-label" type="text" data-pip="${pk}:${i}:label" value="${String(x.label||"").replace(/"/g,'&quot;')}" placeholder="e.g. BT pension" aria-label="Pension name" title="Name of this pension in payment">
+        <input type="number" data-pip="${pk}:${i}:mo" value="${x.mo}" min="0" step="25" aria-label="£ per month" title="What it pays per month before tax — taxed as income and escalated with inflation if that option is on">
+        <input type="month" data-pip="${pk}:${i}:start" value="${x.start}" min="2026-06" max="2060-12" aria-label="Paying from" title="Month it starts (or started) paying — part-months are prorated">
         <button type="button" class="small danger" data-pipdel="${pk}:${i}" aria-label="Remove">✕</button>
       </div>`).join(""):'<div class="hint" style="margin-bottom:6px">None yet.</div>';
     const ibox=document.getElementById("incs_"+pk);if(!ibox)return;
     const incs=ST[pk].incomes||[];
     ibox.innerHTML=incs.length?incs.map((x,i)=>`<div class="inc-row">
-        <input class="pip-label" type="text" data-inc="${pk}:${i}:label" value="${String(x.label||"").replace(/"/g,'&quot;')}" placeholder="e.g. Part-time work" aria-label="Income name">
-        <input type="number" data-inc="${pk}:${i}:mo" value="${x.mo}" min="0" step="25" aria-label="£ per month">
-        <input type="month" data-inc="${pk}:${i}:start" value="${x.start}" min="2026-06" max="2060-12" aria-label="From">
-        <input type="month" data-inc="${pk}:${i}:end" value="${x.end}" min="2026-06" max="2060-12" aria-label="To">
+        <input class="pip-label" type="text" data-inc="${pk}:${i}:label" value="${String(x.label||"").replace(/"/g,'&quot;')}" placeholder="e.g. Part-time work" aria-label="Income name" title="Name of this other income, e.g. part-time work or rent">
+        <input type="number" data-inc="${pk}:${i}:mo" value="${x.mo}" min="0" step="25" aria-label="£ per month" title="Monthly amount in today’s money — taxed as income">
+        <input type="month" data-inc="${pk}:${i}:start" value="${x.start}" min="2026-06" max="2060-12" aria-label="From" title="First month it’s received">
+        <input type="month" data-inc="${pk}:${i}:end" value="${x.end}" min="2026-06" max="2060-12" aria-label="To" title="Last month it’s received — it stops after this">
         <button type="button" class="small danger" data-incdel="${pk}:${i}" aria-label="Remove">✕</button>
       </div>`).join(""):'<div class="hint" style="margin-bottom:6px">None yet.</div>';
   });
@@ -2253,6 +2348,69 @@ document.getElementById("clearData").addEventListener("click",async()=>{
   if(st){st.style.color="var(--ok)";st.textContent="\u2713 All personal data cleared. The app is blank \u2014 re-enter figures, or load a saved scenario JSON to restore.";}
 });
 
+/* ---------- tooltips for every static input field ---------- */
+const TIPS={
+  incomeSlider:"Target monthly income after tax, in today’s money — everything else in the plan is solved around this",
+  topUp:"One-off gross pension contribution made before retirement — costs less than face value once tax relief is added",
+  reliefRate:"Tax relief assumed on the contribution — 40% while it fits inside higher-rate pay, otherwise 20%",
+  topUpSource:"Which cash pot pays the net cost — the contribution waits until that money has arrived",
+  isaFund:"Moved from cash into ISA each April, up to £20,000 per person per year — shelters future growth from tax",
+  isaGrowth:"Assumed annual growth on ISA money once invested",
+  annualExtras:"Planned extra spending each year on top of the monthly target — holidays and the like",
+  strategy:"Order the pots are drawn in retirement — Tax-optimised fills each personal allowance with zero-tax pension withdrawals first",
+  inflation:"Assumed CPI inflation — the Live UK data card can set this to the latest official ONS rate",
+  giaTax:"Effective tax on gains when selling taxable investments or crypto — approximates CGT above the £3,000 annual allowance",
+  escalate:"Raise the income target and fixed incomes with inflation each year, so spending power holds",
+  realTerms:"Show every figure in today’s purchasing power instead of future pounds",
+  fundedAgeInput:"Type a target age and the monthly income is solved for you",
+  s_p1_name:"Your name — used on tiles, the owner filter and reports",
+  s_p1_email:"Used by the email-reminder button and on reports — never sent anywhere automatically",
+  s_p1_dob:"Sets your age automatically and keeps it right as birthdays pass",
+  s_p1_age:"Drives state-pension timing and the plan horizon — auto-filled when a date of birth is set",
+  s_p1_retire:"Your last working day — drives the countdown, salary cut-off, contribution deadline and drawdown start",
+  s_p1_salary:"Gross annual salary paid until your retirement date — sets the 40% relief window and covers household need until then",
+  s_p1_sp:"Your yearly state pension in today’s money — check the real figure at gov.uk/check-state-pension",
+  s_p1_spage:"Age your state pension starts — 66–68 depending on date of birth",
+  s_p2_name:"Your partner’s name — used on tiles, the owner filter and reports",
+  s_p2_email:"Used by the email-reminder button and on reports — never sent anywhere automatically",
+  s_p2_dob:"Sets their age automatically and keeps it right as birthdays pass",
+  s_p2_age:"Drives their state-pension timing — auto-filled when a date of birth is set",
+  s_p2_retire:"Their last working day — their salary stops and their drawdown can start from here",
+  s_p2_salary:"Their gross annual salary until their retirement date — helps cover household need until then",
+  s_p2_sp:"Their yearly state pension in today’s money — check at gov.uk/check-state-pension",
+  s_p2_spage:"Age their state pension starts — 66–68 depending on date of birth",
+  s_couple:"Plan as a couple — two personal allowances, two state pensions and £40k of ISA funding a year",
+  s_holdview:"How the Portfolio section opens — editable table or visual tiles",
+  s_appver:"Free-text label shown at the right of the menu bar — handy for telling copies apart",
+  s_alert1:"Days before a due date that an action turns amber and joins the banner, email summary and calendar reminders",
+  s_alert2:"Second calendar reminder, in days before due — set 0 to skip; never later than the 1st Alert",
+  s_collapse:"Tap section titles on the main page to fold them away",
+  s_endage:"Run the projection to this age — later ages make the ‘funded to’ test stricter",
+  he_name:"What this money is — free text, e.g. provider or fund name",
+  he_wrap:"Tax wrapper — decides how and when withdrawals are taxed",
+  he_owner:"Whose name it’s held in — decides whose tax allowances it uses",
+  he_start:"Month this money joins the plan — it’s excluded from the simulation before then",
+  he_value:"Current value in £ today",
+  he_growth:"Assumed annual growth % after charges",
+  he_note:"Notes for this holding — URLs become clickable links on the tile",
+  estV0:"What you paid, or an earlier valuation",
+  estD0:"Date of that purchase or valuation",
+  estV1:"What it’s worth now, or what it sold for",
+  estD1:"Date of the current value",
+  mDue:"When this should be done by — drives the amber alerts, banner and calendar reminders",
+  mDate:"When it was actually completed",
+  mNotes:"Decisions, reference numbers, who you spoke to — saved with the scenario",
+  mDone:"Mark done — archives the action and applies any portfolio effect automatically"
+};
+function applyTips(){
+  Object.keys(TIPS).forEach(id=>{
+    const el=document.getElementById(id);
+    if(!el)return;
+    el.title=TIPS[id];
+    if(typeof el.closest==="function"){const lb=el.closest("label");if(lb&&!lb.title)lb.title=TIPS[id];}
+  });
+}
+
 /* ---------- start: restore the newest saved state (browser vs embedded-in-file), then render ---------- */
 function embeddedState(){
   try{
@@ -2269,6 +2427,7 @@ function embeddedState(){
   if(chosen&&chosen.holdings)Object.assign(S,chosen);
   normalizeState();
   renderControls();renderSettingsControls();
+  applyTips();
   render();
 })();
 
